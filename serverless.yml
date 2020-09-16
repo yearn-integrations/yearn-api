@@ -1,19 +1,21 @@
 service: yearn
 
 plugins:
-  - serverless-offline
-  - serverless-domain-manager
   - serverless-aws-documentation
   - serverless-export-swagger
+  - serverless-offline
+  - serverless-domain-manager
 
 custom:
   defaultStage: dev
   currentStage: ${opt:stage, self:custom.defaultStage}
   customDomain: ${file(./config/serverless/domain.js):${self:custom.currentStage}}
+  serverless-offline:
+    useChildProcesses: true
   basePath: ""
   swaggerDestinations:
-    s3BucketName: "yearn-integrations"
-    s3KeyName: "swagger/api.json"
+    s3BucketName: "yearn.tools"
+    s3KeyName: "swagger/swagger.json"
     acl: public-read
   documentation:
     api:
@@ -25,9 +27,9 @@ custom:
         - name: Vaults
           description: Vault endpoints
         - name: User
-          description: User endpoints
+          description: User endpoints (these APIs are specific to a user account)
         - name: Loanscan
-          description: Loanscan endpoints
+          description: Loanscan endpoints (not for general consumption)
     models:
       - name: MessageResponse
         contentType: "application/json"
@@ -48,15 +50,22 @@ functions:
     role: arn:aws:iam::698083237070:role/service-role/fetchTokenIds-role-o9i24lq2
     events:
       - http:
-          path: /user/{id}/vaults/earnings
+          path: /user/{userAddress}/vaults/earnings
           method: get
           cors: true
+          request:
+            parameters:
+              paths:
+                userAddress: true
           documentation:
             summary: Returns vault earnings per user
             tags:
               - User
             description: >
               Vault earnings are calculated using the yearn subgraph
+          pathParams:
+            - name: "userAddress"
+              description: "User account address. Format: 0x{...}"
 
   loanscan-link:
     handler: services/loanscan/link/handler.handler
