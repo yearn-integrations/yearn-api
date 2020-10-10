@@ -306,3 +306,62 @@ functions:
               - Loanscan
             description: >
               crvBUSD APY is an aggregate APY. This API combines vault APY with underlying Curve pool APY. Aggregation formula: ((1 + poolApy) * (1 + vaultApy) - 1) * 100;
+
+
+  # /yfi
+  yfi-price:
+    handler: services/yfi/handler.handler
+    role: arn:aws:iam::698083237070:role/service-role/fetchTokenIds-role-o9i24lq2
+    timeout: 30
+    events:
+      - http:
+          path: /yfi/price
+          method: get
+          cors: true
+          documentation:
+            summary: Gets historical yfi price data.
+            tags:
+              - yfi
+            description: >
+              Data fetched from Coingecko. Granularity set automatically by Coingecko.
+              Minutely data will be used for duration within 1 day.
+              Hourly data will be used for duration between 1 day and 90 days.
+              Daily data will be used for duration above 90 days.
+
+  yfi-marketcap:
+    handler: services/yfi/handler.handler
+    role: arn:aws:iam::698083237070:role/service-role/fetchTokenIds-role-o9i24lq2
+    timeout: 30
+    events:
+      - http:
+          path: /yfi/marketcap
+          method: get
+          cors: true
+          documentation:
+            summary: Gets historical yfi marketcap data.
+            tags:
+              - yfi
+            description: >
+              Data fetched from Coingecko. Granularity set automatically by Coingecko.
+              Minutely data will be used for duration within 1 day.
+              Hourly data will be used for duration between 1 day and 90 days.
+              Daily data will be used for duration above 90 days.
+
+  yfi-volume:
+    handler: services/yfi/handler.handler
+    role: arn:aws:iam::698083237070:role/service-role/fetchTokenIds-role-o9i24lq2
+    timeout: 30
+    events:
+      - http:
+          path: /yfi/volume
+          method: get
+          cors: true
+          documentation:
+            summary: Gets historical yfi volume data.
+            tags:
+              - yfi
+            description: >
+              Data fetched from Coingecko. Granularity set automatically by Coingecko.
+              Minutely data will be used for duration within 1 day.
+              Hourly data will be used for duration between 1 day and 90 days.
+              Daily data will be used for duration above 90 days.
