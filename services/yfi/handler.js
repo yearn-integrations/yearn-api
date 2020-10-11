@@ -3,14 +3,36 @@
 require("dotenv").config();
 const { getYfiHistoricalMarketData } = require("./coingecko");
 const moment = require("moment");
+const _ = require("lodash");
 
 module.exports.handler = async (event) => {
+  const [from, to, requestedType, vsCurrency] = prepareRequestParams(event);
+
+  const historicalYfiMarketData = await getYfiHistoricalMarketData(
+    from,
+    to,
+    requestedType,
+    vsCurrency
+  );
+
+  return {
+    statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+    },
+    body: JSON.stringify(historicalYfiMarketData),
+  };
+};
+
+function prepareRequestParams(event) {
   const queryParams = event.queryStringParameters;
 
-  const to = queryParams?.to ? moment(queryParams.to) : moment();
-  const from = queryParams?.from
-    ? moment(queryParams.from)
-    : to.clone().subtract("1", "months");
+  let to = _.get(queryParams, "to", null);
+  to = to ? moment(to) : moment();
+
+  let from = _.get(queryParams, "from", null);
+  from = from ? moment(from) : to.clone().subtract("1", "months");
 
   if (!from.isValid()) {
     throw "Could not parse 'from' param as a valid date/time";
@@ -38,19 +60,5 @@ module.exports.handler = async (event) => {
     return parts[parts.length - 1];
   })(event.path);
 
-  const historicalYfiMarketData = await getYfiHistoricalMarketData(
-    from,
-    to,
-    typeMapping[requestedType],
-    vsCurrency
-  );
-
-  return {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true,
-    },
-    body: JSON.stringify(historicalYfiMarketData),
-  };
-};
+  return [from, to, typeMapping[requestedType], vsCurrency];
+}
