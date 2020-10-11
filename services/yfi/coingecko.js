@@ -1,9 +1,15 @@
 const moment = require("moment");
 const fetch = require("node-fetch");
 
-async function getYfiHistoricalMarketData(from, to, type, vsCurrency) {
-  const coingeckoApiEndPoint = "https://api.coingecko.com/api/v3/";
+const coingeckoApiEndPoint = "https://api.coingecko.com/api/v3/";
 
+async function getYfiHistoricalMarketData(
+  from,
+  to,
+  type,
+  vsCurrency,
+  formatTimestamps = true
+) {
   const response = await fetch(
     `${coingeckoApiEndPoint}/coins/yearn-finance/market_chart/range?vs_currency=${vsCurrency}&from=${from.unix()}&to=${to.unix()}`
   );
@@ -19,10 +25,13 @@ async function getYfiHistoricalMarketData(from, to, type, vsCurrency) {
 
   const typesUsed = Object.keys(responseData);
   typesUsed.forEach((typeUsed) => {
-    responseData[typeUsed] = responseData[typeUsed].map((item) => ({
-      timestamp: item[0],
-      value: item[1],
-    }));
+    responseData[typeUsed] = responseData[typeUsed].map((item) => {
+      let [timestamp, value] = item;
+      return {
+        timestamp: formatTimestamps ? moment(timestamp).format() : timestamp,
+        value,
+      };
+    });
   });
 
   return responseData;
