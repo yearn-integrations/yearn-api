@@ -30,6 +30,8 @@ custom:
           description: User endpoints (these APIs are specific to a user account)
         - name: Loanscan
           description: Loanscan endpoints (not for general consumption)
+        - name: YFI market data
+          description: YFI endpoints for historial YFI market data
 
 provider:
   name: aws
@@ -323,6 +325,9 @@ functions:
             tags:
               - yfi
             description: >
+              Defaults to last month of data but can be specified with to and from query params like ?from=2020-10-01&to=2020-10-02
+              Time of day can also be supplied like ?from=2020-10-01T07:15:00Z&to=2020-10-01T19:15:00Z
+              Currency default to USD but can be provided like ?vsCurrency=GBP
               Data fetched from Coingecko. Granularity set automatically by Coingecko.
               Minutely data will be used for duration within 1 day.
               Hourly data will be used for duration between 1 day and 90 days.
@@ -342,6 +347,8 @@ functions:
             tags:
               - yfi
             description: >
+              Defaults to last month of data but can be specified with to and from query params like ?from=2020-10-01&to=2020-10-02
+              Time of day can also be supplied like ?from=2020-10-01T07:15:00Z&to=2020-10-01T19:15:00Z
               Data fetched from Coingecko. Granularity set automatically by Coingecko.
               Minutely data will be used for duration within 1 day.
               Hourly data will be used for duration between 1 day and 90 days.
@@ -361,6 +368,8 @@ functions:
             tags:
               - yfi
             description: >
+              Defaults to last month of data but can be specified with to and from query params like ?from=2020-10-01&to=2020-10-02
+              Time of day can also be supplied like ?from=2020-10-01T07:15:00Z&to=2020-10-01T19:15:00Z
               Data fetched from Coingecko. Granularity set automatically by Coingecko.
               Minutely data will be used for duration within 1 day.
               Hourly data will be used for duration between 1 day and 90 days.
