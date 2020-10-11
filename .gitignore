@@ -3,3 +3,6 @@ node_modules
 .DS_Store
 awsProfile.yml
 .env
+
+# IntelliJ IDE project files
+.idea
