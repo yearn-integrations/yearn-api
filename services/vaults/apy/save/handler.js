@@ -1,6 +1,7 @@
 require("dotenv").config();
 const AWS = require("aws-sdk");
-const db = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
+// const db = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
+const db = require('../../../../models/apy.model');
 const Web3 = require("web3");
 const moment = require("moment");
 const delay = require("delay");
@@ -42,14 +43,16 @@ const pools = [
 ];
 
 const saveVault = async (data) => {
-  const params = {
-    TableName: "vaultApy",
-    Item: data,
-  };
-  await db
-    .put(params)
-    .promise()
-    .catch((err) => console.log("err", err));
+  // const params = {
+  //   TableName: "vaultApy",
+  //   Item: data,
+  // };
+  // await db
+  //   .put(params)
+  //   .promise()
+  //   .catch((err) => console.log("err", err));
+
+  await db.add(data).catch((err) => console.log('err', err));
   console.log(`Saved ${data.name}`);
 };
 
@@ -278,7 +281,7 @@ const readVault = async (vault) => {
   return data;
 };
 
-module.exports.handler = async (context) => {
+module.exports.handler = async (res) => {
   console.log("Fetching historical blocks");
   currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
   await delay(delayTime);
@@ -297,13 +300,9 @@ module.exports.handler = async (context) => {
     }
     await delay(delayTime);
   }
-  const response = {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true,
-    },
-    body: JSON.stringify(vaultsWithApy),
-  };
-  return response;
+
+  return res.status(200).json({
+    message: '',
+    body: vaultsWithApy
+  });
 };

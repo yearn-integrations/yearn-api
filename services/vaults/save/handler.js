@@ -1,6 +1,7 @@
 require("dotenv").config();
 const AWS = require("aws-sdk");
-const db = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
+// const db = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
+const db = require('../../../models/vault.model');
 const _ = require("lodash");
 const fetch = require("node-fetch");
 const Web3 = require("web3");
@@ -70,18 +71,11 @@ const callContractMethod = async (contract, method) => {
 };
 
 const saveVault = async (vault) => {
-	const params = {
-		TableName: "vaults",
-		Item: vault,
-	};
-	await db
-		.put(params)
-		.promise()
-		.catch((err) => console.log("err", err));
+	await db.add(vault).catch((err) => console.log('err', err));
 	console.log(`Saved ${vault.name}`);
 };
 
-module.exports.handler = async (event) => {
+module.exports.handler = async (res) => {
 	const registryContract = new web3.eth.Contract(
 		yRegistryAbi,
 		yRegistryAddress
@@ -151,13 +145,8 @@ module.exports.handler = async (event) => {
 		vaults.push(vault);
 	}
 
-	const response = {
-		statusCode: 200,
-		headers: {
-			"Access-Control-Allow-Origin": "*",
-			"Access-Control-Allow-Credentials": true,
-		},
-		body: JSON.stringify(vaults),
-	};
-	return response;
+	res.status(200).json({
+		message: '',
+		body: vaults
+	})
 };

@@ -1,19 +1,28 @@
 version: '3.6'
 services:
-  serverless:
+  database:
+    image: mongo
+    container_name: 'database'
+    restart: 'always'
+    ports: 
+      - '27017:27017'
+    volumes: 
+      - 'mongodata:/data/db'
+  api:
+    container_name: 'api'
+    restart: 'always'
     build:
       context: .
-    environment:
-      - SUBGRAPH_ENDPOINT=${SUBGRAPH_ENDPOINT}
-      - WEB3_ENDPOINT=${WEB3_ENDPOINT}
-      - ARCHIVENODE_ENDPOINT=${ARCHIVENODE_ENDPOINT}
-      - ETHERSCAN_API_KEY=${ETHERSCAN_API_KEY}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+    env_file: 
+      - .env
     ports:
-      - "3000:3000"
+      - "8080:8080"
     volumes:
-      - "./config:/opt/app/config:ro"
-      - "./services:/opt/app/services:ro"
-      - "./utils:/opt/app/utils:ro"
+      - "./config:/api/config:ro"
+      - "./services:/api/services:ro"
+      - "./utils:/api/utils:ro"
+      - "./models:/api/models:ro"
+    depends_on: 
+      - database
+volumes: 
+  mongodata:

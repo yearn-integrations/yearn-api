@@ -7,51 +7,112 @@ const BigNumber = require("bignumber.js");
 const subgraphUrl = process.env.SUBGRAPH_ENDPOINT;
 const { getVaults } = require("../../../vaults/handler");
 const _ = require("lodash");
+const {
+  devContract,
+  prodContract,
+} = require('../../../../config/serverless/domain');
 
-module.exports.handler = async (event) => {
-  const userAddress = event.pathParameters.userAddress;
-  const transactions = await getTransactions(userAddress);
-  return {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true,
-    },
-    body: JSON.stringify(transactions),
-  };
+module.exports.handler = async (req, res) => {
+  const userAddress = req.params.userAddress || '';
+  if (userAddress === '') {
+    res.status(200).json({
+      message: 'User Address is empty.',
+      body: null
+    });
+  } else {
+    const transactions = await getTransactions(userAddress);
+    res.status(200).json({
+      message: '',
+      body: transactions
+    });
+  }
 };
 
 const getGraphTransactions = async (userAddress) => {
+  // const query = `
+  // { 
+  //     deposits: deposits (where: {account: "${userAddress}"}, orderBy: blockNumber) {
+  //       transactionAddress: id
+  //       vaultAddress
+  //       amount
+  //       timestamp
+  //     }
+  //     withdrawals: withdraws (where: {account: "${userAddress}"}, orderBy: blockNumber) { 
+  //       transactionAddress: id
+  //       vaultAddress
+  //       amount
+  //       timestamp
+  //     }
+  //     transfersIn: transfers(where: {to: "${userAddress}", from_not: "0x0000000000000000000000000000000000000000"}, orderBy: blockNumber) {
+  //       transactionAddress: id
+  //       timestamp
+  //       vaultAddress
+  //       balance
+  //       totalSupply
+  //       shares: value
+  //     }
+  //     transfersOut: transfers(where: {from: "${userAddress}", to_not: "0x0000000000000000000000000000000000000000"}, orderBy: blockNumber) {
+  //       transactionAddress: id
+  //       shares: value
+  //       vaultAddress
+  //       timestamp
+  //       balance
+  //       totalSupply
+  //       shares: value
+  //     }
+  //   }
+  // `;
   const query = `
   { 
-      deposits: deposits (where: {account: "${userAddress}"}, orderBy: blockNumber) {
-        transactionAddress: id
-        vaultAddress
+      deposits: deposits (where: {account: "${userAddress}"}) {
+        transactionAddress: transaction {
+          id
+        }
+        vaultAddress: farmer {
+          id
+        }
         amount
-        timestamp
+        transaction {
+          timestamp
+        }
       }
-      withdrawals: withdraws (where: {account: "${userAddress}"}, orderBy: blockNumber) { 
-        transactionAddress: id
-        vaultAddress
+      withdrawals (where: {account: "${userAddress}"}) { 
+        transactionAddress: transaction {
+          id
+        }
+        vaultAddress: farmer {
+          id
+        }
         amount
-        timestamp
+        transaction {
+          timestamp
+        }
       }
-      transfersIn: transfers(where: {to: "${userAddress}", from_not: "0x0000000000000000000000000000000000000000"}, orderBy: blockNumber) {
-        transactionAddress: id
-        timestamp
-        vaultAddress
-        balance
-        totalSupply
+      transfersIn: transfers(where: {to: "${userAddress}", from_not: "0x0000000000000000000000000000000000000000"}) {
+        transactionAddress: transaction {
+          id
+        }
+        transaction {
+          timestamp
+        }
+        vaultAddress: farmer {
+          id
+        }
+        amount
         shares: value
       }
-      transfersOut: transfers(where: {from: "${userAddress}", to_not: "0x0000000000000000000000000000000000000000"}, orderBy: blockNumber) {
-        transactionAddress: id
+      transfersOut: transfers(where: {from: "${userAddress}", to_not: "0x0000000000000000000000000000000000000000"}) {
+        transactionAddress: transaction {
+          id
+        }
         shares: value
-        vaultAddress
-        timestamp
-        balance
-        totalSupply
-        shares: value
+        transaction {
+          timestamp
+        }
+        vaultAddress: farmer {
+          id
+        }
+        amount
       }
     }
   `;
@@ -76,6 +137,22 @@ const getVaultAddressesForUserWithGraphTransactions = (
     transfersIn,
     transfersOut,
   } = graphTransactions;
+
+  const txMapping = (tx) => {
+    tx.vaultAddress = tx.vaultAddress.id;
+    tx.transactionAddress = tx. transactionAddress.id;
+    tx.timestamp = tx.transaction.timestamp;
+
+    return {
+      ...tx
+    };
+  }
+
+  deposits.map(txMapping);
+  withdrawals.map(txMapping);
+  transfersIn.map(txMapping);
+  transfersOut.map(txMapping);
+
   const vaultAddressesForUser = uniq([
     ...pluck("vaultAddress", deposits),
     ...pluck("vaultAddress", withdrawals),
@@ -144,8 +221,10 @@ const getTransactions = async (userAddress) => {
 
     const vault = vaults.find(findVault);
 
+    //TODO Change dynamic address
     const vaultTransactions = {
-      vaultAddress: vault.address,
+      // vaultAddress: vault.address,
+      vaultAddress: process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? prodContract.prodYfUSDTContract : devContract.devYfUSDTContract,
       deposits: depositsToVault.map(correctTransactionAddress),
       withdrawals: withdrawalsFromVault.map(correctTransactionAddress),
       transfersIn: transfersIntoVault.map(correctTransactionAddress),

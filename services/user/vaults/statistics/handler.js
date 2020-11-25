@@ -7,6 +7,13 @@ const BigNumber = require("bignumber.js");
 const subgraphUrl = process.env.SUBGRAPH_ENDPOINT;
 const Web3 = require("web3");
 const web3 = new Web3(process.env.WEB3_ENDPOINT);
+const earnABIContract = require('../../../../config/abi').earnABIContract;
+const vaultABIContract = require('../../../../config/abi').vaultABIContract;
+const yfUSDTABIContract = require('../../../../config/abi').yfUSDTABIContract;
+const {
+  devContract,
+  prodContract,
+} = require('../../../../config/serverless/domain');
 
 const {
   getTransactions,
@@ -17,6 +24,11 @@ const _ = require("lodash");
 const getVaultContract = (vaultAddress) => {
   const abi = getMinimalVaultABI();
   const contract = new web3.eth.Contract(abi, vaultAddress);
+  return contract;
+};
+
+const getContract = (abi, contractAddress) => {
+  const contract = new web3.eth.Contract(abi, contractAddress);
   return contract;
 };
 
@@ -32,15 +44,37 @@ const getPricePerFullShare = async (vaultContract) => {
   return pricePerFullShare;
 };
 
-const getVaultStatistics = async (vaultAddress, transactions, userAddress) => {
-  const findVault = (vault) =>
-    vault.vaultAddress.toLowerCase() === vaultAddress;
+const getVaultStatistics = async (contractAddress, transactions, userAddress) => {
+  const findVault = (vault) => {
+    console.log('vault', JSON.stringify(vault));
+    return vault.vaultAddress.toLowerCase() === contractAddress;
+  }
+    
   const transactionsForVault = _.find(transactions, findVault);
+  console.log('contractAddress', contractAddress);
 
-  const vaultContract = getVaultContract(vaultAddress);
-  const depositedShares = await getDepositedShares(vaultContract, userAddress);
+  let earnAddress = "";
+  let vaultAddress = "";
+  let yfUSDTAddress = "";
 
-  const pricePerFullShare = await getPricePerFullShare(vaultContract);
+  if (process.env.PRODUCTION != null && process.env.PRODUCTION != '') {
+    earnAddress = prodContract.prodEarnContract;
+    vaultAddress = prodContract.prodVaultContract;
+    yfUSDTAddress = prodContract.prodYfUSDTContract;
+  } else {
+    earnAddress = devContract.devEarnContract;
+    vaultAddress = devContract.devVaultContract;
+    yfUSDTAddress = devContract.devYfUSDTContract;
+  }
+
+  const earnContract = getContract(earnABIContract, earnAddress);
+  const vaultContract = getContract(vaultABIContract, vaultAddress);
+  const farmerContract = getContract(yfUSDTABIContract, yfUSDTAddress);
+
+  const depositedShares = await getDepositedShares(farmerContract, userAddress);
+  const earnPricePerFullShare = await getPricePerFullShare(earnContract);
+  const vaultPricePerFullShare = await getPricePerFullShare(vaultContract);
+  const pricePerFullShare = earnPricePerFullShare + vaultPricePerFullShare / 2;
 
   const depositedAmount = new BigNumber(depositedShares)
     .times(pricePerFullShare)
@@ -92,26 +126,30 @@ const getVaultStatistics = async (vaultAddress, transactions, userAddress) => {
 const getVaultsStatistics = async (userAddress) => {
   const vaultAddressesForUser = await getVaultAddressesForUser(userAddress);
   const transactions = await getTransactions(userAddress);
-  const getVaultStatisticsWithTransactions = async (vault) =>
-    await getVaultStatistics(vault, transactions, userAddress);
-
+  const getVaultStatisticsWithTransactions = async (vault) => {
+    return await getVaultStatistics(vault, transactions, userAddress);
+  }
+    
   const vaultsStatistics = await Promise.all(
     vaultAddressesForUser.map(getVaultStatisticsWithTransactions)
   );
   return vaultsStatistics;
 };
 
-module.exports.handler = async (event) => {
-  const userAddress = event.pathParameters.userAddress;
-  const vaultsStatistics = await getVaultsStatistics(userAddress);
-  return {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true,
-    },
-    body: JSON.stringify(vaultsStatistics),
-  };
+module.exports.handler = async (req, res) => {
+  const userAddress = req.params.userAddress || '';
+  if (userAddress === '') {
+    res.status(200).json({
+      message: 'User Address is empty.',
+      body: null
+    });
+  } else {
+    const vaultsStatistics = await getVaultsStatistics(req.params.userAddress);
+    res.status(200).json({
+      message: '',
+      body: vaultsStatistics
+    });
+  }
 };
 
 function getMinimalVaultABI() {
