@@ -9,6 +9,8 @@ services:
       - '27017:27017'
     volumes: 
       - 'mongodata:/data/db'
+    networks: 
+      - backend
   api:
     container_name: 'api'
     restart: always
@@ -23,8 +25,6 @@ services:
       - "./services:/api/services:ro"
       - "./utils:/api/utils:ro"
       - "./models:/api/models:ro"
-    depends_on: 
-      - database
     networks: 
       - backend
 volumes: 
