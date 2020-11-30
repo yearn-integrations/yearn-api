@@ -14,7 +14,6 @@ const connectDB = async (callback) => {
   var url = '';
   if (process.env.PRODUCTION != null && process.env.PRODUCTION != '') {
     url = `mongodb://${encodeURIComponent(MONGO_USERNAME)}:${encodeURIComponent(MONGO_PASSWORD)}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authMechanism=${AUTH_MECHANISM}`;
-    // url = `mongodb://${MONGO_HOSTNAME}`;
   } else {
     url = `mongodb://${MONGO_HOSTNAME}`;
   }
