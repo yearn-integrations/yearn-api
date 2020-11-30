@@ -7,7 +7,7 @@ const pushSlackErrorAlert = (method, url, err) => {
 
   const request = {
     method: "post",
-    url: "https://hooks.slack.com/services/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",
+    url: process.env.SLACK_HOOK_URL,
     headers: {
       "Content-Type": "application/json"
     },

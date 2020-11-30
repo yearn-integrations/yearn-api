@@ -21,6 +21,24 @@ module.exports.handler = async (req, res) => {
     });
   } else {
     const transactions = await getTransactions(userAddress);
+    const contentMapping = (data) => {
+      data.contractAddress = data.vaultAddress;
+      delete data.vaultAddress;
+
+      const transactionMapping = (tx) => {
+        delete tx.transaction;
+        tx.timestamp = Number(tx.timestamp);
+        return tx;
+      }
+
+      data.deposits.map(transactionMapping);
+      data.withdrawals.map(transactionMapping);
+      data.transfersIn.map(transactionMapping);
+      data.transfersOut.map(transactionMapping);
+      return data;
+    }
+
+    transactions.map(contentMapping);
     res.status(200).json({
       message: '',
       body: transactions
@@ -121,7 +139,7 @@ const getGraphTransactions = async (userAddress) => {
     method: "POST",
     body: JSON.stringify({ query }),
   });
-
+  
   const responseJson = await response.json();
   const graphTransactions = responseJson.data;
   return graphTransactions;
@@ -175,17 +193,17 @@ const getTransactions = async (userAddress) => {
   const graphTransactions = await getGraphTransactions(userAddress);
   let { deposits, withdrawals, transfersIn, transfersOut } = graphTransactions;
 
-  const injectAmountIntoTransfer = (transfer) => {
-    const amount = (transfer.balance * transfer.shares) / transfer.totalSupply;
-    const newTransfer = {
-      ...transfer,
-      amount,
-    };
-    return newTransfer;
-  };
+  // const injectAmountIntoTransfer = (transfer) => {
+  //   const amount = (transfer.balance * transfer.shares) / transfer.totalSupply;
+  //   const newTransfer = {
+  //     ...transfer,
+  //     amount,
+  //   };
+  //   return newTransfer;
+  // };
 
-  transfersIn = transfersIn.map(injectAmountIntoTransfer);
-  transfersOut = transfersOut.map(injectAmountIntoTransfer);
+  // transfersIn = transfersIn.map(injectAmountIntoTransfer);
+  // transfersOut = transfersOut.map(injectAmountIntoTransfer);
 
   // Get all the vaults the address has interacted with.
   const vaultAddresses = getVaultAddressesForUserWithGraphTransactions(

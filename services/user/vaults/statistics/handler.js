@@ -37,21 +37,33 @@ const getDepositedShares = async (vaultContract, userAddress) => {
   return balance;
 };
 
-const getPricePerFullShare = async (vaultContract) => {
-  const pricePerFullShare = await vaultContract.methods
+const getPricePerFullShare = async (contract) => {
+  const pricePerFullShare = await contract.methods
     .getPricePerFullShare()
     .call();
   return pricePerFullShare;
 };
 
+const getBalanceOf = async (contract, address) => {
+  const balance = await contract.methods
+    .balanceOf(address)
+    .call();
+  return balance;
+};
+
+const getTotalSupply = async (contract) => {
+  const totalSupply = await contract.methods
+    .totalSupply()
+    .call();
+  return totalSupply;
+};
+
 const getVaultStatistics = async (contractAddress, transactions, userAddress) => {
   const findVault = (vault) => {
-    console.log('vault', JSON.stringify(vault));
     return vault.vaultAddress.toLowerCase() === contractAddress;
   }
     
   const transactionsForVault = _.find(transactions, findVault);
-  console.log('contractAddress', contractAddress);
 
   let earnAddress = "";
   let vaultAddress = "";
@@ -74,7 +86,12 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   const depositedShares = await getDepositedShares(farmerContract, userAddress);
   const earnPricePerFullShare = await getPricePerFullShare(earnContract);
   const vaultPricePerFullShare = await getPricePerFullShare(vaultContract);
-  const pricePerFullShare = earnPricePerFullShare + vaultPricePerFullShare / 2;
+  const earnBalance = await getBalanceOf(earnContract, yfUSDTAddress);
+  const vaultBalance = await getBalanceOf(vaultContract, yfUSDTAddress);
+  const totalSupply = await getTotalSupply(farmerContract, yfUSDTAddress);
+  const pricePerFullShare = (new BigNumber(earnPricePerFullShare).times(new BigNumber(earnBalance))
+    .plus(new BigNumber(vaultPricePerFullShare).times(new BigNumber(vaultBalance))))
+    .dividedBy(new BigNumber(totalSupply));
 
   const depositedAmount = new BigNumber(depositedShares)
     .times(pricePerFullShare)
@@ -111,7 +128,7 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     .plus(totalTransferredOut);
 
   const statistics = {
-    vaultAddress,
+    contractAddress: yfUSDTAddress,
     totalDeposits: totalDeposits.toFixed(),
     totalWithdrawals: totalWithdrawals.toFixed(),
     totalTransferredIn: totalTransferredIn.toFixed(),
@@ -136,7 +153,7 @@ const getVaultsStatistics = async (userAddress) => {
   return vaultsStatistics;
 };
 
-module.exports.handler = async (req, res) => {
+const handler = async (req, res) => {
   const userAddress = req.params.userAddress || '';
   if (userAddress === '') {
     res.status(200).json({
@@ -173,4 +190,11 @@ function getMinimalVaultABI() {
   ];
 }
 
-module.exports.getVaultsStatistics = getVaultsStatistics;
+module.exports = {
+  getVaultsStatistics,
+  getContract,
+  getPricePerFullShare,
+  getBalanceOf,
+  getTotalSupply,
+  handler
+}

@@ -75,7 +75,7 @@ const saveVault = async (vault) => {
 	console.log(`Saved ${vault.name}`);
 };
 
-module.exports.handler = async (res) => {
+module.exports.handler = async () => {
 	const registryContract = new web3.eth.Contract(
 		yRegistryAbi,
 		yRegistryAddress
@@ -144,9 +144,4 @@ module.exports.handler = async (res) => {
 		const vault = await getVault(vaultAddress, idx);
 		vaults.push(vault);
 	}
-
-	res.status(200).json({
-		message: '',
-		body: vaults
-	})
 };
