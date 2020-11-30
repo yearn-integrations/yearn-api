@@ -25,5 +25,31 @@ services:
       - "./models:/api/models:ro"
     depends_on: 
       - database
+    networks:
+      - backend
+  webserver:
+    image: nginx:1.13
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+    volumes:
+      - ./nginx-conf:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - api
+    networks:
+      - backend
+  certbot:
+    image: certbot/certbot
+    volumes: 
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 volumes: 
   mongodata:
+networks: 
+  - backend
+
