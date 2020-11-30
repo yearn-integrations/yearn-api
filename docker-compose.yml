@@ -25,8 +25,6 @@ services:
       - "./models:/api/models:ro"
     depends_on: 
       - database
-    networks:
-      - backend
   nginx:
     image: nginx:1.13
     container_name: nginx
@@ -39,8 +37,8 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-    networks:
-      - backend
+    depends_on:
+      - api
   certbot:
     image: certbot/certbot
     volumes: 
@@ -49,7 +47,3 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 volumes: 
   mongodata:
-networks: 
-  backend:
-    driver: bridge
-
