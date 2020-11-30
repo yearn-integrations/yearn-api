@@ -4,14 +4,14 @@ services:
     image: mongo
     container_name: 'database'
     command: [--auth]
-    restart: 'always'
+    restart: always
     ports: 
       - '27017:27017'
     volumes: 
       - 'mongodata:/data/db'
   api:
     container_name: 'api'
-    restart: 'always'
+    restart: always
     build:
       context: .
     env_file: 
@@ -29,8 +29,8 @@ services:
       - backend
   nginx:
     image: nginx:1.13
-    container_name: webserver
-    restart: unless-stopped
+    container_name: nginx
+    restart: always
     ports:
       - "8000:8000"
       - "8443:8443"
