@@ -60,6 +60,7 @@ const saveVault = async (data) => {
 };
 
 const saveHistoricalAPY = async (data) => {
+  console.log('history-apy', data)
   await historicalDb.add(data).catch((err) => console.log('err', err));
 };
 
