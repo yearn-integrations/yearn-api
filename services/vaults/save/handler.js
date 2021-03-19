@@ -102,6 +102,7 @@ module.exports.handler = async () => {
 			10
 		);
 
+		console.log('tokenAddress', tokenAddress);
 		const tokenInfo = await fetch(
 			`https://api.coingecko.com/api/v3/coins/ethereum/contract/${tokenAddress}`
 		).then((res) => res.json());
