@@ -341,7 +341,7 @@ const saveAndReadVault = async (vault) => {
 };
 
 module.exports.saveHandler = async () => {
-  console.log("Fetching historical blocks");
+  console.log("Fetching historical blocks", 'save APY history');
   currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
   await delay(delayTime);
   oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;
@@ -407,7 +407,7 @@ module.exports.handleHistoricialAPY = async (req, res) => {
 }
 
 module.exports.handler = async () => {
-  console.log("Fetching historical blocks");
+  console.log("Fetching historical blocks", 'save Vault APY');
   currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
   await delay(delayTime);
   oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;

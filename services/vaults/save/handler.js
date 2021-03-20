@@ -102,39 +102,43 @@ module.exports.handler = async () => {
 			10
 		);
 
-		console.log('tokenAddress', tokenAddress);
 		const tokenInfo = await fetch(
 			`https://api.coingecko.com/api/v3/coins/ethereum/contract/${tokenAddress}`
 		).then((res) => res.json());
-		const tokenSymbolAlias = tokenSymbolAliases[tokenSymbol] || tokenSymbol;
-		const symbolAlias = symbolAliases[vaultSymbol] || `y${tokenSymbolAlias}`;
-		const vaultAlias =
-			vaultAliases[vaultAddress] || `${tokenSymbolAlias} Vault`;
-		const tokenIcon = tokenInfo.image.large;
-		const vaultIcon = vaultIcons[tokenSymbol];
-		const vault = {
-			address: vaultAddress,
-			name: vaultName,
-			vaultAlias,
-			vaultIcon,
-			symbol: vaultSymbol,
-			symbolAlias,
-			controllerAddress: controllerAddress,
-			controllerName: await fetchContractName(controllerAddress),
-			strategyAddress: strategyAddress,
-			strategyName: await fetchContractName(strategyAddress),
-			tokenAddress: tokenAddress,
-			tokenName: tokenName,
-			tokenSymbol: tokenSymbol,
-			tokenSymbolAlias,
-			tokenIcon: tokenIcon,
-			decimals: decimals,
-			wrapped: vaultInfo.isWrappedArray[idx],
-			delegated: vaultInfo.isDelegatedArray[idx],
-			timestamp: Date.now(),
-		};
-		await saveVault(vault);
-		return vault;
+		
+		if (tokenInfo) {
+			const tokenSymbolAlias = tokenSymbolAliases[tokenSymbol] || tokenSymbol;
+			const symbolAlias = symbolAliases[vaultSymbol] || `y${tokenSymbolAlias}`;
+			const vaultAlias =
+				vaultAliases[vaultAddress] || `${tokenSymbolAlias} Vault`;
+			const tokenIcon = tokenInfo.image.large;
+			const vaultIcon = vaultIcons[tokenSymbol];
+			const vault = {
+				address: vaultAddress,
+				name: vaultName,
+				vaultAlias,
+				vaultIcon,
+				symbol: vaultSymbol,
+				symbolAlias,
+				controllerAddress: controllerAddress,
+				controllerName: await fetchContractName(controllerAddress),
+				strategyAddress: strategyAddress,
+				strategyName: await fetchContractName(strategyAddress),
+				tokenAddress: tokenAddress,
+				tokenName: tokenName,
+				tokenSymbol: tokenSymbol,
+				tokenSymbolAlias,
+				tokenIcon: tokenIcon,
+				decimals: decimals,
+				wrapped: vaultInfo.isWrappedArray[idx],
+				delegated: vaultInfo.isDelegatedArray[idx],
+				timestamp: Date.now(),
+			};
+			await saveVault(vault);
+			return vault;
+		}
+
+		return;
 	};
 
 	const vaults = [];
