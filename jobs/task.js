@@ -38,8 +38,8 @@ const savePricePerFullShare = async () => {
   })
 }
 
-/** Store APY */
-const saveAPY = async () => {
+/** Store Historical APY */
+const saveHistoricalAPY = async () => {
   await vaultApySave.saveHandler();
   cron.schedule('*/5 * * * *', async () => {
     console.log('[saveAPY]', new Date().getTime());
@@ -53,5 +53,5 @@ module.exports = {
   saveVaultAPY,
   saveVault,
   savePricePerFullShare,
-  saveAPY
+  saveHistoricalAPY
 }

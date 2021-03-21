@@ -22,7 +22,7 @@ async function init() {
     jobs.saveVault();
     jobs.saveVaultAPY();
     jobs.savePricePerFullShare();
-    jobs.saveAPY();
+    jobs.saveHistoricalAPY();
   })
 
   app.use(cors());

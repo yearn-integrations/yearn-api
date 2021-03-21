@@ -157,8 +157,6 @@ const getApyForVault = async (vault) => {
     inceptionBlockNbr
   );
 
-  const now = Date.now();
-
   const apyInceptionSample = await getApy(
     pricePerFullShareInception,
     pricePerFullShareCurrent,
@@ -280,7 +278,7 @@ const readVault = async (vault) => {
   }
   const contract = new infuraWeb3.eth.Contract(abi, address);
   const apy = await getApyForVault(vault);
-  const loanscanApy = await getLoanscanApyForVault(vault);
+  // const loanscanApy = await getLoanscanApyForVault(vault);
   console.log("Vault: ", name, apy);
   const data = {
     address,
