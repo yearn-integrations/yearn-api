@@ -339,22 +339,26 @@ const saveAndReadVault = async (vault) => {
 };
 
 module.exports.saveHandler = async () => {
-  console.log("Fetching historical blocks", 'save APY history');
-  currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
-  oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;
-  threeDaysAgoBlock = (await blocks.getDate(threeDaysAgo)).block;
-  oneWeekAgoBlock = (await blocks.getDate(oneWeekAgo)).block;
-  oneMonthAgoBlock = (await blocks.getDate(oneMonthAgo)).block;
-  nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
-  console.log("Done fetching historical blocks");
+  try {
+    console.log("Fetching historical blocks", 'save APY history');
+    currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
+    oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;
+    threeDaysAgoBlock = (await blocks.getDate(threeDaysAgo)).block;
+    oneWeekAgoBlock = (await blocks.getDate(oneWeekAgo)).block;
+    oneMonthAgoBlock = (await blocks.getDate(oneMonthAgo)).block;
+    nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
+    console.log("Done fetching historical blocks");
 
-  const vaultsWithApy = [];
-  for (const vault of vaults) {
-    const vaultWithApy = await saveAndReadVault(vault);
-    if (vaultWithApy !== null) {
-      vaultsWithApy.push(vaultWithApy);
+    const vaultsWithApy = [];
+    for (const vault of vaults) {
+      const vaultWithApy = await saveAndReadVault(vault);
+      if (vaultWithApy !== null) {
+        vaultsWithApy.push(vaultWithApy);
+      }
+      await delay(delayTime);
     }
-    await delay(delayTime);
+  } catch (err) {
+    console.error(err);
   }
 }
 
@@ -404,22 +408,26 @@ module.exports.handleHistoricialAPY = async (req, res) => {
 }
 
 module.exports.handler = async () => {
-  console.log("Fetching historical blocks", 'save Vault APY');
-  currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
-  await delay(delayTime);
-  oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;
-  threeDaysAgoBlock = (await blocks.getDate(threeDaysAgo)).block;
-  oneWeekAgoBlock = (await blocks.getDate(oneWeekAgo)).block;
-  oneMonthAgoBlock = (await blocks.getDate(oneMonthAgo)).block;
-  nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
-  console.log("Done fetching historical blocks");
-
-  const vaultsWithApy = [];
-  for (const vault of vaults) {
-    const vaultWithApy = await readVault(vault);
-    if (vaultWithApy !== null) {
-      vaultsWithApy.push(vaultWithApy);
-    }
+  try {
+    console.log("Fetching historical blocks", 'save Vault APY');
+    currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
     await delay(delayTime);
+    oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;
+    threeDaysAgoBlock = (await blocks.getDate(threeDaysAgo)).block;
+    oneWeekAgoBlock = (await blocks.getDate(oneWeekAgo)).block;
+    oneMonthAgoBlock = (await blocks.getDate(oneMonthAgo)).block;
+    nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
+    console.log("Done fetching historical blocks");
+
+    const vaultsWithApy = [];
+    for (const vault of vaults) {
+      const vaultWithApy = await readVault(vault);
+      if (vaultWithApy !== null) {
+        vaultsWithApy.push(vaultWithApy);
+      }
+      await delay(delayTime);
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
