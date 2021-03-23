@@ -87,55 +87,59 @@ module.exports.handler = async () => {
 	await delay(delayTime);
 
 	const getVault = async (vaultAddress, idx) => {
-		const controllerAddress = vaultInfo.controllerArray[idx];
-		const strategyAddress = vaultInfo.strategyArray[idx];
-		const vaultContract = await getContract(vaultAddress);
-		const controllerContract = await getContract(controllerAddress);
-		const strategyContract = await getContract(strategyAddress);
-		const vaultName = await callContractMethod(vaultContract, "name");
-		const vaultSymbol = await callContractMethod(vaultContract, "symbol");
-		const tokenSymbol = vaultSymbol.substring(1);
-		const tokenAddress = vaultInfo.tokenArray[idx];
-		const tokenName = vaultName.substring(6);
-		const decimals = parseInt(
-			await callContractMethod(vaultContract, "decimals"),
-			10
-		);
+		try {
+			const controllerAddress = vaultInfo.controllerArray[idx];
+			const strategyAddress = vaultInfo.strategyArray[idx];
+			const vaultContract = await getContract(vaultAddress);
+			const controllerContract = await getContract(controllerAddress);
+			const strategyContract = await getContract(strategyAddress);
+			const vaultName = await callContractMethod(vaultContract, "name");
+			const vaultSymbol = await callContractMethod(vaultContract, "symbol");
+			const tokenSymbol = vaultSymbol.substring(1);
+			const tokenAddress = vaultInfo.tokenArray[idx];
+			const tokenName = vaultName.substring(6);
+			const decimals = parseInt(
+				await callContractMethod(vaultContract, "decimals"),
+				10
+			);
 
-		const tokenInfo = await fetch(
-			`https://api.coingecko.com/api/v3/coins/ethereum/contract/${tokenAddress}`
-		).then((res) => res.json());
-		
-		if (tokenInfo) {
-			const tokenSymbolAlias = tokenSymbolAliases[tokenSymbol] || tokenSymbol;
-			const symbolAlias = symbolAliases[vaultSymbol] || `y${tokenSymbolAlias}`;
-			const vaultAlias =
-				vaultAliases[vaultAddress] || `${tokenSymbolAlias} Vault`;
-			const tokenIcon = tokenInfo.image ? tokenInfo.image.large : '';
-			const vaultIcon = vaultIcons[tokenSymbol];
-			const vault = {
-				address: vaultAddress,
-				name: vaultName,
-				vaultAlias,
-				vaultIcon,
-				symbol: vaultSymbol,
-				symbolAlias,
-				controllerAddress: controllerAddress,
-				controllerName: await fetchContractName(controllerAddress),
-				strategyAddress: strategyAddress,
-				strategyName: await fetchContractName(strategyAddress),
-				tokenAddress: tokenAddress,
-				tokenName: tokenName,
-				tokenSymbol: tokenSymbol,
-				tokenSymbolAlias,
-				tokenIcon: tokenIcon,
-				decimals: decimals,
-				wrapped: vaultInfo.isWrappedArray[idx],
-				delegated: vaultInfo.isDelegatedArray[idx],
-				timestamp: Date.now(),
-			};
-			await saveVault(vault);
-			return vault;
+			const tokenInfo = await fetch(
+				`https://api.coingecko.com/api/v3/coins/ethereum/contract/${tokenAddress}`
+			).then((res) => res.json());
+			
+			if (tokenInfo) {
+				const tokenSymbolAlias = tokenSymbolAliases[tokenSymbol] || tokenSymbol;
+				const symbolAlias = symbolAliases[vaultSymbol] || `y${tokenSymbolAlias}`;
+				const vaultAlias =
+					vaultAliases[vaultAddress] || `${tokenSymbolAlias} Vault`;
+				const tokenIcon = tokenInfo.image ? tokenInfo.image.large : '';
+				const vaultIcon = vaultIcons[tokenSymbol];
+				const vault = {
+					address: vaultAddress,
+					name: vaultName,
+					vaultAlias,
+					vaultIcon,
+					symbol: vaultSymbol,
+					symbolAlias,
+					controllerAddress: controllerAddress,
+					controllerName: await fetchContractName(controllerAddress),
+					strategyAddress: strategyAddress,
+					strategyName: await fetchContractName(strategyAddress),
+					tokenAddress: tokenAddress,
+					tokenName: tokenName,
+					tokenSymbol: tokenSymbol,
+					tokenSymbolAlias,
+					tokenIcon: tokenIcon,
+					decimals: decimals,
+					wrapped: vaultInfo.isWrappedArray[idx],
+					delegated: vaultInfo.isDelegatedArray[idx],
+					timestamp: Date.now(),
+				};
+				await saveVault(vault);
+				return vault;
+			}
+		} catch (err) {
+			console.log(err);
 		}
 
 		return;
