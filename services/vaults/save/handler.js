@@ -138,9 +138,7 @@ module.exports.handler = async () => {
 				await saveVault(vault);
 				return vault;
 			}
-		} catch (err) {
-			console.log(err);
-		}
+		} catch (err) {}
 
 		return;
 	};
