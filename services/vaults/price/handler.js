@@ -3,6 +3,8 @@
 const {
   devContract,
   prodContract,
+  testContracts,
+  mainContracts,
 } = require('../../../config/serverless/domain');
 const earnABIContract = require('../../../config/abi').earnABIContract;
 const vaultABIContract = require('../../../config/abi').vaultABIContract;
@@ -14,34 +16,31 @@ const db = require('../../../models/price.model');
 const moment = require("moment");
 
 const getCurrentPrice = async () => {
-  let earnAddress = "";
-  let vaultAddress = "";
+  let contracts = process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? mainContracts : testContracts;
 
-  if (process.env.PRODUCTION != null && process.env.PRODUCTION != '') {
-    earnAddress = prodContract.prodEarnContract;
-    vaultAddress = prodContract.prodVaultContract;
-  } else {
-    earnAddress = devContract.devEarnContract;
-    vaultAddress = devContract.devVaultContract;
-  }
-
+  for (const key of Object.keys(contracts.earn)) {
+    const earnContract = getContract(contracts.earn[key].abi, contracts.earn[key].address);
+    const vaultContract = getContract(contracts.vault[key].abi, contracts.vault[key].address);
   
-  const earnContract = getContract(earnABIContract, earnAddress);
-  const vaultContract = getContract(vaultABIContract, vaultAddress);
-
-  const earnPricePerFullShare = await getPricePerFullShare(earnContract);
-  const vaultPricePerFullShare = await getPricePerFullShare(vaultContract);
-  await db.add({
-    earnPrice: earnPricePerFullShare,
-    vaultPrice: vaultPricePerFullShare,
-  }).catch((err) => console.log('err', err));
+    try {
+      const earnPricePerFullShare = await getPricePerFullShare(earnContract);
+      const vaultPricePerFullShare = await getPricePerFullShare(vaultContract);
+      await db.add(key + '_price', {
+        earnPrice: earnPricePerFullShare,
+        vaultPrice: vaultPricePerFullShare,
+      }).catch((err) => console.log('err', err));
+    } catch (err) {
+      await db.add(key + '_price', {
+        earnPrice: "0",
+        vaultPrice: "0",
+      }).catch((err) => console.log('err', err));
+    }
+  }
 }
 
-const getHistoricalPrice = async (startTime, contractAddress) => {
+const getHistoricalPrice = async (startTime, collection) => {
   var result = [];
-  if (contractAddress == devContract.devYfUSDTContract || contractAddress == prodContract.prodYfUSDTContract) {
-    result = await db.findPriceWithTimePeriods(startTime, new Date().getTime())
-  }
+  result = await db.findPriceWithTimePeriods(collection, startTime, new Date().getTime())
   return result;
 }
 
@@ -55,12 +54,34 @@ module.exports.handleHistoricialPrice = async (req, res) => {
       message: 'Days is empty.',
       body: null
     });
-  } else if (req.params.contractAddress == null || req.params.contractAddress == '') {
+  } else if (req.params.farmer == null || req.params.farmer == '') {
     res.status(200).json({
-      message: 'Contract Address is empty.',
+      message: 'Farmer is empty.',
       body: null
     });
   } else {
+    let collection = '';
+    switch (req.params.farmer) {
+      case db.usdtFarmer: 
+        collection = db.usdtFarmer;
+        break;
+      case db.usdcFarmer:
+        collection = db.usdcFarmer;
+        break;
+      case db.daiFarmer:
+        collection = db.daiFarmer;
+        break;
+      case db.tusdFarmer:
+        collection = db.tusdFarmer;
+        break;
+      default:
+        res.status(200).json({
+          message: 'Invalid Farmer',
+          body: null
+        })
+        return;
+    }
+
     var startTime = -1;
     switch (req.params.days) {
       case '30d':
@@ -75,7 +96,7 @@ module.exports.handleHistoricialPrice = async (req, res) => {
     }
 
     if (startTime !== -1) {
-      var result = await getHistoricalPrice(startTime.unix(), req.params.contractAddress);
+      var result = await getHistoricalPrice(startTime.unix(), collection);
       const resultMapping = (price) => {
         delete price._id;
         return price;

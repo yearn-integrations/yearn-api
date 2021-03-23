@@ -1,12 +1,11 @@
 const mongo = require('../config/db');
-const collection = 'yfUSDT_price';
 
-const findAll = async () => {
+const findAll = async (collection) => {
   const db = mongo.getDB();
   return await db.collection(collection).find({}).toArray();
 };
 
-const findPriceWithTimePeriods = async (startTime, endTime) => {
+const findPriceWithTimePeriods = async (collection, startTime, endTime) => {
   const db = mongo.getDB();
   return await db.collection(collection).find({
     timestamp: {
@@ -16,7 +15,7 @@ const findPriceWithTimePeriods = async (startTime, endTime) => {
   }).toArray();
 }
 
-const add = async (params) => {
+const add = async (collection, params) => {
   const db = mongo.getDB();
   Object.assign(params, {
     timestamp: new Date().getTime()
@@ -27,5 +26,9 @@ const add = async (params) => {
 module.exports = {
   findAll,
   findPriceWithTimePeriods,
-  add
+  add,
+  usdtFarmer: 'yUSDT_price',
+  usdcFarmer: 'yUSDC_price',
+  tusdFarmer: 'yTUSD_price',
+  daiFarmer: 'yDAI_price',
 };

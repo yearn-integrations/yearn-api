@@ -3,13 +3,14 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
 const { pluck, uniq } = require("ramda/dist/ramda");
-const BigNumber = require("bignumber.js");
 const subgraphUrl = process.env.SUBGRAPH_ENDPOINT;
 const { getVaults } = require("../../../vaults/handler");
 const _ = require("lodash");
 const {
   devContract,
   prodContract,
+  testContracts,
+  mainContracts
 } = require('../../../../config/serverless/domain');
 
 module.exports.handler = async (req, res) => {
@@ -181,7 +182,7 @@ const getVaultAddressesForUserWithGraphTransactions = (
 };
 
 const getVaultAddressesForUser = async (userAddress) => {
-  const graphTransactions = await getGraphTransactions(userAddress);
+  const graphTransactions = await getGraphTransactions(userAddress.toLowerCase());
   const vaultAddressesForUser = getVaultAddressesForUserWithGraphTransactions(
     userAddress,
     graphTransactions
@@ -211,15 +212,14 @@ const getTransactions = async (userAddress) => {
     graphTransactions
   );
 
-  const vaults = await getVaults();
+  const farmers = process.env.PRODUCTION == '' ? Object.values(testContracts.farmer) : Object.values(mainContracts.farmer);
 
   const removeVaultAddressField = (deposit) => _.omit(deposit, "vaultAddress");
 
   const getTransactionsByVaultAddress = (vaultAddress) => {
     const findItemByVaultAddress = (item) => item.vaultAddress === vaultAddress;
 
-    const findVault = (vault) =>
-      vault.address.toLowerCase() === vaultAddress.toLowerCase();
+    const findVault = (vault) => vault.address.toLowerCase() === vaultAddress.toLowerCase();
 
     const depositsToVault = deposits
       .filter(findItemByVaultAddress)
@@ -237,12 +237,12 @@ const getTransactions = async (userAddress) => {
       .filter(findItemByVaultAddress)
       .map(stripUnneededTransferFields);
 
-    const vault = vaults.find(findVault);
+    const farmer = farmers.find(findVault);
 
     //TODO Change dynamic address
     const vaultTransactions = {
-      // vaultAddress: vault.address,
-      vaultAddress: process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? prodContract.prodYfUSDTContract : devContract.devYfUSDTContract,
+      vaultAddress: farmer.address,
+      // vaultAddress: process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? prodContract.prodYfUSDTContract : devContract.devYfUSDTContract,
       deposits: depositsToVault.map(correctTransactionAddress),
       withdrawals: withdrawalsFromVault.map(correctTransactionAddress),
       transfersIn: transfersIntoVault.map(correctTransactionAddress),

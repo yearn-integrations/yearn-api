@@ -1,12 +1,11 @@
 const mongo = require('../config/db');
-const collection = 'historical-apy';
 
-const findAll = async () => {
+const findAll = async (collection) => {
   const db = mongo.getDB();
   return await db.collection(collection).find({}).toArray();
 };
 
-const findWithTimePeriods = async (startTime, endTime) => {
+const findWithTimePeriods = async (startTime, endTime, collection) => {
   const db = mongo.getDB();
   return await db.collection(collection).find({
     timestamp: {
@@ -16,7 +15,7 @@ const findWithTimePeriods = async (startTime, endTime) => {
   }).toArray();
 }
 
-const add = async (params) => {
+const add = async (params, collection) => {
   const db = mongo.getDB();
   Object.assign(params, {
     timestamp: new Date().getTime()
@@ -27,5 +26,9 @@ const add = async (params) => {
 module.exports = {
   findAll,
   findWithTimePeriods,
-  add
+  add,
+  usdtFarmer: 'yUSDT_historical-apy',
+  usdcFarmer: 'yUSDC_historical-apy',
+  tusdFarmer: 'yTUSD_historical-apy',
+  daiFarmer: 'yDAI_historical-apy',
 };

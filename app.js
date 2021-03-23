@@ -30,7 +30,7 @@ async function init() {
   app.get('/vaults/apy', (req, res) => vaultsApy.handler(res));
   app.get('/user/:userAddress/vaults/statistics', (req, res) => userStatistics.handler(req, res));
   app.get('/user/:userAddress/vaults/transactions', (req, res) => userTransactions.handler(req, res));
-  app.get('/vaults/price/:contractAddress/:days', (req, res) => vaultsPrice.handleHistoricialPrice(req, res));
+  app.get('/vaults/price/:farmer/:days', (req, res) => vaultsPrice.handleHistoricialPrice(req, res));
   app.get('/vaults/historical-apy/:contractAddress/:days', (req, res) => vaultAPYSave.handleHistoricialAPY(req, res));
 
   app.listen(port, () => console.log(`Listening on ${port}`));

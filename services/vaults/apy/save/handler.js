@@ -17,7 +17,7 @@ const archiveNodeWeb3 = new Web3(archiveNodeUrl);
 const infuraWeb3 = new Web3(infuraUrl);
 const blocks = new EthDater(archiveNodeWeb3, delayTime);
 const { aggregatedContractABI } = require('../../../../config/abi');
-const { devContract, prodContract } = require('../../../../config/serverless/domain');
+const { devContract, prodContract, aggregatedContractAddress, testContracts, mainContracts } = require('../../../../config/serverless/domain');
 
 let currentBlockNbr;
 let oneDayAgoBlock;
@@ -45,7 +45,7 @@ const pools = [
   },
 ];
 
-const saveVault = async (data) => {
+const saveVaultWithApy = async (data) => {
   // const params = {
   //   TableName: "vaultApy",
   //   Item: data,
@@ -59,12 +59,11 @@ const saveVault = async (data) => {
   console.log(`Saved ${data.name}`);
 };
 
-const saveHistoricalAPY = async (data) => {
-  console.log('history-apy', data)
-  await historicalDb.add(data).catch((err) => console.log('err', err));
+const saveHistoricalAPY = async (data, collection) => {
+  await historicalDb.add(data, collection).catch((err) => console.log('err', err));
 };
 
-const getApy = async (
+const getApy = (
   previousValue,
   currentValue,
   previousBlockNbr,
@@ -73,10 +72,10 @@ const getApy = async (
   if (!previousValue) {
     return 0;
   }
-  const pricePerFullShareDelta = (currentValue - previousValue) / 1e18;
   const blockDelta = currentBlockNbr - previousBlockNbr;
-  const dailyRoi = (pricePerFullShareDelta / blockDelta) * 100 * nbrBlocksInDay;
-  const yearlyRoi = dailyRoi * 365;
+  const returnSincePrevBlock = (currentValue - previousValue) / previousValue;
+  const days = blockDelta / nbrBlocksInDay;
+  const yearlyRoi = 100 * ((1 + returnSincePrevBlock) ** (365.2425 / days) - 1);
   return yearlyRoi;
 };
 
@@ -96,6 +95,7 @@ const getPricePerFullShare = async (
 ) => {
   const contractDidntExist = block < inceptionBlockNbr;
   const inceptionBlock = block === inceptionBlockNbr;
+
   if (inceptionBlock) {
     return 1e18;
   }
@@ -157,7 +157,7 @@ const getApyForVault = async (vault) => {
     inceptionBlockNbr
   );
 
-  const apyInceptionSample = await getApy(
+  const apyInceptionSample = getApy(
     pricePerFullShareInception,
     pricePerFullShareCurrent,
     inceptionBlockNbr,
@@ -165,7 +165,7 @@ const getApyForVault = async (vault) => {
   );
 
   const apyOneDaySample =
-    (await getApy(
+    (getApy(
       pricePerFullShareOneDayAgo,
       pricePerFullShareCurrent,
       oneDayAgoBlock,
@@ -173,7 +173,7 @@ const getApyForVault = async (vault) => {
     )) || apyInceptionSample;
 
   const apyThreeDaySample =
-    (await getApy(
+    (getApy(
       pricePerFullShareThreeDaysAgo,
       pricePerFullShareCurrent,
       threeDaysAgoBlock,
@@ -181,7 +181,7 @@ const getApyForVault = async (vault) => {
     )) || apyInceptionSample;
 
   const apyOneWeekSample =
-    (await getApy(
+    (getApy(
       pricePerFullShareOneWeekAgo,
       pricePerFullShareCurrent,
       oneWeekAgoBlock,
@@ -189,7 +189,7 @@ const getApyForVault = async (vault) => {
     )) || apyInceptionSample;
 
   const apyOneMonthSample =
-    (await getApy(
+    (getApy(
       pricePerFullShareOneMonthAgo,
       pricePerFullShareCurrent,
       oneMonthAgoBlock,
@@ -255,9 +255,25 @@ const getLoanscanApyForVault = async (vault) => {
 
 const getHistoricalAPY = async (startTime, contractAddress) => {
   var result = [];
-  if (contractAddress == devContract.devYfUSDTContract || contractAddress == prodContract.prodYfUSDTContract) {
-    result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime())
+  switch (contractAddress.toLowerCase()) {
+    case testContracts.vault['yUSDT'].address:
+    case mainContracts.vault['yUSDT'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.usdtFarmer);
+      break;
+    case testContracts.vault['yUSDC'].address:
+    case mainContracts.vault['yUSDC'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.usdcFarmer);
+      break;
+    case testContracts.vault['yDAI'].address:
+    case mainContracts.vault['yDAI'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daiFarmer);
+      break;
+    case testContracts.vault['yTUSD'].address:
+    case mainContracts.vault['yTUSD'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.tusdFarmer);
+      break;
   }
+
   return result;
 }
 
@@ -276,10 +292,9 @@ const readVault = async (vault) => {
     console.log(`Vault ABI not found: ${name}`);
     return null;
   }
-  const contract = new infuraWeb3.eth.Contract(abi, address);
+  // const contract = new infuraWeb3.eth.Contract(abi, address);
   const apy = await getApyForVault(vault);
   // const loanscanApy = await getLoanscanApyForVault(vault);
-  console.log("Vault: ", name, apy);
   const data = {
     address,
     name,
@@ -291,7 +306,7 @@ const readVault = async (vault) => {
     timestamp: Date.now(),
     ...apy,
   };
-  await saveVault(data);
+  await saveVaultWithApy(data);
   return data;
 };
 
@@ -311,7 +326,7 @@ const saveAndReadVault = async (vault) => {
     return null;
   }
   const apy = await getApyForVault(vault);
-  const aprContract = new infuraWeb3.eth.Contract(aggregatedContractABI, prodContract.aggregatedContractAddress);
+  const aprContract = new infuraWeb3.eth.Contract(aggregatedContractABI, aggregatedContractAddress);
   var call = 'getAPROptions';//+asset.symbol
   var aprs = 0;
   aprs = await aprContract.methods[call](vault.erc20address).call();
@@ -328,13 +343,12 @@ const saveAndReadVault = async (vault) => {
   }))
 
   aprs = infuraWeb3.utils.fromWei(maxApr.toFixed(0), 'ether')
-  console.log("Vault: ", name, apy);
   const data = {
     ...apy,
     aprs,
     symbol
   };
-  await saveHistoricalAPY(data);
+  await saveHistoricalAPY(data, vaultSymbol + '_historical-apy');
   return data;
 };
 

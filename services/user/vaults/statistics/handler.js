@@ -13,6 +13,8 @@ const yfUSDTABIContract = require('../../../../config/abi').yfUSDTABIContract;
 const {
   devContract,
   prodContract,
+  testContracts,
+  mainContracts
 } = require('../../../../config/serverless/domain');
 
 const {
@@ -60,42 +62,32 @@ const getTotalSupply = async (contract) => {
 
 const getVaultStatistics = async (contractAddress, transactions, userAddress) => {
   const findVault = (vault) => {
+    if (vault.vaultAddress == null) return false;
     return vault.vaultAddress.toLowerCase() === contractAddress;
   }
     
   const transactionsForVault = _.find(transactions, findVault);
 
-  let earnAddress = "";
-  let vaultAddress = "";
-  let yfUSDTAddress = "";
+  // Get User Deposit Amount
+  let strategyContract;
+  let vaultContract;
 
   if (process.env.PRODUCTION != null && process.env.PRODUCTION != '') {
-    earnAddress = prodContract.prodEarnContract;
-    vaultAddress = prodContract.prodVaultContract;
-    yfUSDTAddress = prodContract.prodYfUSDTContract;
+    const symbol = Object.keys(mainContracts.farmer).find(key => mainContracts.farmer[key].address.toLowerCase() === contractAddress.toLowerCase());
+    strategyContract = getContract(mainContracts.farmer[symbol].strategyABI, mainContracts.farmer[symbol].strategyAddress);
+    vaultContract = getContract(mainContracts.farmer[symbol].abi, mainContracts.farmer[symbol].address);
   } else {
-    earnAddress = devContract.devEarnContract;
-    vaultAddress = devContract.devVaultContract;
-    yfUSDTAddress = devContract.devYfUSDTContract;
+    const symbol = Object.keys(testContracts.farmer).find(key => testContracts.farmer[key].address.toLowerCase() === contractAddress.toLowerCase());
+
+    strategyContract = getContract(testContracts.farmer[symbol].strategyABI, testContracts.farmer[symbol].strategyAddress);
+    vaultContract = getContract(testContracts.farmer[symbol].abi, testContracts.farmer[symbol].address);
   }
+  const earnDepositAmount = await strategyContract.methods.getEarnDepositBalance(userAddress).call();
+  const vaultDepositAmount = await strategyContract.methods.getVaultDepositBalance(userAddress).call();
+  const depositedAmount = new BigNumber(earnDepositAmount)
+    .plus(vaultDepositAmount);
 
-  const earnContract = getContract(earnABIContract, earnAddress);
-  const vaultContract = getContract(vaultABIContract, vaultAddress);
-  const farmerContract = getContract(yfUSDTABIContract, yfUSDTAddress);
-
-  const depositedShares = await getDepositedShares(farmerContract, userAddress);
-  const earnPricePerFullShare = await getPricePerFullShare(earnContract);
-  const vaultPricePerFullShare = await getPricePerFullShare(vaultContract);
-  const earnBalance = await getBalanceOf(earnContract, yfUSDTAddress);
-  const vaultBalance = await getBalanceOf(vaultContract, yfUSDTAddress);
-  const totalSupply = await getTotalSupply(farmerContract, yfUSDTAddress);
-  const pricePerFullShare = (new BigNumber(earnPricePerFullShare).times(new BigNumber(earnBalance))
-    .plus(new BigNumber(vaultPricePerFullShare).times(new BigNumber(vaultBalance))))
-    .dividedBy(new BigNumber(totalSupply));
-
-  const depositedAmount = new BigNumber(depositedShares)
-    .times(pricePerFullShare)
-    .dividedBy(10 ** 18);
+  const depositedShares = await getDepositedShares(vaultContract, userAddress);
 
   const {
     deposits,
@@ -128,13 +120,13 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     .plus(totalTransferredOut);
 
   const statistics = {
-    contractAddress: yfUSDTAddress,
+    contractAddress,
     totalDeposits: totalDeposits.toFixed(),
     totalWithdrawals: totalWithdrawals.toFixed(),
     totalTransferredIn: totalTransferredIn.toFixed(),
     totalTransferredOut: totalTransferredOut.toFixed(),
     depositedShares,
-    depositedAmount: depositedAmount.toFixed(0),
+    depositedAmount: depositedAmount,
     earnings: earnings.toFixed(0),
   };
   return statistics;
