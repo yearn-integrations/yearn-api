@@ -72,25 +72,64 @@ const testContracts = {
       abi: abi.vaultUSDTABIContract,
       strategyAddress: '0x157fbacbbf6ba50c45e1375ae728f88f0cde1615',
       strategyABI: abi.yearnUSDTABIContract,
+      contractType: 'yearn'
     },
     'yUSDC': {
       address: '0xBdf7cC9c7a9dFF3d54Aa976e9586CE9935484005',
       abi: abi.vaultUSDCABIContract,
       strategyAddress: '0xf5a1988a9d02ce26b2cca31a56368e5f6a9b55ac',
       strategyABI: abi.yearnUSDCABIContract,
+      contractType: 'yearn'
     },
     'yDAI': {
       address: '0x2BB53Ee2592319e3c3cF2323f1a81B1bF7854B7C',
       abi: abi.vaultDAIABIContract,
       strategyAddress: '0x26cd801a2dbd05caad547b9d67ac2665e45dbc7e',
       strategyABI: abi.yearnDAIABIContract,
+      contractType: 'yearn'
     },
     'yTUSD': {
       address: '0xa8B73aE1E978315886E318FB086504231A3Ef917',
       abi: abi.vaultTUSDABIContract,
       strategyAddress: '0x5abeadf41fe9ea8dbd49ddf4e9659dd098da9610',
       strategyABI: abi.yearnTUSDABIContract,
+      contractType: 'yearn'
     },
+    'cUSDT': {
+      address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52',
+      abi: abi.compoundVaultContract,
+      strategyAddress: '0xa5c956aef6a21c986665de9cf889ef36613c7d5e',
+      strategyABI: abi.compoundStrategyContract,
+      contractType: 'compound'
+    },
+    'cUSDC': {
+      address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e',
+      abi: abi.compoundVaultContract,
+      strategyAddress: '0x3add8a9d3176c4b30dddeeababf9ca5cc3d49944',
+      strategyABI: abi.compoundStrategyContract,
+      contractType: 'compound'
+    },
+    'cDAI': {
+      address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d',
+      abi: abi.compoundVaultContract,
+      strategyAddress: '0xb951976a7d79fd8a589a7ca9753641380f5c1ab4',
+      strategyABI: abi.compoundStrategyContract,
+      contractType: 'compound'
+    },
+  },
+  compund: {
+    'cUSDT': {
+      address: '0x3f0a0ea2f86bae6362cf9799b523ba06647da018',
+      abi: abi.cUSDTContract,
+    },
+    'cUSDC': {
+      address: '0x4a92e71227d294f041bd82dd8f78591b75140d63',
+      abi: abi.cUSDCContract,
+    },
+    'cDAI': {
+      address: '0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad',
+      abi: abi.cDAIContract,
+    }
   }
 };
 
@@ -137,25 +176,64 @@ const mainContracts = {
       abi: abi.vaultUSDTABIContract,
       strategyAddress: '0x3DB93e95c9881BC7D9f2C845ce12e97130Ebf5f2',
       strategyABI: abi.yearnUSDTABIContract,
+      contractType: 'yearn'
     },
     'yUSDC': {
       address: '0x9f0230FbDC0379E5FefAcca89bE03A42Fec5fb6E',
       abi: abi.vaultUSDCABIContract,
       strategyAddress: '0x4A9dE4dA5eC67E1dbc8e18F26E178B40D690A11D',
       strategyABI: abi.yearnUSDCABIContract,
+      contractType: 'yearn'
     },
     'yDAI': { 
       address: '0x2bFc2Da293C911e5FfeC4D2A2946A599Bc4Ae770',
       abi: abi.vaultDAIABIContract,
       strategyAddress: '0x3685fB7CA1C555Cb5BD5A246422ee1f2c53DdB71',
       strategyABI: abi.yearnDAIABIContract,
+      contractType: 'yearn'
     },
     'yTUSD': {
       address: '0x2C8de02aD4312069355B94Fb936EFE6CFE0C8FF6',
       abi: abi.vaultTUSDABIContract,
       strategyAddress: '0xA6F1409a259B21a84c8346ED1B0826D656959a54',
       strategyABI: abi.yearnTUSDABIContract,
+      contractType: 'yearn'
     },
+    'cUSDT': {
+      address: '0xEeCe6AD323a93d4B021BDAaC587DCC04b5cf0a78',
+      abi: abi.compoundVaultContract,
+      strategyAddress: '0x11af10648ed5094f41753ccb69a2f74135697631',
+      strategyABI: abi.compoundStrategyContract,
+      contractType: 'compound'
+    },
+    'cUSDC': {
+      address: '0xd1D7f950899C0269a7F2aad5E854cdc3a1350ba9',
+      abi: abi.compoundVaultContract,
+      strategyAddress: '0x89be389b0529ca3187b6e81e689496cb3bad8557',
+      strategyABI: abi.compoundStrategyContract,
+      contractType: 'compound'
+    },
+    'cDAI': {
+      address: '0x43C20638C3914Eca3c96e9cAc8ebE7d652Be45c6',
+      abi: abi.compoundVaultContract,
+      strategyAddress: '0x0c5cff1c9ec7ce8e28998503471b19c848c5a581',
+      strategyABI: abi.compoundStrategyContract,
+      contractType: 'compound'
+    },
+  },
+  compund: {
+    'cUSDT': {
+      address: '0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9',
+      abi: abi.cUSDTContract,
+    },
+    'cUSDC': {
+      address: '0x39aa39c021dfbae8fac545936693ac917d5e7563',
+      abi: abi.cUSDTContract,
+    },
+    'cDAI': {
+      address: '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643',
+      abi: abi.cDAIContract,
+    }
   }
 }
 

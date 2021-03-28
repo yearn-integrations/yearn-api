@@ -17,7 +17,7 @@ const archiveNodeWeb3 = new Web3(archiveNodeUrl);
 const infuraWeb3 = new Web3(infuraUrl);
 const blocks = new EthDater(archiveNodeWeb3, delayTime);
 const { aggregatedContractABI } = require('../../../../config/abi');
-const { devContract, prodContract, aggregatedContractAddress, testContracts, mainContracts } = require('../../../../config/serverless/domain');
+const { aggregatedContractAddress, testContracts, mainContracts } = require('../../../../config/serverless/domain');
 
 let currentBlockNbr;
 let oneDayAgoBlock;
@@ -46,15 +46,6 @@ const pools = [
 ];
 
 const saveVaultWithApy = async (data) => {
-  // const params = {
-  //   TableName: "vaultApy",
-  //   Item: data,
-  // };
-  // await db
-  //   .put(params)
-  //   .promise()
-  //   .catch((err) => console.log("err", err));
-
   await db.add(data).catch((err) => console.log('err', err));
   console.log(`Saved ${data.name}`);
 };
@@ -77,6 +68,16 @@ const getApy = (
   const days = blockDelta / nbrBlocksInDay;
   const yearlyRoi = 100 * ((1 + returnSincePrevBlock) ** (365.2425 / days) - 1);
   return yearlyRoi;
+};
+
+const getCompoundSupplyApy = async (cToken) => {
+  const ethMantissa = 1e18;
+  const blocksPerDay = 4 * 60 * 24;
+  const daysPerYear = 365;
+
+  const supplyRatePerBlock = await cToken.methods.supplyRatePerBlock().call();
+  const supplyApy = (((Math.pow((supplyRatePerBlock / ethMantissa * blocksPerDay) + 1, daysPerYear))) - 1) * 100;
+  return supplyApy;
 };
 
 const getVirtualPrice = async (address, block) => {
@@ -117,124 +118,148 @@ const getApyForVault = async (vault) => {
     symbol,
   } = vault;
 
-  const pool = _.find(pools, { symbol });
+  // Compound Vault
+  if (vault.isCompound) {
+    let cToken;
 
-  const vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
+    if (process.env.PRODUCTION != '') {
+      const symbol = Object.keys(mainContracts.farmer).find((key) => mainContracts.farmer[key].address.toLowerCase() === vault.vaultContractAddress.toLowerCase());
+      cToken = new archiveNodeWeb3.eth.Contract(mainContracts.compund[symbol].abi,  mainContracts.compund[symbol].address);
+    } else {
+      const symbol = Object.keys(testContracts.farmer).find((key) => testContracts.farmer[key].address.toLowerCase() === vault.vaultContractAddress.toLowerCase());
+      cToken = new archiveNodeWeb3.eth.Contract(testContracts.compund[symbol].abi,  testContracts.compund[symbol].address);
+    }
+    const compoundApy = await getCompoundSupplyApy(cToken)
+    return {
+      apyInceptionSample: 0,
+      apyOneDaySample: 0,
+      apyThreeDaySample: 0,
+      apyOneWeekSample: 0,
+      apyOneMonthSample: 0,
+      apyLoanscan: 0,
+      compoundApy,
+    };
+  } else {
+    // Yearn Vault
+    const pool = _.find(pools, { symbol });
+    const vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
 
-  const pricePerFullShareInception = await getPricePerFullShare(
-    vaultContract,
-    inceptionBlockNbr,
-    inceptionBlockNbr
-  );
-
-  const pricePerFullShareCurrent = await getPricePerFullShare(
-    vaultContract,
-    currentBlockNbr,
-    inceptionBlockNbr
-  );
-
-  const pricePerFullShareOneDayAgo = await getPricePerFullShare(
-    vaultContract,
-    oneDayAgoBlock,
-    inceptionBlockNbr
-  );
-
-  const pricePerFullShareThreeDaysAgo = await getPricePerFullShare(
-    vaultContract,
-    threeDaysAgoBlock,
-    inceptionBlockNbr
-  );
-
-  const pricePerFullShareOneWeekAgo = await getPricePerFullShare(
-    vaultContract,
-    oneWeekAgoBlock,
-    inceptionBlockNbr
-  );
-
-  const pricePerFullShareOneMonthAgo = await getPricePerFullShare(
-    vaultContract,
-    oneMonthAgoBlock,
-    inceptionBlockNbr
-  );
-
-  const apyInceptionSample = getApy(
-    pricePerFullShareInception,
-    pricePerFullShareCurrent,
-    inceptionBlockNbr,
-    currentBlockNbr
-  );
-
-  const apyOneDaySample =
-    (getApy(
-      pricePerFullShareOneDayAgo,
-      pricePerFullShareCurrent,
+    const pricePerFullShareInception = await getPricePerFullShare(
+      vaultContract,
+      inceptionBlockNbr,
+      inceptionBlockNbr
+    );
+  
+    const pricePerFullShareCurrent = await getPricePerFullShare(
+      vaultContract,
+      currentBlockNbr,
+      inceptionBlockNbr
+    );
+  
+    const pricePerFullShareOneDayAgo = await getPricePerFullShare(
+      vaultContract,
       oneDayAgoBlock,
-      currentBlockNbr
-    )) || apyInceptionSample;
-
-  const apyThreeDaySample =
-    (getApy(
-      pricePerFullShareThreeDaysAgo,
-      pricePerFullShareCurrent,
+      inceptionBlockNbr
+    );
+  
+    const pricePerFullShareThreeDaysAgo = await getPricePerFullShare(
+      vaultContract,
       threeDaysAgoBlock,
-      currentBlockNbr
-    )) || apyInceptionSample;
-
-  const apyOneWeekSample =
-    (getApy(
-      pricePerFullShareOneWeekAgo,
-      pricePerFullShareCurrent,
+      inceptionBlockNbr
+    );
+  
+    const pricePerFullShareOneWeekAgo = await getPricePerFullShare(
+      vaultContract,
       oneWeekAgoBlock,
-      currentBlockNbr
-    )) || apyInceptionSample;
-
-  const apyOneMonthSample =
-    (getApy(
-      pricePerFullShareOneMonthAgo,
-      pricePerFullShareCurrent,
+      inceptionBlockNbr
+    );
+  
+    const pricePerFullShareOneMonthAgo = await getPricePerFullShare(
+      vaultContract,
       oneMonthAgoBlock,
-      currentBlockNbr
-    )) || apyInceptionSample;
-
-  let apyLoanscan = apyOneDaySample;
-
-  const apyData = {
-    apyInceptionSample,
-    apyOneDaySample,
-    apyThreeDaySample,
-    apyOneWeekSample,
-    apyOneMonthSample,
-  };
-
-  if (pool) {
-    const poolAddress = pool.address;
-    const virtualPriceCurrent = await getVirtualPrice(
-      poolAddress,
+      inceptionBlockNbr
+    );
+  
+    const apyInceptionSample = getApy(
+      pricePerFullShareInception,
+      pricePerFullShareCurrent,
+      inceptionBlockNbr,
       currentBlockNbr
     );
-    const virtualPriceOneDayAgo = await getVirtualPrice(
-      poolAddress,
-      oneDayAgoBlock
-    );
-
-    const poolApy = await getApy(
-      virtualPriceOneDayAgo,
-      virtualPriceCurrent,
-      oneDayAgoBlock,
-      currentBlockNbr
-    );
-
-    const poolPct = poolApy / 100;
-    const vaultPct = apyOneDaySample / 100;
-    apyLoanscan = ((1 + poolPct) * (1 + vaultPct) - 1) * 100;
-
-    return { ...apyData, poolApy, apyLoanscan };
+  
+    const apyOneDaySample =
+      (getApy(
+        pricePerFullShareOneDayAgo,
+        pricePerFullShareCurrent,
+        oneDayAgoBlock,
+        currentBlockNbr
+      )) || apyInceptionSample;
+  
+    const apyThreeDaySample =
+      (getApy(
+        pricePerFullShareThreeDaysAgo,
+        pricePerFullShareCurrent,
+        threeDaysAgoBlock,
+        currentBlockNbr
+      )) || apyInceptionSample;
+  
+    const apyOneWeekSample =
+      (getApy(
+        pricePerFullShareOneWeekAgo,
+        pricePerFullShareCurrent,
+        oneWeekAgoBlock,
+        currentBlockNbr
+      )) || apyInceptionSample;
+  
+    const apyOneMonthSample =
+      (getApy(
+        pricePerFullShareOneMonthAgo,
+        pricePerFullShareCurrent,
+        oneMonthAgoBlock,
+        currentBlockNbr
+      )) || apyInceptionSample;
+  
+    let apyLoanscan = 0;
+  
+    const apyData = {
+      apyInceptionSample,
+      apyOneDaySample,
+      apyThreeDaySample,
+      apyOneWeekSample,
+      apyOneMonthSample,
+    };
+  
+    if (pool) {
+      const poolAddress = pool.address;
+      const virtualPriceCurrent = await getVirtualPrice(
+        poolAddress,
+        currentBlockNbr
+      );
+      const virtualPriceOneDayAgo = await getVirtualPrice(
+        poolAddress,
+        oneDayAgoBlock
+      );
+  
+      const poolApy = await getApy(
+        virtualPriceOneDayAgo,
+        virtualPriceCurrent,
+        oneDayAgoBlock,
+        currentBlockNbr
+      );
+  
+      const poolPct = poolApy / 100;
+      const vaultPct = apyOneDaySample / 100;
+      apyLoanscan = ((1 + poolPct) * (1 + vaultPct) - 1) * 100;
+  
+      return { ...apyData, poolApy, apyLoanscan };
+    }
+  
+    return {
+      ...apyData,
+      apyLoanscan,
+      compoundApy: 0,
+    };
   }
-
-  return {
-    ...apyData,
-    apyLoanscan,
-  };
 };
 
 const getLoanscanApyForVault = async (vault) => {
@@ -272,6 +297,18 @@ const getHistoricalAPY = async (startTime, contractAddress) => {
     case mainContracts.vault['yTUSD'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.tusdFarmer);
       break;
+    case testContracts.farmer['cDAI'].address:
+    case mainContracts.farmer['cDAI'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.cDaiFarmer);
+      break;
+    case testContracts.farmer['cUSDC'].address:
+    case mainContracts.farmer['cUSDC'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.cUsdcFarmer);
+      break;
+    case testContracts.farmer['cUSDT'].address:
+    case mainContracts.farmer['cUSDT'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.cUsdtFarmer);
+      break;
   }
 
   return result;
@@ -294,6 +331,7 @@ const readVault = async (vault) => {
   }
   // const contract = new infuraWeb3.eth.Contract(abi, address);
   const apy = await getApyForVault(vault);
+
   // const loanscanApy = await getLoanscanApyForVault(vault);
   const data = {
     address,
@@ -326,23 +364,27 @@ const saveAndReadVault = async (vault) => {
     return null;
   }
   const apy = await getApyForVault(vault);
-  const aprContract = new infuraWeb3.eth.Contract(aggregatedContractABI, aggregatedContractAddress);
-  var call = 'getAPROptions';//+asset.symbol
   var aprs = 0;
-  aprs = await aprContract.methods[call](vault.erc20address).call();
-
-  const keys = Object.keys(aprs)
-  const workKeys = keys.filter((key) => {
-    return isNaN(key)
-  })
-  const maxApr = Math.max.apply(Math, workKeys.map(function(o) {
-    if(o === 'uniapr' || o === 'unicapr' || o === "iapr") {
-      return aprs[o]-100000000000000000000
-    }
-    return aprs[o];
-  }))
-
-  aprs = infuraWeb3.utils.fromWei(maxApr.toFixed(0), 'ether')
+  if (!vault.isCompound) {
+    const aprContract = new infuraWeb3.eth.Contract(aggregatedContractABI, aggregatedContractAddress);
+    var call = 'getAPROptions';//+asset.symbol
+    
+    aprs = await aprContract.methods[call](vault.erc20address).call();
+  
+    const keys = Object.keys(aprs)
+    const workKeys = keys.filter((key) => {
+      return isNaN(key)
+    })
+    const maxApr = Math.max.apply(Math, workKeys.map(function(o) {
+      if(o === 'uniapr' || o === 'unicapr' || o === "iapr") {
+        return aprs[o]-100000000000000000000
+      }
+      return aprs[o];
+    }))
+  
+    aprs = infuraWeb3.utils.fromWei(maxApr.toFixed(0), 'ether')
+  }
+  
   const data = {
     ...apy,
     aprs,
@@ -356,10 +398,15 @@ module.exports.saveHandler = async () => {
   try {
     console.log("Fetching historical blocks", 'save APY history');
     currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
+    console.log("currentBlockNbr", currentBlockNbr);
     oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;
+    console.log("oneDayAgoBlock", oneDayAgoBlock);
     threeDaysAgoBlock = (await blocks.getDate(threeDaysAgo)).block;
+    console.log("threeDaysAgoBlock", threeDaysAgoBlock);
     oneWeekAgoBlock = (await blocks.getDate(oneWeekAgo)).block;
+    console.log("oneWeekAgoBlock", oneWeekAgoBlock);
     oneMonthAgoBlock = (await blocks.getDate(oneMonthAgo)).block;
+    console.log("oneMonthAgoBlock", oneMonthAgoBlock);
     nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
     console.log("Done fetching historical blocks");
 

@@ -71,21 +71,31 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   // Get User Deposit Amount
   let strategyContract;
   let vaultContract;
+  let type = '';
 
   if (process.env.PRODUCTION != null && process.env.PRODUCTION != '') {
     const symbol = Object.keys(mainContracts.farmer).find(key => mainContracts.farmer[key].address.toLowerCase() === contractAddress.toLowerCase());
     strategyContract = getContract(mainContracts.farmer[symbol].strategyABI, mainContracts.farmer[symbol].strategyAddress);
     vaultContract = getContract(mainContracts.farmer[symbol].abi, mainContracts.farmer[symbol].address);
+    type = mainContracts.farmer[symbol].contractType;
   } else {
     const symbol = Object.keys(testContracts.farmer).find(key => testContracts.farmer[key].address.toLowerCase() === contractAddress.toLowerCase());
-
     strategyContract = getContract(testContracts.farmer[symbol].strategyABI, testContracts.farmer[symbol].strategyAddress);
     vaultContract = getContract(testContracts.farmer[symbol].abi, testContracts.farmer[symbol].address);
+    type = mainContracts.farmer[symbol].contractType;
   }
-  const earnDepositAmount = await strategyContract.methods.getEarnDepositBalance(userAddress).call();
-  const vaultDepositAmount = await strategyContract.methods.getVaultDepositBalance(userAddress).call();
-  const depositedAmount = new BigNumber(earnDepositAmount)
-    .plus(vaultDepositAmount);
+
+  let depositedAmount = new BigNumber(0);
+
+  if (type === 'yearn') {
+    const earnDepositAmount = await strategyContract.methods.getEarnDepositBalance(userAddress).call();
+    const vaultDepositAmount = await strategyContract.methods.getVaultDepositBalance(userAddress).call();
+    depositedAmount = new BigNumber(earnDepositAmount)
+      .plus(vaultDepositAmount);
+  } else if (type === 'compound') {
+    depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
+    depositedAmount = new BigNumber(depositedAmount);
+  }
 
   const depositedShares = await getDepositedShares(vaultContract, userAddress);
 

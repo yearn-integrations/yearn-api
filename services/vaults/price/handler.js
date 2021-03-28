@@ -18,17 +18,33 @@ const moment = require("moment");
 const getCurrentPrice = async () => {
   let contracts = process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? mainContracts : testContracts;
 
-  for (const key of Object.keys(contracts.earn)) {
-    const earnContract = getContract(contracts.earn[key].abi, contracts.earn[key].address);
-    const vaultContract = getContract(contracts.vault[key].abi, contracts.vault[key].address);
-  
+  for (const key of Object.keys(contracts.farmer)) {
     try {
-      const earnPricePerFullShare = await getPricePerFullShare(earnContract);
-      const vaultPricePerFullShare = await getPricePerFullShare(vaultContract);
-      await db.add(key + '_price', {
-        earnPrice: earnPricePerFullShare,
-        vaultPrice: vaultPricePerFullShare,
-      }).catch((err) => console.log('err', err));
+      if (contracts.farmer[key].contractType === 'yearn') {
+        const earnContract = getContract(contracts.earn[key].abi, contracts.earn[key].address);
+        const vaultContract = getContract(contracts.vault[key].abi, contracts.vault[key].address);
+    
+        const earnPricePerFullShare = await getPricePerFullShare(earnContract);
+        const vaultPricePerFullShare = await getPricePerFullShare(vaultContract);
+        await db.add(key + '_price', {
+          earnPrice: earnPricePerFullShare,
+          vaultPrice: vaultPricePerFullShare,
+          compoundExchangeRate: 0,
+        }).catch((err) => console.log('err', err));
+      } else if (contracts.farmer[key].contractType === 'compound') {
+        const compoundContract = getContract(contracts.compund[key].abi, contracts.compund[key].address);
+        const getCash = await compoundContract.methods.getCash().call({ from: account.address });
+        const totalBorrows = await compoundContract.methods.totalBorrows().call({ from: account.address });
+        const totalReserves = await compoundContract.methods.totalReserves().call({ from: account.address });
+        const totalSupply = await compoundContract.methods.totalSupply().call({ from: account.address });
+        const exchangeRate = (getCash + totalBorrows - totalReserves) / totalSupply;
+    
+        await db.add(key + '_price', {
+          earnPrice: 0,
+          vaultPrice: 0,
+          compoundExchangeRate: exchangeRate,
+        }).catch((err) => console.log('err', err));
+      }
     } catch (err) {
       await db.add(key + '_price', {
         earnPrice: "0",
@@ -73,6 +89,15 @@ module.exports.handleHistoricialPrice = async (req, res) => {
         break;
       case db.tusdFarmer:
         collection = db.tusdFarmer;
+        break;
+      case db.cUsdtFarmer: 
+        collection = db.cUsdtFarmer;
+        break;
+      case db.cUsdcFarmer: 
+        collection = db.cUsdcFarmer;
+        break;
+      case db.cDaiFarmer:
+        collection = db.cDaiFarmer;
         break;
       default:
         res.status(200).json({
