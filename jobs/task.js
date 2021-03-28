@@ -1,5 +1,6 @@
 const cron = require('node-cron');
-const vaultApySave = require('../services/vaults/apy/save/handler');
+const vaultApySave = require('../services/vaults/apy/save/historical-handle');
+const vaultHandlerSave = require('../services/vaults/apy/save/handler');
 const vaultSave = require('../services/vaults/save/handler');
 const priceSave = require('../services/vaults/price/handler');
 
@@ -17,10 +18,10 @@ const saveVault = async () => {
 
 /** Save Vault APY */
 const saveVaultAPY = async () => {
-  await vaultApySave.handler();
+  await vaultHandlerSave.handler();
   cron.schedule('0 0 0 * * *', async () => {
     console.log('[saveVaultAPY]');
-    await vaultApySave.handler();
+    await vaultHandlerSave.handler();
   }, {
     scheduled: true,
     timezone: "Etc/UTC" // UTC +0

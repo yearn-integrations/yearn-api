@@ -1,7 +1,5 @@
 require("dotenv").config();
-const AWS = require("aws-sdk");
-// const db = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
-const db = require('../../../../models/apy.model');
+const historicalDb = require('../../../../models/historical-apy.model');
 const Web3 = require("web3");
 const moment = require("moment");
 const delay = require("delay");
@@ -15,7 +13,8 @@ const infuraUrl = process.env.WEB3_ENDPOINT;
 const archiveNodeWeb3 = new Web3(archiveNodeUrl);
 const infuraWeb3 = new Web3(infuraUrl);
 const blocks = new EthDater(archiveNodeWeb3, delayTime);
-const { testContracts, mainContracts } = require('../../../../config/serverless/domain');
+const { aggregatedContractABI } = require('../../../../config/abi');
+const { aggregatedContractAddress, testContracts, mainContracts } = require('../../../../config/serverless/domain');
 
 let currentBlockNbr;
 let oneDayAgoBlock;
@@ -43,9 +42,8 @@ const pools = [
   },
 ];
 
-const saveVaultWithApy = async (data) => {
-  await db.add(data).catch((err) => console.log('err', err));
-  console.log(`Saved ${data.name}`);
+const saveHistoricalAPY = async (data, collection) => {
+  await historicalDb.add(data, collection).catch((err) => console.log('err', err));
 };
 
 const getApy = (
@@ -272,7 +270,43 @@ const getLoanscanApyForVault = async (vault) => {
   );
 };
 
-const readVault = async (vault) => {
+const getHistoricalAPY = async (startTime, contractAddress) => {
+  var result = [];
+  switch (contractAddress.toLowerCase()) {
+    case testContracts.vault['yUSDT'].address:
+    case mainContracts.vault['yUSDT'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.usdtFarmer);
+      break;
+    case testContracts.vault['yUSDC'].address:
+    case mainContracts.vault['yUSDC'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.usdcFarmer);
+      break;
+    case testContracts.vault['yDAI'].address:
+    case mainContracts.vault['yDAI'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daiFarmer);
+      break;
+    case testContracts.vault['yTUSD'].address:
+    case mainContracts.vault['yTUSD'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.tusdFarmer);
+      break;
+    case testContracts.farmer['cDAI'].address:
+    case mainContracts.farmer['cDAI'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.cDaiFarmer);
+      break;
+    case testContracts.farmer['cUSDC'].address:
+    case mainContracts.farmer['cUSDC'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.cUsdcFarmer);
+      break;
+    case testContracts.farmer['cUSDT'].address:
+    case mainContracts.farmer['cUSDT'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.cUsdtFarmer);
+      break;
+  }
+
+  return result;
+}
+
+const saveAndReadVault = async (vault) => {
   const {
     name,
     symbol,
@@ -287,40 +321,56 @@ const readVault = async (vault) => {
     console.log(`Vault ABI not found: ${name}`);
     return null;
   }
-  // const contract = new infuraWeb3.eth.Contract(abi, address);
   const apy = await getApyForVault(vault);
-
-  // const loanscanApy = await getLoanscanApyForVault(vault);
+  var aprs = 0;
+  if (!vault.isCompound) {
+    const aprContract = new infuraWeb3.eth.Contract(aggregatedContractABI, aggregatedContractAddress);
+    var call = 'getAPROptions';//+asset.symbol
+    
+    aprs = await aprContract.methods[call](vault.erc20address).call();
+  
+    const keys = Object.keys(aprs)
+    const workKeys = keys.filter((key) => {
+      return isNaN(key)
+    })
+    const maxApr = Math.max.apply(Math, workKeys.map(function(o) {
+      if(o === 'uniapr' || o === 'unicapr' || o === "iapr") {
+        return aprs[o]-100000000000000000000
+      }
+      return aprs[o];
+    }))
+  
+    aprs = infuraWeb3.utils.fromWei(maxApr.toFixed(0), 'ether')
+  }
+  
   const data = {
-    address,
-    name,
-    symbol,
-    description,
-    vaultSymbol,
-    description,
-    tokenAddress,
-    timestamp: Date.now(),
     ...apy,
+    aprs,
+    symbol
   };
-  await saveVaultWithApy(data);
+  await saveHistoricalAPY(data, vaultSymbol + '_historical-apy');
   return data;
 };
 
-module.exports.handler = async () => {
+module.exports.saveHandler = async () => {
   try {
-    console.log("Fetching historical blocks", 'save Vault APY');
+    console.log("Fetching historical blocks", 'save APY history');
     currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
-    await delay(delayTime);
+    console.log("currentBlockNbr", currentBlockNbr);
     oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;
+    console.log("oneDayAgoBlock", oneDayAgoBlock);
     threeDaysAgoBlock = (await blocks.getDate(threeDaysAgo)).block;
+    console.log("threeDaysAgoBlock", threeDaysAgoBlock);
     oneWeekAgoBlock = (await blocks.getDate(oneWeekAgo)).block;
+    console.log("oneWeekAgoBlock", oneWeekAgoBlock);
     oneMonthAgoBlock = (await blocks.getDate(oneMonthAgo)).block;
+    console.log("oneMonthAgoBlock", oneMonthAgoBlock);
     nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
     console.log("Done fetching historical blocks");
 
     const vaultsWithApy = [];
     for (const vault of vaults) {
-      const vaultWithApy = await readVault(vault);
+      const vaultWithApy = await saveAndReadVault(vault);
       if (vaultWithApy !== null) {
         vaultsWithApy.push(vaultWithApy);
       }
@@ -329,4 +379,49 @@ module.exports.handler = async () => {
   } catch (err) {
     console.error(err);
   }
-};
+}
+
+module.exports.handleHistoricialAPY = async (req, res) => {
+  if (req.params.days == null || req.params.days == '') {
+    res.status(200).json({
+      message: 'Days is empty.',
+      body: null
+    });
+  } else if (req.params.contractAddress == null || req.params.contractAddress == '') {
+    res.status(200).json({
+      message: 'Contract Address is empty.',
+      body: null
+    });
+  } else {
+    var startTime = -1;
+    switch (req.params.days) {
+      case '30d':
+        startTime = moment().subtract(30, 'days');
+        break;
+      case '7d':
+        startTime = moment().subtract(7, 'days');
+        break;
+      case '1d':
+        startTime = moment().subtract(1, 'days');
+        break;
+    }
+
+    if (startTime !== -1) {
+      var result = await getHistoricalAPY(startTime.unix(), req.params.contractAddress);
+      const resultMapping = (apy) => {
+        delete apy._id;
+        return apy;
+      };
+      result = result.map(resultMapping);
+      res.status(200).json({
+        message: '',
+        body: result
+      })
+    } else {
+      res.status(200).json({
+        message: "Please only pass '30d', '7d' or '1d' as days option.",
+        body: null
+      })
+    }
+  }
+}
