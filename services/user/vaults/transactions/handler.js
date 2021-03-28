@@ -4,11 +4,8 @@ require("dotenv").config();
 const fetch = require("node-fetch");
 const { pluck, uniq } = require("ramda/dist/ramda");
 const subgraphUrl = process.env.SUBGRAPH_ENDPOINT;
-const { getVaults } = require("../../../vaults/handler");
 const _ = require("lodash");
 const {
-  devContract,
-  prodContract,
   testContracts,
   mainContracts
 } = require('../../../../config/serverless/domain');
