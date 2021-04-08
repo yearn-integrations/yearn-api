@@ -22,10 +22,6 @@ let threeDaysAgoBlock;
 let oneWeekAgoBlock;
 let oneMonthAgoBlock;
 let nbrBlocksInDay;
-const oneDayAgo = moment().subtract(1, "days").valueOf();
-const threeDaysAgo = moment().subtract(3, "days").valueOf();
-const oneWeekAgo = moment().subtract(1, "weeks").valueOf();
-const oneMonthAgo = moment().subtract(1, "months").valueOf();
 
 const pools = [
   {
@@ -354,6 +350,11 @@ const saveAndReadVault = async (vault) => {
 
 module.exports.saveHandler = async () => {
   try {
+    const oneDayAgo = moment().subtract(1, "days").valueOf();
+    const threeDaysAgo = moment().subtract(3, "days").valueOf();
+    const oneWeekAgo = moment().subtract(1, "weeks").valueOf();
+    const oneMonthAgo = moment().subtract(1, "months").valueOf();
+
     console.log("Fetching historical blocks", 'save APY history');
     currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
     console.log("currentBlockNbr", currentBlockNbr);
