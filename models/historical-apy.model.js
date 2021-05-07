@@ -34,4 +34,7 @@ module.exports = {
   cUsdtFarmer: 'cUSDT_historical-apy',
   cUsdcFarmer: 'cUSDC_historical-apy',
   cDaiFarmer: 'cDAI_historical-apy',
+  hfDaiFarmer: 'hfDAI_historical-apy',
+  hfUsdcFarmer: 'hfUSDC_historical-apy',
+  hfUsdtFarmer: 'hfUSDT_historical-apy'
 };

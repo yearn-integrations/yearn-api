@@ -82,7 +82,7 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     const symbol = Object.keys(testContracts.farmer).find(key => testContracts.farmer[key].address.toLowerCase() === contractAddress.toLowerCase());
     strategyContract = getContract(testContracts.farmer[symbol].strategyABI, testContracts.farmer[symbol].strategyAddress);
     vaultContract = getContract(testContracts.farmer[symbol].abi, testContracts.farmer[symbol].address);
-    type = mainContracts.farmer[symbol].contractType;
+    type = testContracts.farmer[symbol].contractType;
   }
 
   let depositedAmount = new BigNumber(0);
@@ -94,6 +94,9 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
       .plus(vaultDepositAmount);
   } else if (type === 'compound') {
     depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
+    depositedAmount = new BigNumber(depositedAmount);
+  } else if (type === 'harvest') {
+    depositedAmount = await vaultContract.methods.getCurrentBalance(userAddress).call();
     depositedAmount = new BigNumber(depositedAmount);
   }
 

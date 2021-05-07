@@ -30,6 +30,7 @@ const getCurrentPrice = async () => {
           earnPrice: earnPricePerFullShare,
           vaultPrice: vaultPricePerFullShare,
           compoundExchangeRate: 0,
+          price: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'compound') {
         const compoundContract = getContract(contracts.compund[key].abi, contracts.compund[key].address);
@@ -43,12 +44,24 @@ const getCurrentPrice = async () => {
           earnPrice: 0,
           vaultPrice: 0,
           compoundExchangeRate: exchangeRate,
+          price: 0
         }).catch((err) => console.log('err', err));
+      } else if (contracts.farmer[key].contractType === 'harvest') {
+        const contract = getContract(contracts.harvest[key].abi, contracts.harvest[key].address);
+        const pricePerFullShare = await getPricePerFullShare(contract);
+        await db.add(key + '_price', {
+          earnPrice: 0,
+          vaultPrice: 0,
+          compoundExchangeRate: 0,
+          price: pricePerFullShare
+        })
       }
     } catch (err) {
       await db.add(key + '_price', {
         earnPrice: "0",
         vaultPrice: "0",
+        compoundExchangeRate: 0,
+        price: "0"
       }).catch((err) => console.log('err', err));
     }
   }
@@ -98,6 +111,15 @@ module.exports.handleHistoricialPrice = async (req, res) => {
         break;
       case db.cDaiFarmer:
         collection = db.cDaiFarmer;
+        break;
+      case db.hfDaiFarmer: 
+        collection = db.hfDaiFarmer;
+        break;
+      case db.hfUsdcFarmer: 
+        collection = db.hfUsdcFarmer;
+        break;
+      case db.hfUsdtFarmer: 
+        collection = db.hfUsdtFarmer;
         break;
       default:
         res.status(200).json({

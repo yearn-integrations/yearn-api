@@ -54,6 +54,8 @@ const getApy = (
   const blockDelta = currentBlockNbr - previousBlockNbr;
   const returnSincePrevBlock = (currentValue - previousValue) / previousValue;
   const days = blockDelta / nbrBlocksInDay;
+  console.log('returnSincePrevBlock', returnSincePrevBlock)
+  console.log('days', days)
   const yearlyRoi = 100 * ((1 + returnSincePrevBlock) ** (365.2425 / days) - 1);
   return yearlyRoi;
 };
@@ -91,6 +93,7 @@ const getPricePerFullShare = async (
   if (contractDidntExist) {
     return 0;
   }
+  console.log('block', block);
   const pricePerFullShare = await vaultContract.methods
     .getPricePerFullShare()
     .call(undefined, block);
@@ -130,50 +133,59 @@ const getApyForVault = async (vault) => {
   } else {
     // Yearn Vault
     const pool = _.find(pools, { symbol });
-    const vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
-
+    var vaultContract;
+    if (vault.isHarvest) {
+      const envContracts = process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? mainContracts : testContracts;
+      vaultContract = new archiveNodeWeb3.eth.Contract(envContracts.harvest[vault.id].abi, envContracts.harvest[vault.id].address);
+    } else {
+      vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
+    }
+    
     const pricePerFullShareInception = await getPricePerFullShare(
       vaultContract,
       inceptionBlockNbr,
       inceptionBlockNbr
     );
-  
+    console.log('pricePerFullShareInception', pricePerFullShareInception);
+
     const pricePerFullShareCurrent = await getPricePerFullShare(
       vaultContract,
       currentBlockNbr,
       inceptionBlockNbr
     );
+    console.log('pricePerFullShareCurrent', pricePerFullShareCurrent);
   
     const pricePerFullShareOneDayAgo = await getPricePerFullShare(
       vaultContract,
       oneDayAgoBlock,
       inceptionBlockNbr
     );
-  
+    console.log('pricePerFullShareOneDayAgo', pricePerFullShareOneDayAgo);
     const pricePerFullShareThreeDaysAgo = await getPricePerFullShare(
       vaultContract,
       threeDaysAgoBlock,
       inceptionBlockNbr
     );
-  
+    console.log('pricePerFullShareThreeDaysAgo', pricePerFullShareThreeDaysAgo);
     const pricePerFullShareOneWeekAgo = await getPricePerFullShare(
       vaultContract,
       oneWeekAgoBlock,
       inceptionBlockNbr
     );
-  
+    console.log('pricePerFullShareOneWeekAgo', pricePerFullShareOneWeekAgo);
     const pricePerFullShareOneMonthAgo = await getPricePerFullShare(
       vaultContract,
       oneMonthAgoBlock,
       inceptionBlockNbr
     );
-  
+    console.log('pricePerFullShareOneMonthAgo', pricePerFullShareOneMonthAgo);
     const apyInceptionSample = getApy(
       pricePerFullShareInception,
       pricePerFullShareCurrent,
       inceptionBlockNbr,
       currentBlockNbr
     );
+    console.log('apyInceptionSample', apyInceptionSample)
   
     const apyOneDaySample =
       (getApy(
@@ -182,7 +194,7 @@ const getApyForVault = async (vault) => {
         oneDayAgoBlock,
         currentBlockNbr
       )) || apyInceptionSample;
-  
+    console.log('apyOneDaySample', apyOneDaySample)
     const apyThreeDaySample =
       (getApy(
         pricePerFullShareThreeDaysAgo,
@@ -319,24 +331,26 @@ const saveAndReadVault = async (vault) => {
   }
   const apy = await getApyForVault(vault);
   var aprs = 0;
-  if (!vault.isCompound) {
-    const aprContract = new infuraWeb3.eth.Contract(aggregatedContractABI, aggregatedContractAddress);
-    var call = 'getAPROptions';//+asset.symbol
+  if (!vault.isCompound && !vault.isHarvest) {
+    try {
+      const aprContract = new infuraWeb3.eth.Contract(aggregatedContractABI, aggregatedContractAddress);
+      var call = 'getAPROptions';//+asset.symbol
+      
+      aprs = await aprContract.methods[call](vault.erc20address).call();
     
-    aprs = await aprContract.methods[call](vault.erc20address).call();
-  
-    const keys = Object.keys(aprs)
-    const workKeys = keys.filter((key) => {
-      return isNaN(key)
-    })
-    const maxApr = Math.max.apply(Math, workKeys.map(function(o) {
-      if(o === 'uniapr' || o === 'unicapr' || o === "iapr") {
-        return aprs[o]-100000000000000000000
-      }
-      return aprs[o];
-    }))
-  
-    aprs = infuraWeb3.utils.fromWei(maxApr.toFixed(0), 'ether')
+      const keys = Object.keys(aprs)
+      const workKeys = keys.filter((key) => {
+        return isNaN(key)
+      })
+      const maxApr = Math.max.apply(Math, workKeys.map(function(o) {
+        if(o === 'uniapr' || o === 'unicapr' || o === "iapr") {
+          return aprs[o]-100000000000000000000
+        }
+        return aprs[o];
+      }))
+    
+      aprs = infuraWeb3.utils.fromWei(maxApr.toFixed(0), 'ether')
+    } catch (ex) {}
   }
   
   const data = {
@@ -344,6 +358,7 @@ const saveAndReadVault = async (vault) => {
     aprs,
     symbol
   };
+  console.log('vaultSymbol', vaultSymbol)
   await saveHistoricalAPY(data, vaultSymbol + '_historical-apy');
   return data;
 };

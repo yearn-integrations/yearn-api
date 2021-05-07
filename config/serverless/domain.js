@@ -95,26 +95,47 @@ const testContracts = {
       strategyABI: abi.yearnTUSDABIContract,
       contractType: 'yearn'
     },
-    'cUSDT': {
-      address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52',
-      abi: abi.compoundVaultContract,
-      strategyAddress: '0xa5c956aef6a21c986665de9cf889ef36613c7d5e',
-      strategyABI: abi.compoundStrategyContract,
-      contractType: 'compound'
+    // 'cUSDT': {
+    //   address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52',
+    //   abi: abi.compoundVaultContract,
+    //   strategyAddress: '0xa5c956aef6a21c986665de9cf889ef36613c7d5e',
+    //   strategyABI: abi.compoundStrategyContract,
+    //   contractType: 'compound'
+    // },
+    // 'cUSDC': {
+    //   address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e',
+    //   abi: abi.compoundVaultContract,
+    //   strategyAddress: '0x3add8a9d3176c4b30dddeeababf9ca5cc3d49944',
+    //   strategyABI: abi.compoundStrategyContract,
+    //   contractType: 'compound'
+    // },
+    // 'cDAI': {
+    //   address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d',
+    //   abi: abi.compoundVaultContract,
+    //   strategyAddress: '0xb951976a7d79fd8a589a7ca9753641380f5c1ab4',
+    //   strategyABI: abi.compoundStrategyContract,
+    //   contractType: 'compound'
+    // },
+    'hfDAI': {
+      address: '0xf6cd30117e16feacaebd2bd30a6d682af6fb9844',
+      abi: abi.hfDAOContract,
+      strategyAddress: '0xd505538106e0e4fe73e913f990688f2eafd75901',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest'
     },
-    'cUSDC': {
-      address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e',
-      abi: abi.compoundVaultContract,
-      strategyAddress: '0x3add8a9d3176c4b30dddeeababf9ca5cc3d49944',
-      strategyABI: abi.compoundStrategyContract,
-      contractType: 'compound'
+    'hfUSDC': {
+      address: '0xefd426cee17809039c84da8e37951c634901e427',
+      abi: abi.hfDAOContract,
+      strategyAddress: '0x3568bcd1d00db319dade2c5611c474e8f4d661d1',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest'
     },
-    'cDAI': {
-      address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d',
-      abi: abi.compoundVaultContract,
-      strategyAddress: '0xb951976a7d79fd8a589a7ca9753641380f5c1ab4',
-      strategyABI: abi.compoundStrategyContract,
-      contractType: 'compound'
+    'hfUSDT': {
+      address: '0xb0f92a610e83602bf5df258265dbe1561ae33e85',
+      abi: abi.hfDAOContract,
+      strategyAddress: '0x5f75141042e8ac06a6f7aecac665acad228faae1',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest'
     },
   },
   compund: {
@@ -129,6 +150,20 @@ const testContracts = {
     'cDAI': {
       address: '0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad',
       abi: abi.cDAIContract,
+    }
+  },
+  harvest: {
+    'hfDAI': {
+      address: '0xed2ebf9cde8c8fcc4f82ec6e3675130ae5649442',
+      abi: abi.hfVault,
+    },
+    'hfUSDC': {
+      address: '0xeff936f12c1600b8ce60f0e0575f520f82aedce3',
+      abi: abi.hfVault,
+    },
+    'hfUSDT': {
+      address: '0x1298e9b9a2350ad91f2baf68ab4de8ecb9267621',
+      abi: abi.hfVault,
     }
   }
 };
