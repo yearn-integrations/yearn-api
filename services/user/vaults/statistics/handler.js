@@ -82,11 +82,10 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     const symbol = Object.keys(testContracts.farmer).find(key => testContracts.farmer[key].address.toLowerCase() === contractAddress.toLowerCase());
     strategyContract = getContract(testContracts.farmer[symbol].strategyABI, testContracts.farmer[symbol].strategyAddress);
     vaultContract = getContract(testContracts.farmer[symbol].abi, testContracts.farmer[symbol].address);
-    type = mainContracts.farmer[symbol].contractType;
+    type = testContracts.farmer[symbol].contractType;
   }
 
   let depositedAmount = new BigNumber(0);
-
   if (type === 'yearn') {
     const earnDepositAmount = await strategyContract.methods.getEarnDepositBalance(userAddress).call();
     const vaultDepositAmount = await strategyContract.methods.getVaultDepositBalance(userAddress).call();

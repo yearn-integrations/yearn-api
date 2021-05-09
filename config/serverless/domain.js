@@ -32,66 +32,66 @@ module.exports.dev = () => {
 const testContracts = {
   earn: {
     'yUSDT': {
-      address: '0xdb12e805d004698fc58f6e4fbdd876268df2dffe',
+      address: '0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd',
       abi: abi.earnUSDTABIContract,
     },
     'yUSDC': {
-      address: '0xC6Be21D8533e90Fd136905eBe70c9d9148237f2d',
+      address: '0x2200a7e736821f5915ed3c40e7088a7e56dea64a',
       abi: abi.earnUSDCABIContract,
     },
     'yDAI': {
-      address: '0x21857b392b7d0ca20c439bc39896f38ee74c6023',
+      address: '0x690bcadb0d5633766510be078b97796d90acc7d8',
       abi: abi.earnDAIABIContract,
     },
     'yTUSD': {
-      address: '0x63659fcb4a1f62e0c80690ddc67084e8e1560c61',
+      address: '0x6c45ba691a8f587e3fd7f17c7adefce8dfa452aa',
       abi: abi.earnTUSDABIContract,
     },
   },
   vault: {
     'yUSDT': {
-      address: '0x359902517f43b8d38cf9718fe90e552375476f05',
+      address: '0xa5c53c76729e92630a2a3c549215110a330c902d',
       abi: config.vaultContractV2ABI,
     },
     'yUSDC': {
-      address: '0x231991d392dbe5980586665bc1a066f8efac78c8',
+      address: '0xabdb489ded91b6646fadc8eeb0ca82ea1d526182',
       abi: config.vaultContractABI,
     },
     'yDAI': {
-      address: '0x193b83e8cc108c86362e47a4c2d3048837d4996e',
+      address: '0x5c2eea0a960cc1f604bf3c35a52ca2273f12e67e',
       abi: config.vaultContractV2ABI,
     },
     'yTUSD': {
-      address: '0x0c9ddf949e32221612145807e34483ccf946b2b9',
+      address: '0xa8564f8d255c33175d4882e55f1a6d19e7a7d351',
       abi: config.vaultContractV2ABI,
     },
   },
   farmer: {
     'yUSDT': {
-      address: '0x132b495eC9451c9D572A791Ef9cB6f96Dcb67020',
+      address: '0x6B150E9BD70E216775c8b73270E64e870a3110c1',
       abi: abi.vaultUSDTABIContract,
-      strategyAddress: '0x157fbacbbf6ba50c45e1375ae728f88f0cde1615',
+      strategyAddress: '0x31324c1c0bb6b4b6f8102acb8346b065307926fa',
       strategyABI: abi.yearnUSDTABIContract,
       contractType: 'yearn'
     },
     'yUSDC': {
-      address: '0xBdf7cC9c7a9dFF3d54Aa976e9586CE9935484005',
+      address: '0x6E15e283dc430eca010Ade8b11b5B377902d6e56',
       abi: abi.vaultUSDCABIContract,
-      strategyAddress: '0xf5a1988a9d02ce26b2cca31a56368e5f6a9b55ac',
+      strategyAddress: '0xe77ad5e2c4e7143fdbac6a4dde891727fc395c75',
       strategyABI: abi.yearnUSDCABIContract,
       contractType: 'yearn'
     },
     'yDAI': {
-      address: '0x2BB53Ee2592319e3c3cF2323f1a81B1bF7854B7C',
+      address: '0x2428bFD238a3632552B343297c504F60283009eD',
       abi: abi.vaultDAIABIContract,
-      strategyAddress: '0x26cd801a2dbd05caad547b9d67ac2665e45dbc7e',
+      strategyAddress: '0x8615dfb5b53e9ddb3751fbc3fc59512d4aba9a22',
       strategyABI: abi.yearnDAIABIContract,
       contractType: 'yearn'
     },
     'yTUSD': {
-      address: '0xa8B73aE1E978315886E318FB086504231A3Ef917',
+      address: '0xEcCb98c36bfc8c49c6065d1cD90bcf1c6F02D4AD',
       abi: abi.vaultTUSDABIContract,
-      strategyAddress: '0x5abeadf41fe9ea8dbd49ddf4e9659dd098da9610',
+      strategyAddress: '0xf64674cfc6597d597275144a1a746dad564b0fcd',
       strategyABI: abi.yearnTUSDABIContract,
       contractType: 'yearn'
     },
