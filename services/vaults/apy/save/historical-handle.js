@@ -91,9 +91,12 @@ const getPricePerFullShare = async (
   if (contractDidntExist) {
     return 0;
   }
-  const pricePerFullShare = await vaultContract.methods
+  let pricePerFullShare = 0;
+  try {
+    pricePerFullShare = await vaultContract.methods
     .getPricePerFullShare()
     .call(undefined, block);
+  } catch (ex) {}
   await delay(delayTime);
   return pricePerFullShare;
 };
@@ -167,7 +170,7 @@ const getApyForVault = async (vault) => {
       oneMonthAgoBlock,
       inceptionBlockNbr
     );
-  
+
     const apyInceptionSample = getApy(
       pricePerFullShareInception,
       pricePerFullShareCurrent,
@@ -319,7 +322,7 @@ const saveAndReadVault = async (vault) => {
   }
   const apy = await getApyForVault(vault);
   var aprs = 0;
-  if (!vault.isCompound) {
+  if (!vault.isCompound && process.env.PRODUCTION != '') {
     const aprContract = new infuraWeb3.eth.Contract(aggregatedContractABI, aggregatedContractAddress);
     var call = 'getAPROptions';//+asset.symbol
     
