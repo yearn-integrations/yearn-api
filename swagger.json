@@ -5,6 +5,7 @@
         "title": "DAOventures API",
         "description": "DAOventures API documentation"
     },
+    "basePath": "/api/",
     "consumes": [
         "application/json"
     ],
