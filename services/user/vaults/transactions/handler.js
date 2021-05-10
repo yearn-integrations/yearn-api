@@ -181,7 +181,6 @@ const getTransactions = async (userAddress) => {
   const removeVaultAddressField = (deposit) => _.omit(deposit, "vaultAddress");
 
   const getTransactionsByVaultAddress = (vaultAddress) => {
-    console.log('vaultAddress', vaultAddress);
     const findItemByVaultAddress = (item) => item.vaultAddress === vaultAddress;
 
     const findVault = (vault) => vault.address.toLowerCase() === vaultAddress.toLowerCase();

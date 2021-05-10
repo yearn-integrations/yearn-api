@@ -6,10 +6,13 @@ const userTransactions = require("./services/user/vaults/transactions/handler");
 const vaultsPrice = require("./services/vaults/price/handler");
 const vaultsTvl = require("./services/vaults/tvl/handler");
 const vaultHistoricalAPYSave = require("./services/vaults/apy/save/historical-handle");
+const vaultCategory = require('./services/vaults/category/handler');
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 8080;
 const jobs = require("./jobs/task");
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 
 async function init() {
   // Improve debugging
@@ -49,6 +52,22 @@ async function init() {
   app.get("/vaults/tvl/total", (req, res) =>
     vaultsTvl.getTotalTVLhandle(req, res)
   );
+
+  app.get("/vaults/category", (req, res) =>
+    vaultCategory.getVaultCategory(req, res)
+  );
+
+  const options = {
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Hello World',
+        version: '1.0.0',
+      },
+    },
+    apis: ['./src/routes*.js'], // files containing annotations as above
+  };
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   app.listen(port, () => console.log(`Listening on ${port}`));
 }

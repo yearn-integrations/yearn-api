@@ -5,6 +5,7 @@ const Web3 = require("web3");
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
+const web3Url = process.env.WEB3_ENDPOINT;
 const infuraMainnetUrl =
   `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`;
 const infuraKovanUrl =
@@ -15,7 +16,7 @@ const infuraRopstenUrl =
   `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`;
 const archiveNodeWeb3 = new Web3(archiveNodeUrl);
 
-const infuraMainnetWeb3 = new Web3(infuraMainnetUrl);
+const infuraWeb3 = new Web3(web3Url);
 const infuraKovanWeb3 = new Web3(infuraKovanUrl);
 const infuraRinkebyWeb3 = new Web3(infuraRinkebyUrl);
 const infuraRopstenWeb3 = new Web3(infuraRopstenUrl);
@@ -28,7 +29,6 @@ const {
 const getDecimals = async (contract) => {
   try {
     let decimals = await contract.methods.decimals().call();
-    // console.log("Decimals", decimals);
     return decimals;
   } catch (err) {
     // Catch error
@@ -50,20 +50,8 @@ const getPoolAmount = async (contract) => {
 };
 
 const getContract = (vault) => {
-  const { strategyABI, strategyAddress, network } = vault;
-  let contract;
-
-  // console.log(network);
-  if (network === "main") {
-    contract = new infuraMainnetWeb3.eth.Contract(strategyABI, strategyAddress);
-  } else if (network === "kovan") {
-    contract = new infuraKovanWeb3.eth.Contract(strategyABI, strategyAddress);
-  } else if (network === "rinkeby") {
-    contract = new infuraRinkebyWeb3.eth.Contract(strategyABI, strategyAddress);
-  } else if (network === "ropsten") {
-    contract = new infuraRopstenWeb3.eth.Contract(strategyABI, strategyAddress);
-  }
-
+  const { strategyABI, strategyAddress } = vault;
+  const contract = new archiveNodeWeb3.eth.Contract(strategyABI, strategyAddress);
   return contract;
 };
 
@@ -99,7 +87,6 @@ const getTVL = async (vault) => {
   const tokenPrice = await getTokenPrice(tokenId);
 
   tvl = (poolAmount / 10 ** decimals) * tokenPrice;
-  console.log("TVL for", vault.name, tvl)
   return tvl;
 };
 
@@ -111,16 +98,12 @@ const getAllTVL = await = async () => {
       : testContracts; 
 
   let tvls = Array();
-  //   console.log(vaults);
   for (vault in vaults.farmer) {
-    // console.log(vaults.farmer[vault]);
     let _vault = vaults.farmer[vault];
     let tvl = await getTVL(_vault);
     tvls.push(tvl);
 
-    await saveTVL(_vault, tvl);
-
-    // console.log("TVL", tvl);
+    await saveTVL(vault, tvl);
   }
 
   return tvls;
@@ -131,7 +114,6 @@ const getTotalTVL = async (tvls) => {
   let totalTVL
   try{
     totalTVL = _.sum(tvls);
-    console.log("Total TVL", totalTVL)
   } catch (err) {
     // Catch error
     console.log(err);
@@ -149,9 +131,7 @@ const saveTotalTVL = async (totalTVL) => {
 };
 
 // Save TVL of specified Vault
-const saveTVL = async (vault, tvl) => {
-  const { name } = vault;
-
+const saveTVL = async (name, tvl) => {
   await db
     .add(name + "_tvl", {
       tvl: tvl,
@@ -159,15 +139,11 @@ const saveTVL = async (vault, tvl) => {
     .catch((err) => console.log("err", err));
 };
 
-// const vault = testContracts.farmer.cUSDT;
-
-// getPoolAmount(vault);
-// const tvls = await ();
-
-const getVaults = async () => {
-  const vaults = await db.findAll();
-  return vaults;
-};
+const getVaults = () => {
+  return process.env.PRODUCTION != null && process.env.PRODUCTION != ""
+  ? mainContracts
+  : testContracts;
+}
 
 // Save All TVLs to database
 module.exports.saveAllTVLhandler = async () => {
@@ -191,8 +167,6 @@ module.exports.getTotalTVLhandle = async () => {
 
 module.exports.getTVLhandle = async (req, res) => {
   // check if vault param is input
-  console.log("get TVL handle");
-
   if (req.params.farmer === null || req.params.farmer === "") {
     res.status(200).json({
       message: "Farmer is empty.",
