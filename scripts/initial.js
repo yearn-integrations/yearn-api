@@ -19,3 +19,15 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e', symbol: 'cUSDC', },
     { name: 'basic', contract_address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d', symbol: 'cDAI', },
 ]);
+
+db.xdvg_token.insert({
+    name: 'USDT',
+    contract_address: '0x07de306FF27a2B630B1141956844eB1552B956B5'
+});
+
+db.stake_pool.insert({
+    name: 'USDT',
+    contract_address: '0x07de306FF27a2B630B1141956844eB1552B956B5',
+    status: 'A',
+    pid: '0'
+});
