@@ -167,6 +167,30 @@
                 ],
                 "responses": {}
             }
+        },
+        "/staking/get-vip-tokens": {
+            "get": {
+                "tags": [
+                    "Stake"
+                ],
+                "description": "vipDVG Token Information",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {}
+            }
+        },
+        "/staking/get-pools": {
+            "get": {
+                "tags": [
+                    "Stake"
+                ],
+                "description": "Stake Pools Information",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {}
+            }
         }
     }
 }
