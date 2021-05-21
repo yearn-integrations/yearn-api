@@ -31,38 +31,38 @@ module.exports.dev = () => {
 // yearn = rinkeby
 const testContracts = {
   earn: {
-    'yUSDT': {
-      address: '0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd',
+    yUSDT: {
+      address: "0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd",
       abi: abi.earnUSDTABIContract,
     },
-    'yUSDC': {
-      address: '0x2200a7e736821f5915ed3c40e7088a7e56dea64a',
+    yUSDC: {
+      address: "0x2200a7e736821f5915ed3c40e7088a7e56dea64a",
       abi: abi.earnUSDCABIContract,
     },
-    'yDAI': {
-      address: '0x690bcadb0d5633766510be078b97796d90acc7d8',
+    yDAI: {
+      address: "0x690bcadb0d5633766510be078b97796d90acc7d8",
       abi: abi.earnDAIABIContract,
     },
-    'yTUSD': {
-      address: '0x6c45ba691a8f587e3fd7f17c7adefce8dfa452aa',
+    yTUSD: {
+      address: "0x6c45ba691a8f587e3fd7f17c7adefce8dfa452aa",
       abi: abi.earnTUSDABIContract,
     },
   },
   vault: {
-    'yUSDT': {
-      address: '0xa5c53c76729e92630a2a3c549215110a330c902d',
+    yUSDT: {
+      address: "0xa5c53c76729e92630a2a3c549215110a330c902d",
       abi: config.vaultContractV2ABI,
     },
-    'yUSDC': {
-      address: '0xabdb489ded91b6646fadc8eeb0ca82ea1d526182',
+    yUSDC: {
+      address: "0xabdb489ded91b6646fadc8eeb0ca82ea1d526182",
       abi: config.vaultContractABI,
     },
-    'yDAI': {
-      address: '0x5c2eea0a960cc1f604bf3c35a52ca2273f12e67e',
+    yDAI: {
+      address: "0x5c2eea0a960cc1f604bf3c35a52ca2273f12e67e",
       abi: config.vaultContractV2ABI,
     },
-    'yTUSD': {
-      address: '0xa8564f8d255c33175d4882e55f1a6d19e7a7d351',
+    yTUSD: {
+      address: "0xa8564f8d255c33175d4882e55f1a6d19e7a7d351",
       abi: config.vaultContractV2ABI,
     },
   },
@@ -81,34 +81,34 @@ const testContracts = {
     },
   },
   farmer: {
-    'yUSDT': {
-      address: '0x6B150E9BD70E216775c8b73270E64e870a3110c1',
+    yUSDT: {
+      address: "0x6B150E9BD70E216775c8b73270E64e870a3110c1",
       abi: abi.vaultUSDTABIContract,
-      strategyAddress: '0x31324c1c0bb6b4b6f8102acb8346b065307926fa',
+      strategyAddress: "0x31324c1c0bb6b4b6f8102acb8346b065307926fa",
       strategyABI: abi.yearnUSDTABIContract,
       contractType: "yearn",
       tokenId: "tether",
     },
-    'yUSDC': {
-      address: '0x6E15e283dc430eca010Ade8b11b5B377902d6e56',
+    yUSDC: {
+      address: "0x6E15e283dc430eca010Ade8b11b5B377902d6e56",
       abi: abi.vaultUSDCABIContract,
-      strategyAddress: '0xe77ad5e2c4e7143fdbac6a4dde891727fc395c75',
+      strategyAddress: "0xe77ad5e2c4e7143fdbac6a4dde891727fc395c75",
       strategyABI: abi.yearnUSDCABIContract,
       contractType: "yearn",
       tokenId: "usd-coin",
     },
-    'yDAI': {
-      address: '0x2428bFD238a3632552B343297c504F60283009eD',
+    yDAI: {
+      address: "0x2428bFD238a3632552B343297c504F60283009eD",
       abi: abi.vaultDAIABIContract,
-      strategyAddress: '0x8615dfb5b53e9ddb3751fbc3fc59512d4aba9a22',
+      strategyAddress: "0x8615dfb5b53e9ddb3751fbc3fc59512d4aba9a22",
       strategyABI: abi.yearnDAIABIContract,
       contractType: "yearn",
       tokenId: "dai",
     },
-    'yTUSD': {
-      address: '0xEcCb98c36bfc8c49c6065d1cD90bcf1c6F02D4AD',
+    yTUSD: {
+      address: "0xEcCb98c36bfc8c49c6065d1cD90bcf1c6F02D4AD",
       abi: abi.vaultTUSDABIContract,
-      strategyAddress: '0xf64674cfc6597d597275144a1a746dad564b0fcd',
+      strategyAddress: "0xf64674cfc6597d597275144a1a746dad564b0fcd",
       strategyABI: abi.yearnTUSDABIContract,
       contractType: "yearn",
       tokenId: "true-usd",
@@ -136,6 +136,22 @@ const testContracts = {
       strategyABI: abi.compoundStrategyContract,
       contractType: "compound",
       tokenId: "dai",
+    },
+  },
+  vipDVG: {
+    xDVG: {
+      address: "0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424",
+      abi: abi.xDVGABIContract,
+      contractType: "vipDVG",
+      tokenId: "xDVG",
+    },
+  },
+  DVG: {
+    DVG: {
+      address: "0xea9726eFc9831EF0499fD4Db4Ab143F15a797673",
+      abi: abi.DVGABIContract,
+      contractType: "DVG",
+      tokenId: "DVG",
     },
   },
 };
@@ -247,6 +263,22 @@ const mainContracts = {
     cDAI: {
       address: "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643",
       abi: abi.cDAIContract,
+    },
+  },
+  vipDVG: {
+    xDVG: {
+      address: "", // TODO: Update mainnet address
+      abi: abi.xDVGABIContract,
+      contractType: "vipDVG",
+      tokenId: "xDVG",
+    },
+  },
+  DVG: {
+    DVG: {
+      address: "", // TODO: Update mainnet address
+      abi: abi.xDVGABIContract,
+      contractType: "vipDVG",
+      tokenId: "xDVG",
     },
   },
 };
