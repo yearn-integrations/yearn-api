@@ -1,0 +1,196 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "DAOventures API",
+        "description": "DAOventures API documentation"
+    },
+    "basePath": "/api/",
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/vaults/apy": {
+            "get": {
+                "tags": [
+                    "Vaults"
+                ],
+                "description": "Vault Information with APY",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {}
+            }
+        },
+        "/user/{userAddress}/vaults/statistics": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Transaction information of the user and vaults",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userAddress",
+                        "in": "path",
+                        "description": "User Wallet Address (Lower Case)",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/{userAddress}/vaults/transactions": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Transaction history of the user",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userAddress",
+                        "in": "path",
+                        "description": "User Wallet Address (Lower Case)",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/vaults/price/{farmer}/{days}": {
+            "get": {
+                "tags": [
+                    "Vaults"
+                ],
+                "description": "Price history of the vault",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "farmer",
+                        "in": "path",
+                        "description": "Vault ID with '_price'",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "days",
+                        "in": "path",
+                        "description": "Number of days. Only available for '30d', '7d', '1d'.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/vaults/historical-apy/{contractAddress}/{days}": {
+            "get": {
+                "tags": [
+                    "Vaults"
+                ],
+                "description": "APY history of the vaults",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "contractAddress",
+                        "in": "path",
+                        "description": "Vault Address",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "days",
+                        "in": "path",
+                        "description": "Number of days. Only available for '30d', '7d', '1d'.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/vaults/tvl/{farmer}": {
+            "get": {
+                "tags": [
+                    "Vaults"
+                ],
+                "description": "TVL of the vault",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "farmer",
+                        "in": "path",
+                        "description": "Vault ID",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/vaults/tvl/total": {
+            "get": {
+                "tags": [
+                    "Vaults"
+                ],
+                "description": "Total TVL of all the existing vaults",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {}
+            }
+        },
+        "/vaults/category": {
+            "get": {
+                "tags": [
+                    "Vaults"
+                ],
+                "description": "Get All Vault Categories",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {}
+            }
+        },
+        "/staking/get-vip-tokens": {
+            "get": {
+                "tags": [
+                    "Stake"
+                ],
+                "description": "vipDVG Token Information",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {}
+            }
+        },
+        "/staking/get-pools": {
+            "get": {
+                "tags": [
+                    "Stake"
+                ],
+                "description": "Stake Pools Information",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {}
+            }
+        }
+    }
+}

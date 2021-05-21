@@ -93,9 +93,14 @@ const getPricePerFullShare = async (
   if (contractDidntExist) {
     return 0;
   }
-  const pricePerFullShare = await vaultContract.methods
+
+  let pricePerFullShare = 0;
+  try {
+    pricePerFullShare = await vaultContract.methods
     .getPricePerFullShare()
     .call(undefined, block);
+  } catch (ex) {}
+  
   await delay(delayTime);
   return pricePerFullShare;
 };
@@ -107,7 +112,6 @@ const getApyForVault = async (vault) => {
     vaultContractAddress: address,
     symbol,
   } = vault;
-
   // Compound Vault
   if (vault.isCompound) {
     let cToken;
@@ -145,13 +149,13 @@ const getApyForVault = async (vault) => {
       inceptionBlockNbr,
       inceptionBlockNbr
     );
-  
+      
     const pricePerFullShareCurrent = await getPricePerFullShare(
       vaultContract,
       currentBlockNbr,
       inceptionBlockNbr
     );
-  
+
     const pricePerFullShareOneDayAgo = await getPricePerFullShare(
       vaultContract,
       oneDayAgoBlock,

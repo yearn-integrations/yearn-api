@@ -86,7 +86,6 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   }
 
   let depositedAmount = new BigNumber(0);
-
   if (type === 'yearn') {
     const earnDepositAmount = await strategyContract.methods.getEarnDepositBalance(userAddress).call();
     const vaultDepositAmount = await strategyContract.methods.getVaultDepositBalance(userAddress).call();

@@ -93,10 +93,12 @@ const getPricePerFullShare = async (
   if (contractDidntExist) {
     return 0;
   }
-  console.log('block', block);
-  const pricePerFullShare = await vaultContract.methods
+  let pricePerFullShare = 0;
+  try {
+    pricePerFullShare = await vaultContract.methods
     .getPricePerFullShare()
     .call(undefined, block);
+  } catch (ex) {}
   await delay(delayTime);
   return pricePerFullShare;
 };
@@ -146,39 +148,33 @@ const getApyForVault = async (vault) => {
       inceptionBlockNbr,
       inceptionBlockNbr
     );
-    console.log('pricePerFullShareInception', pricePerFullShareInception);
 
     const pricePerFullShareCurrent = await getPricePerFullShare(
       vaultContract,
       currentBlockNbr,
       inceptionBlockNbr
     );
-    console.log('pricePerFullShareCurrent', pricePerFullShareCurrent);
   
     const pricePerFullShareOneDayAgo = await getPricePerFullShare(
       vaultContract,
       oneDayAgoBlock,
       inceptionBlockNbr
     );
-    console.log('pricePerFullShareOneDayAgo', pricePerFullShareOneDayAgo);
     const pricePerFullShareThreeDaysAgo = await getPricePerFullShare(
       vaultContract,
       threeDaysAgoBlock,
       inceptionBlockNbr
     );
-    console.log('pricePerFullShareThreeDaysAgo', pricePerFullShareThreeDaysAgo);
     const pricePerFullShareOneWeekAgo = await getPricePerFullShare(
       vaultContract,
       oneWeekAgoBlock,
       inceptionBlockNbr
     );
-    console.log('pricePerFullShareOneWeekAgo', pricePerFullShareOneWeekAgo);
     const pricePerFullShareOneMonthAgo = await getPricePerFullShare(
       vaultContract,
       oneMonthAgoBlock,
       inceptionBlockNbr
     );
-    console.log('pricePerFullShareOneMonthAgo', pricePerFullShareOneMonthAgo);
     const apyInceptionSample = getApy(
       pricePerFullShareInception,
       pricePerFullShareCurrent,
@@ -331,7 +327,7 @@ const saveAndReadVault = async (vault) => {
   }
   const apy = await getApyForVault(vault);
   var aprs = 0;
-  if (!vault.isCompound && !vault.isHarvest) {
+  if (!vault.isCompound && !vault.isHarvest && process.env.PRODUCTION != '') {
     try {
       const aprContract = new infuraWeb3.eth.Contract(aggregatedContractABI, aggregatedContractAddress);
       var call = 'getAPROptions';//+asset.symbol
