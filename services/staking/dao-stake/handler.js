@@ -213,8 +213,8 @@ module.exports.getDaoStake = async(req, res) => {
 
             const pool = await poolCalculation(daoStake, poolInfo, tokensPrice);
            
-            delete pools[index].strategy_address;
-            delete pools[index]._id;
+            delete pool.strategy_address;
+            delete pool._id;
 
             result.push(pool);
         }
