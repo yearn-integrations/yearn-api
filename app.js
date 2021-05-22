@@ -66,7 +66,7 @@ async function init() {
   app.get("/staking/get-pools", (req, res) =>
     stakePool.getPools(req, res)
   );
-  app.get("/staking/get-xdvg-stake/:amount", (req, res) => stakeXDvg.getxDVGStake(req, res));
+  app.get("/staking/get-xdvg-stake", (req, res) => stakeXDvg.getxDVGStake(req, res));
 
   app.get("/staking/get-dao-stakes", (req, res) => stakeDaoStakes.getDaoStake(req, res));
 

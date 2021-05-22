@@ -192,7 +192,7 @@
                 "responses": {}
             }
         },
-        "/staking/get-xdvg-stake/{amount}" :{
+        "/staking/get-xdvg-stake" :{
             "get": {
                 "tags": [
                     "Stake"
@@ -200,15 +200,6 @@
                 "description": "Get xDVG stake",
                 "produces": [
                     "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "amount",
-                        "in": "path",
-                        "description": "xDVG amount",
-                        "required": true,
-                        "type": "string"
-                    }
                 ],
                 "responses": {}
             }
