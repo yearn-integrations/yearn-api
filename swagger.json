@@ -212,6 +212,18 @@
                 ],
                 "responses": {}
             }
+        },
+        "/staking/get-dao-stakes" :{
+            "get": {
+                "tags": [
+                    "Stake"
+                ],
+                "description": "Get DAOstake",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {}
+            }
         }
     }
 }

@@ -146,7 +146,13 @@ const testContracts = {
     address: "0xea9726eFc9831EF0499fD4Db4Ab143F15a797673",
     abi: abi.dvgContract,
     tokenId: "daoventures"
-  }
+  },
+  daoStake: {
+    address: "0x949798E1DC431338948653e1274E30C33Db42Ad8",
+    abi: abi.daoStakeContract,
+    startBlock: 24824850,
+    poolPercent: 0.51
+  },
 };
 
 const mainContracts = {
