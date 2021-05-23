@@ -78,8 +78,7 @@ const fetchContractABI = async (address) => {
 // DAOstake totalPoolWeight()
 const getDaoStakeTotalPoolWeight = async (daoStakeContract) => {
     try {
-        let totalPoolWeight = await daoStakeContract.methods.totalPoolWeight().call();
-        totalPoolWeight = totalPoolWeight / (10 ** 15);
+        const totalPoolWeight = await daoStakeContract.methods.totalPoolWeight().call();
         return totalPoolWeight;
     } catch (err) {
         console.log("Error in getDaoStakeTotalPoolWeight(): ", err);
@@ -89,7 +88,9 @@ const getDaoStakeTotalPoolWeight = async (daoStakeContract) => {
 // Get token balanceOf(DAOstake)  
 const getLPTokenBalanceOfDAOStake = async (contract, daoStakeAddress) => {
     try { 
-        const lpTokenBalOfDaoStake = await contract.methods.balanceOf(daoStakeAddress).call();
+        const decimals = await contract.methods.decimals().call();
+        let lpTokenBalOfDaoStake = await contract.methods.balanceOf(daoStakeAddress).call();
+        lpTokenBalOfDaoStake = lpTokenBalOfDaoStake * ( 10 ** decimals);
         return lpTokenBalOfDaoStake;
     } catch (err) {
         console.log("Error in getLPTokenBalanceOfDAOStake(): ", err);
@@ -117,18 +118,10 @@ const getPoolFromDaoStake = async(pid, daoStakeContract) => {
     }
 }
 
-// getTotalSupply() from token contract
-const getTokenTotalSupply = async (contract) => {
-    try {
-        const totalSupply = await contract.methods.totalSupply().call();
-        return totalSupply;
-    } catch (err) {
-        console.log("Error in getTokenTotalSupply(): ", err);
-    }
-}
-
 // Calculate APR and TVL for pool
 const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
+    let apr = 0;
+
     // Extract data from daoStake param
     const { startBlock, poolPercent, totalPoolWeight , daoStakeContract } = daoStake;
 
@@ -144,22 +137,29 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
 
     // Pass in pool's contract, DAOstake address get balanceOf() in pool's contract
     const tokenBalOfDAOStake = await getLPTokenBalanceOfDAOStake(poolContract, daoStakeContract._address);
-
+    
     // Pass in start block, last reward block to invoke getMultiplier() in DAOstake contract
     const multiplier = await getMultiplier(startBlock,lastRewardBlock, daoStakeContract);
-    
+   
     // Find pool token price
     const poolTokenPrice = tokens.find(t => t.name === pool.name).price;
+
+    console.log("pid: " + pool.pid);
+    console.log("multiplier: " + multiplier);
+    console.log("pool percent: " + poolPercent);
+    console.log("dvg price: " + dvgPrice);
+    console.log("pool weight: " + poolWeight);
+    console.log("total pool weight: "+ totalPoolWeight);
+    console.log("token bal of dao stake" + tokenBalOfDAOStake);
+    console.log("pool token price" + poolTokenPrice);
    
     // APR Calculation
-    const apr = (multiplier * poolPercent * dvgPrice * (poolWeight / (10 ** 15))) / 
+    apr = (multiplier * poolPercent * dvgPrice * poolWeight) / 
                     (totalPoolWeight * tokenBalOfDAOStake * poolTokenPrice);
-    console.log("apr for " + pool.pid + ": " + apr);                
-  
+
     // TVL Calculation
-    const totalSupply = await getTokenTotalSupply(poolContract);
-    const tvl = totalSupply * poolTokenPrice;
-    console.log("tvl for " + pool.pid + ": " + tvl);
+    const tvl = tokenBalOfDAOStake * poolTokenPrice;
+    console.log("apr: "+ apr + ", tvl: " + tvl);
 
     Object.assign(pool, { apr, tvl });
 
