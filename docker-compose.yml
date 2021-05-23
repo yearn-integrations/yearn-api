@@ -1,22 +1,22 @@
-version: '3.6'
+version: "3.6"
 services:
   database:
     image: mongo
-    container_name: 'database'
+    container_name: "database"
     command: [--auth]
     restart: always
-    ports: 
-      - '27017:27017'
-    volumes: 
-      - 'mongodata:/data/db'
-    networks: 
+    ports:
+      - "27017:27017"
+    volumes:
+      - "mongodata:/data/db"
+    networks:
       - backend
   api:
-    container_name: 'api'
+    container_name: "api"
     restart: always
     build:
       context: .
-    env_file: 
+    env_file:
       - .env
     ports:
       - "8080:8080"
@@ -25,10 +25,10 @@ services:
       - "./services:/api/services:ro"
       - "./utils:/api/utils:ro"
       - "./models:/api/models:ro"
-    networks: 
+    networks:
       - backend
-volumes: 
+volumes:
   mongodata:
-networks: 
-  backend: 
+networks:
+  backend:
     driver: bridge

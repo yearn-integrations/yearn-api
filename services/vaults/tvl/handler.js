@@ -6,14 +6,10 @@ const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
 const web3Url = process.env.WEB3_ENDPOINT;
-const infuraMainnetUrl =
-  `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`;
-const infuraKovanUrl =
-  `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`;
-const infuraRinkebyUrl =
-  `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`;
-const infuraRopstenUrl =
-  `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`;
+const infuraMainnetUrl = `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`;
+const infuraKovanUrl = `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`;
+const infuraRinkebyUrl = `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`;
+const infuraRopstenUrl = `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`;
 const archiveNodeWeb3 = new Web3(archiveNodeUrl);
 
 const infuraWeb3 = new Web3(web3Url);
@@ -25,6 +21,7 @@ const {
   testContracts,
   mainContracts,
 } = require("../../../config/serverless/domain");
+const e = require("cors");
 
 const getDecimals = async (contract) => {
   try {
@@ -49,9 +46,38 @@ const getPoolAmount = async (contract) => {
   }
 };
 
-const getContract = (vault) => {
+const getBalance = async (contract, address) => {
+  try {
+    let balanceOf = await contract.methods.balanceOf(address).call();
+    return balanceOf;
+  } catch (err) {
+    // Catch error
+    console.log(err);
+  }
+};
+
+const getTotalSupply = async (contract) => {
+  try {
+    let totalSupply = await contract.methods.totalSupply().call();
+    return totalSupply;
+  } catch (err) {
+    // Catch error
+    console.log(err);
+  }
+};
+
+const getContract = async (vault) => {
   const { strategyABI, strategyAddress } = vault;
-  const contract = new archiveNodeWeb3.eth.Contract(strategyABI, strategyAddress);
+  const contract = new archiveNodeWeb3.eth.Contract(
+    strategyABI,
+    strategyAddress
+  );
+  return contract;
+};
+
+const getTokenContract = async (vault) => {
+  const { abi, address } = vault;
+  const contract = new archiveNodeWeb3.eth.Contract(abi, address);
   return contract;
 };
 
@@ -66,12 +92,36 @@ const getTokenPrice = async (coingecko_token_id) => {
       ids: coingecko_token_id,
       vs_currencies: ["usd"],
     });
+    if (Object.keys(data.data).length != 0) {
+      return data.data[coingecko_token_id]["usd"];
+    } else {
+      return 1;
+    }
   } catch (err) {
-    // Catch error
+    // Catch error, Default Value = 1
     console.log(err);
   }
+};
 
-  return data.data[coingecko_token_id]["usd"];
+const getxDVGPrice = async () => {
+  // TODO: Apply xDVG Price formula
+  // xDVG price = DVG amount of xDVG SC * DVG price / xDVG amount
+  const contracts =
+    process.env.PRODUCTION != null && process.env.PRODUCTION != ""
+      ? mainContracts
+      : testContracts;
+
+  const DVGcontract = await getTokenContract(contracts.DVG.DVG);
+  const xDVGcontract = await getTokenContract(contracts.vipDVG.xDVG);
+  const amountDVG = await getBalance(
+    DVGcontract,
+    contracts.vipDVG.xDVG.address
+  );
+  const amountxDVG = await getTotalSupply(xDVGcontract);
+  const priceDVG = await getTokenPrice(contracts.DVG.DVG.tokenId);
+
+  const pricexDVG = amountxDVG == 0 ? 1 : (amountDVG * priceDVG) / amountxDVG;
+  return pricexDVG;
 };
 
 /**
@@ -81,7 +131,7 @@ const getTokenPrice = async (coingecko_token_id) => {
 const getTVL = async (vault) => {
   const { tokenId } = vault;
   let tvl;
-  const contract = getContract(vault);
+  const contract = await getContract(vault);
   const poolAmount = await getPoolAmount(contract);
   const decimals = await getDecimals(contract);
   const tokenPrice = await getTokenPrice(tokenId);
@@ -90,29 +140,49 @@ const getTVL = async (vault) => {
   return tvl;
 };
 
+/**
+ * Get TVL of xDVG.
+ * TVL = totalSupply * xDVG Price
+ */
+const getTVLxDVG = async (vault) => {
+  const { tokenId } = vault;
+  let tvl;
+  const contract = await getTokenContract(vault);
+  const totalSupply = await getTotalSupply(contract);
+  const decimals = await getDecimals(contract);
+  const tokenPrice = await getxDVGPrice(tokenId); // Not implemented yet
+
+  tvl = (totalSupply / 10 ** decimals) * tokenPrice;
+  return tvl;
+};
+
 // Get and Save all TVL of all Vaults
-const getAllTVL = await = async () => {
+const getAllTVL = async () => {
   let vaults =
     process.env.PRODUCTION != null && process.env.PRODUCTION != ""
       ? mainContracts
-      : testContracts; 
+      : testContracts;
 
   let tvls = Array();
   for (vault in vaults.farmer) {
     let _vault = vaults.farmer[vault];
     let tvl = await getTVL(_vault);
     tvls.push(tvl);
-
     await saveTVL(vault, tvl);
   }
+
+  let _vault = vaults.vipDVG.xDVG;
+  let tvl = await getTVLxDVG(_vault);
+  tvls.push(tvl);
+  await saveTVL("xDVG", tvl);
 
   return tvls;
 };
 
 // Get Total TVL
 const getTotalTVL = async (tvls) => {
-  let totalTVL
-  try{
+  let totalTVL;
+  try {
     totalTVL = _.sum(tvls);
   } catch (err) {
     // Catch error
@@ -141,9 +211,9 @@ const saveTVL = async (name, tvl) => {
 
 const getVaults = () => {
   return process.env.PRODUCTION != null && process.env.PRODUCTION != ""
-  ? mainContracts
-  : testContracts;
-}
+    ? mainContracts
+    : testContracts;
+};
 
 // Save All TVLs to database
 module.exports.saveAllTVLhandler = async () => {
@@ -155,7 +225,7 @@ module.exports.saveAllTVLhandler = async () => {
 // Read from DB
 module.exports.getTotalTVLhandle = async () => {
   // Get and save all TVL
-  const totalTvl = await db.getTotalTVL({limit: 1})
+  const totalTvl = await db.getTotalTVL({ limit: 1 });
 
   res.status(200).json({
     message: "Total TVL",
@@ -174,7 +244,7 @@ module.exports.getTVLhandle = async (req, res) => {
     });
   }
 
-  const result = await db.getTVL(req.params.farmer + "_tvl", {limit: 1});
+  const result = await db.getTVL(req.params.farmer + "_tvl", { limit: 1 });
   if (result) {
     res.status(200).json({
       message: `TVL for ${req.params.farmer}`,
