@@ -92,13 +92,9 @@ const getTokenPrice = async (coingecko_token_id) => {
       ids: coingecko_token_id,
       vs_currencies: ["usd"],
     });
-    console.log(data);
-    console.log(Object.keys(data.data).length);
     if (Object.keys(data.data).length != 0) {
-      console.log("Data", coingecko_token_id);
       return data.data[coingecko_token_id]["usd"];
     } else {
-      console.log("No Data from CoinGecko for", coingecko_token_id);
       return 1;
     }
   } catch (err) {
@@ -125,7 +121,6 @@ const getxDVGPrice = async () => {
   const priceDVG = await getTokenPrice(contracts.DVG.DVG.tokenId);
 
   const pricexDVG = amountxDVG == 0 ? 1 : (amountDVG * priceDVG) / amountxDVG;
-  console.log("Price of xDVG", pricexDVG);
   return pricexDVG;
 };
 
@@ -158,7 +153,6 @@ const getTVLxDVG = async (vault) => {
   const tokenPrice = await getxDVGPrice(tokenId); // Not implemented yet
 
   tvl = (totalSupply / 10 ** decimals) * tokenPrice;
-  console.log("TVL xDVG", tvl);
   return tvl;
 };
 
@@ -213,7 +207,6 @@ const saveTVL = async (name, tvl) => {
       tvl: tvl,
     })
     .catch((err) => console.log("err", err));
-  console.log("saved xdvg tvl", tvl);
 };
 
 const getVaults = () => {
