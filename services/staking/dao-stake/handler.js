@@ -195,7 +195,6 @@ module.exports.getDaoStake = async(req, res) => {
         const poolAbiContractMap = new Map();
         Object.values(contracts.farmer).map(v => {
             poolAbiContractMap.set(v.address, v.abi);
-            return v.address;
         });
 
        
