@@ -195,28 +195,31 @@ module.exports.getDaoStake = async(req, res) => {
         const poolAbiContractMap = new Map();
         Object.values(contracts.farmer).map(v => {
             poolAbiContractMap.set(v.address, v.abi);
+            return v.address;
         });
+
        
         for (index = 0 ; index < poolSize; index ++) {
-            // Fetch abi of pool contract
-            const poolContractInfo = { 
-                address: pools[index].contract_address, 
-                abi: poolAbiContractMap.get(pools[index].contract_address)
-            };
+            if(poolAbiContractMap.has(pools[index].contract_address) && pools[index].status == 'A') {
+                // Fetch abi of pool contract
+                const poolContractInfo = { 
+                    address: pools[index].contract_address, 
+                    abi: poolAbiContractMap.get(pools[index].contract_address)
+                };
 
-            // Get pool contract
-            const poolContract = await getContract(poolContractInfo);
-            let poolInfo = {
-                pool: pools[index],
-                poolContract, 
+                // Get pool contract
+                const poolContract = await getContract(poolContractInfo);
+                let poolInfo = {
+                    pool: pools[index],
+                    poolContract, 
+                }
+
+                const pool = await poolCalculation(daoStake, poolInfo, tokensPrice);
+            
+                delete pool._id;
+
+                result.push(pool);
             }
-
-            const pool = await poolCalculation(daoStake, poolInfo, tokensPrice);
-           
-            delete pool.strategy_address;
-            delete pool._id;
-
-            result.push(pool);
         }
 
         res.status(200).json({
