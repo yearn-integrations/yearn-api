@@ -69,8 +69,6 @@ async function init() {
   );
   app.get("/staking/get-xdvg-stake", (req, res) => stakeXDvg.getxDVGStake(req, res));
 
-  app.get("/staking/get-dao-stakes", (req, res) => stakeDaoStakes.getStakePools(req, res));
-
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   app.listen(port, () => console.log(`Listening on ${port}`));

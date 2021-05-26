@@ -81,5 +81,21 @@ db.stake_pool.insertMany([
         pid: '6',
         category: 'basic',
         tokenId: 'dai'
+    },
+    {
+        name: 'xDVG',
+        contract_address: '0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424',
+        status: 'A',
+        pid: '7',
+        category: 'basic',
+        tokenId: 'xDVG'
+    },
+    {
+        name: 'ETH<->DVG',
+        contract_address: '0x0A15e37442e2a41A3A51A9Eff7fE1DCE0E96f0bB',
+        status: 'A',
+        pid: '7',
+        category: 'basic',
+        tokenId: 'ethDVG'
     }
 ]);

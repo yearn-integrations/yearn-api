@@ -15,6 +15,31 @@ const archiveNodeWeb3 = new Web3(archiveNodeUrl);
 const delayTime = 500;
 let contracts = [];
 
+// xDVGPrice Formula :  xDVG price = ( DVG amount of xDVG SC * DVG price) / xDVG amount
+const getxDVGPrice = async (xDVGAmount, dvgBalanceOfxDVG, dvgPrice) => {
+    return (dvgBalanceOfxDVG * dvgPrice) / xDVGAmount;
+}
+
+// Get vipDVG's total supply
+const getxDVGTotalSupply = async(xDVGContract) => {
+    try {
+        const xDVGTotalSupply = await xDVGContract.methods.totalSupply().call();
+        return xDVGTotalSupply;
+    } catch(err) {
+        console.log("Error in getxDVGTotalSupply(): ", err);
+    }
+}
+
+// DVG's balance of vipDVG contract
+const getDVGBalanceOfxDVG = async(dvgContract, xDVGAddress) => {
+    try {
+        const dvgBalanceOfVipDVG = await dvgContract.methods.balanceOf(xDVGAddress).call();
+        return dvgBalanceOfVipDVG;
+    } catch (err) {
+        console.log("Error in getDVGBalanceOfxDVG(): ", err)
+    }
+}
+
 // Get token price
 const getTokenPrice = async () => {
     const tokens = [
@@ -22,7 +47,8 @@ const getTokenPrice = async () => {
         { tokenId: "usd-coin", price: 0.00 },
         { tokenId: "dai", price: 0.00 },
         { tokenId: "true-usd", price: 0.00 },
-        { tokenId: "daoventures", price: 0.00 }
+        { tokenId: "daoventures", price: 0.00 },
+        { tokenId: "ethereum", price: 0.00 },
     ];
 
     const tokenIds = tokens.map(t => t.tokenId);
@@ -42,6 +68,32 @@ const getTokenPrice = async () => {
             })
         }
 
+        /**** DAOvip ***/ 
+        // Get vipDVG contract
+        const xDVGContractInfo = getContractInfo("vipDVG");
+        const xDVGContract = await getContract(xDVGContractInfo);
+
+        // Get DVG contract
+        const dvgContractInfo = getContractInfo("DVG");
+        const dvgContract = await getContract(dvgContractInfo);
+
+        const xDVGTotalSupply = await getxDVGTotalSupply(xDVGContract);
+        const dvgBalOfxDVG = await getDVGBalanceOfxDVG(dvgContract, xDVGContract._address);
+        const xDVGPrice = await getxDVGPrice(xDVGTotalSupply, dvgBalOfxDVG, tokens.find(t => t.tokenId === 'daoventures').price);
+        tokens.push({
+            tokenId: 'xDVG',
+            price: xDVGPrice,
+        });
+
+        /** Uniswap ETH<->DVG LP **/
+        const ethDVGPoolInfo = getContractInfo("uniswap").ethDVG;
+        const ethDVGPoolContract = await getContract(ethDVGPoolInfo);
+        const ethDVGPoolPrice = await getUniswapLPTokenPrice(ethDVGPoolContract, ethDVGPoolInfo.address, tokens, 'ethereum', 'daoventures');
+        tokens.push({
+            tokenId: 'ethDVG',
+            price: ethDVGPoolPrice,
+        });
+
         return tokens;
     } catch (err) {
         console.log("Error in getTokenPrice(): ", err);
@@ -59,20 +111,6 @@ const getContract = async (contractInfo) => {
     const { abi, address } = contractInfo;
     const contract = new archiveNodeWeb3.eth.Contract(abi, address);
     return contract;
-}
-
-const fetchContractABI = async (address) => {
-    let network = '';
-
-    if (process.env.PRODUCTION == null || process.env.PRODUCTION == "") {
-        network = '-kovan';
-    }
-    const url = `https://api${network}.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${process.env.ETHERSCAN_API_KEY}`;
-    const resp = await fetch(url).then((res) => res.json());
-    const metadata = resp.result;
-
-    await delay(delayTime);
-    return metadata;
 }
 
 // DAOstake totalPoolWeight()
@@ -118,6 +156,46 @@ const getPoolFromDaoStake = async(pid, daoStakeContract) => {
     }
 }
 
+const fetchContractABI = async (address) => {
+    let network = '';
+    if (process.env.PRODUCTION == null || process.env.PRODUCTION == "") {
+        network = '-kovan';
+    }
+	const url = `https://api${network}.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${process.env.ETHERSCAN_API_KEY}`;
+	const resp = await fetch(url).then((res) => res.json());
+	const metadata = resp.result;
+	await delay(delayTime);
+	return metadata;
+};
+
+const getUniswapLPTokenPrice = async (poolContract, poolAddress, tokenPrices, token0Id, token1Id) => {
+    const token0Address = await poolContract.methods.token0().call();
+    const token1Address = await poolContract.methods.token1().call();
+    const totalSupply = await poolContract.methods.totalSupply().call();
+
+    const token0Abi = await fetchContractABI(token0Address);
+    const token1Abi = await fetchContractABI(token1Address);
+
+    const token0 = await getContract({
+        address: token0Address,
+        abi: JSON.parse(token0Abi),
+    });
+
+    const token1 = await getContract({
+        address: token1Address,
+        abi: JSON.parse(token1Abi),
+    });
+
+    // Balance of Both pairs
+    const token0Bal = await token0.methods.balanceOf(poolAddress).call();
+    const token1Bal = await token1.methods.balanceOf(poolAddress).call();
+    const token0Price = tokenPrices.find(t => t.tokenId === token0Id).price;
+    const token1Price = tokenPrices.find(t => t.tokenId === token1Id).price;
+    const pool = token0Bal * token0Price + token1Bal * token1Price;
+    const price = pool / totalSupply;
+    return price;
+}
+
 // Calculate APR and TVL for pool
 const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
     let apr = 0;
@@ -143,15 +221,6 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
    
     // Find pool token price
     const poolTokenPrice = tokens.find(t => t.tokenId === pool.tokenId).price;
-
-    console.log("pid: " + pool.pid);
-    console.log("multiplier: " + multiplier);
-    console.log("pool percent: " + poolPercent);
-    console.log("dvg price: " + dvgPrice);
-    console.log("pool weight: " + poolWeight);
-    console.log("total pool weight: "+ totalPoolWeight);
-    console.log("token bal of dao stake: " + tokenBalOfDAOStake);
-    console.log("pool token price: " + poolTokenPrice);
    
     // APR Calculation
     apr = (multiplier * poolPercent * dvgPrice * (poolWeight / 100)) / 
@@ -159,14 +228,13 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
 
     // TVL Calculation
     const tvl = tokenBalOfDAOStake * poolTokenPrice;
-    console.log("apr: "+ apr + ", tvl: " + tvl);
 
     Object.assign(pool, { apr: apr === Infinity ? 0 : apr, tvl });
 
     return pool;
 }
 
-module.exports.saveStakedPools = async() => {
+module.exports.saveStakedPools = async () => {
     try {
         // Find price for each token
         const tokens = await getTokenPrice();
@@ -195,6 +263,11 @@ module.exports.saveStakedPools = async() => {
             poolAbiContractMap.set(v.address, v.abi);
         });
 
+        // DAOvip
+        poolAbiContractMap.set(contracts.vipDVG.address, contracts.vipDVG.abi);
+
+        // Uniswap ETH <-> DVG Pool 
+        poolAbiContractMap.set(contracts.uniswap.ethDVG.address, contracts.uniswap.ethDVG.abi)
        
         for (index = 0 ; index < poolSize; index ++) {
             if(poolAbiContractMap.has(pools[index].contract_address) && pools[index].status == 'A') {
@@ -219,33 +292,6 @@ module.exports.saveStakedPools = async() => {
         }
     } catch (err) {
         console.error(err);
-    }
-    return;
-}
-
-module.exports.getStakePools = async (req, res) => {
-    try {
-        const pools = await db.findAll();
-        const result = [];
-
-        pools
-        .filter((pool) => pool.status === 'A')
-        .forEach((pool) => {
-            delete pool._id;
-            result.push(pool);
-        });
-        
-        res.status(200).json({
-            message: "Successful response",
-            body:  {
-                pools: result
-            }
-        });
-    } catch (err) {
-        res.status(200).json({
-            message: err.messge,
-            body: null
-        });
     }
     return;
 }

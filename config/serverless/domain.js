@@ -28,7 +28,6 @@ module.exports.dev = () => {
     domainName: `dev-${DEFAULT.domainName}`,
   });
 };
-// yearn = rinkeby
 const testContracts = {
   earn: {
     yUSDT: {
@@ -154,6 +153,12 @@ const testContracts = {
     startBlock: 25055584,
     poolPercent: 0.51
   },
+  uniswap: {
+    ethDVG: {
+      address: "0x0A15e37442e2a41A3A51A9Eff7fE1DCE0E96f0bB",
+      abi: abi.uniswapPairABIContract,
+    }
+  }
 };
 
 const mainContracts = {
@@ -273,14 +278,20 @@ const mainContracts = {
   DVG: {
     address: "", // TODO: Update mainnet address
     abi: abi.xDVGABIContract,
-    tokenId: "xDVG",
+    tokenId: "DVG",
   },
   daoStake: {
-    address: "", // Upadte mainnet address
+    address: "", // Update mainnet address
     abi: abi.daoStakeContract,
     startBlock: 25055584, // Update mainnet block
     poolPercent: 0.51
   },
+  uniswap: {
+    ethDVG: {
+      address: "", // Update mainnet address
+      abi: abi.uniswapPairABIContract,
+    }
+  }
 };
 
 const devEarnContract = "0xdb12e805d004698fc58f6e4fbdd876268df2dffe";

@@ -48,6 +48,7 @@ module.exports.getPools = async (req, res) => {
         const poolSize = _.size(pools);
         for (idx = 0; idx < poolSize; idx++) {
             if (pools[idx].status === 'A') {
+                delete pools[idx]._id;
                 pls.push(pools[idx]);
             }
         }
