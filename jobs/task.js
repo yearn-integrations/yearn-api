@@ -4,6 +4,7 @@ const vaultHandlerSave = require("../services/vaults/apy/save/handler");
 const vaultSave = require("../services/vaults/save/handler");
 const priceSave = require("../services/vaults/price/handler");
 const tvlSave = require("../services/vaults/tvl/handler");
+const stakeSave = require("../services/staking/dao-stake/handler");
 
 /** Save Vault **/
 const saveVault = async () => {
@@ -82,10 +83,26 @@ const saveHistoricalTVL = async () => {
   );
 };
 
+/** Store Historical Stake Pools */
+const saveHistoricalPools = async () => {
+  await stakeSave.saveStakedPools();
+  cron.schedule(
+    "*/5 * * * *",
+    async () => {
+      console.log("[saveStakedPools]", new Date().getTime());
+      await stakeSave.saveStakedPools();
+    },
+    {
+      scheduled: true,
+    }
+  );
+};
+
 module.exports = {
   saveHistoricalTVL,
   saveVaultAPY,
   saveVault,
   savePricePerFullShare,
   saveHistoricalAPY,
+  saveHistoricalPools,
 };

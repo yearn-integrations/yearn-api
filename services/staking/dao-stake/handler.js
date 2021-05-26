@@ -18,11 +18,11 @@ let contracts = [];
 // Get token price
 const getTokenPrice = async () => {
     const tokens = [
-        { name: "USDT", tokenId: "tether", price: 0.00,  },
-        { name: "USDC", tokenId: "usd-coin", price: 0.00 },
-        { name: "DAI", tokenId: "dai", price: 0.00 },
-        { name: "TUSD", tokenId: "true-usd", price: 0.00 },
-        { name: "DVG", tokenId: "daoventures", price: 0.00 }
+        { tokenId: "tether", price: 0.00,  },
+        { tokenId: "usd-coin", price: 0.00 },
+        { tokenId: "dai", price: 0.00 },
+        { tokenId: "true-usd", price: 0.00 },
+        { tokenId: "daoventures", price: 0.00 }
     ];
 
     const tokenIds = tokens.map(t => t.tokenId);
@@ -90,7 +90,7 @@ const getLPTokenBalanceOfDAOStake = async (contract, daoStakeAddress) => {
     try { 
         const decimals = await contract.methods.decimals().call();
         let lpTokenBalOfDaoStake = await contract.methods.balanceOf(daoStakeAddress).call();
-        lpTokenBalOfDaoStake = lpTokenBalOfDaoStake * ( 10 ** decimals);
+        lpTokenBalOfDaoStake = lpTokenBalOfDaoStake / ( 10 ** decimals);
         return lpTokenBalOfDaoStake;
     } catch (err) {
         console.log("Error in getLPTokenBalanceOfDAOStake(): ", err);
@@ -142,7 +142,7 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
     const multiplier = await getMultiplier(startBlock,lastRewardBlock, daoStakeContract);
    
     // Find pool token price
-    const poolTokenPrice = tokens.find(t => t.name === pool.name).price;
+    const poolTokenPrice = tokens.find(t => t.tokenId === pool.tokenId).price;
 
     console.log("pid: " + pool.pid);
     console.log("multiplier: " + multiplier);
@@ -150,30 +150,28 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
     console.log("dvg price: " + dvgPrice);
     console.log("pool weight: " + poolWeight);
     console.log("total pool weight: "+ totalPoolWeight);
-    console.log("token bal of dao stake" + tokenBalOfDAOStake);
-    console.log("pool token price" + poolTokenPrice);
+    console.log("token bal of dao stake: " + tokenBalOfDAOStake);
+    console.log("pool token price: " + poolTokenPrice);
    
     // APR Calculation
-    apr = (multiplier * poolPercent * dvgPrice * poolWeight) / 
-                    (totalPoolWeight * tokenBalOfDAOStake * poolTokenPrice);
+    apr = (multiplier * poolPercent * dvgPrice * (poolWeight / 100)) / 
+                    ((totalPoolWeight / 100) * tokenBalOfDAOStake * poolTokenPrice);
 
     // TVL Calculation
     const tvl = tokenBalOfDAOStake * poolTokenPrice;
     console.log("apr: "+ apr + ", tvl: " + tvl);
 
-    Object.assign(pool, { apr, tvl });
+    Object.assign(pool, { apr: apr === Infinity ? 0 : apr, tvl });
 
     return pool;
 }
 
-module.exports.getDaoStake = async(req, res) => {
+module.exports.saveStakedPools = async() => {
     try {
-        const result = [];
-
         // Find price for each token
         const tokens = await getTokenPrice();
         // Get DVG price
-        const dvgPrice = tokens.find(t => t.name == 'DVG').price;
+        const dvgPrice = tokens.find(t => t.tokenId === 'daoventures').price;
         const tokensPrice = { tokens, dvgPrice };
 
         // Get DAOstake 
@@ -216,24 +214,38 @@ module.exports.getDaoStake = async(req, res) => {
                 const pool = await poolCalculation(daoStake, poolInfo, tokensPrice);
             
                 delete pool._id;
-
-                result.push(pool);
+                db.add(pool);
             }
         }
+    } catch (err) {
+        console.error(err);
+    }
+    return;
+}
 
+module.exports.getStakePools = async (req, res) => {
+    try {
+        const pools = await db.findAll();
+        const result = [];
+
+        pools
+        .filter((pool) => pool.status === 'A')
+        .forEach((pool) => {
+            delete pool._id;
+            result.push(pool);
+        });
+        
         res.status(200).json({
             message: "Successful response",
             body:  {
                 pools: result
             }
         });
-
     } catch (err) {
-        console.log(err);
         res.status(200).json({
             message: err.messge,
             body: null
-        })
+        });
     }
     return;
 }

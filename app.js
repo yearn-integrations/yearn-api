@@ -32,6 +32,7 @@ async function init() {
     jobs.savePricePerFullShare();
     jobs.saveHistoricalAPY();
     jobs.saveHistoricalTVL();
+    jobs.saveHistoricalPools();
   });
 
   app.use(cors());
@@ -68,7 +69,7 @@ async function init() {
   );
   app.get("/staking/get-xdvg-stake", (req, res) => stakeXDvg.getxDVGStake(req, res));
 
-  app.get("/staking/get-dao-stakes", (req, res) => stakeDaoStakes.getDaoStake(req, res));
+  app.get("/staking/get-dao-stakes", (req, res) => stakeDaoStakes.getStakePools(req, res));
 
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

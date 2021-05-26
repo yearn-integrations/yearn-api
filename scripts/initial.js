@@ -27,59 +27,59 @@ db.xdvg_token.insert({
 
 db.stake_pool.insertMany([
     {
-        name: 'USDT',
+        name: 'dvmUSDT',
         contract_address: '0x6B150E9BD70E216775c8b73270E64e870a3110c1',
-        strategy_address: '0x31324c1c0bb6b4b6f8102acb8346b065307926fa',
+        status: 'A',
+        pid: '0',
+        category: 'advance',
+        tokenId: 'tether'
+    },
+    {
+        name: 'dvmUSDC',
+        contract_address: '0x6E15e283dc430eca010Ade8b11b5B377902d6e56',
+        status: 'A',
+        pid: '1',
+        category: 'advance',
+        tokenId: 'usd-coin'
+    },
+    {
+        name: 'dvmDAI',
+        contract_address: '0x2428bFD238a3632552B343297c504F60283009eD',
         status: 'A',
         pid: '2',
-        category: 'advance'
+        category: 'advance',
+        tokenId: 'dai'
     },
     {
-        name: 'USDC',
-        contract_address: '0x6E15e283dc430eca010Ade8b11b5B377902d6e56',
-        strategy_address: '0xe77ad5e2c4e7143fdbac6a4dde891727fc395c75',
+        name: 'dvmTUSD',
+        contract_address: '0xEcCb98c36bfc8c49c6065d1cD90bcf1c6F02D4AD',
         status: 'A',
         pid: '3',
-        category: 'advance'
+        category: 'advance',
+        tokenId: 'true-usd'
     },
     {
-        name: 'DAI',
-        contract_address: '0x2428bFD238a3632552B343297c504F60283009eD',
-        strategy_address: '0x8615dfb5b53e9ddb3751fbc3fc59512d4aba9a22',
+        name: 'dvlUSDT',
+        contract_address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52',
         status: 'A',
         pid: '4',
-        category: 'advance'
+        category: 'basic',
+        tokenId: 'tether'
     },
     {
-        name: 'TUSD',
-        contract_address: '0xEcCb98c36bfc8c49c6065d1cD90bcf1c6F02D4AD',
-        strategy_address: '0xf64674cfc6597d597275144a1a746dad564b0fcd',
+        name: 'dvlUSDC',
+        contract_address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e',
         status: 'A',
         pid: '5',
-        category: 'advance'
-    },
-    {
-        name: 'USDT',
-        contract_address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52',
-        strategy_address: "0xa5c956aef6a21c986665de9cf889ef36613c7d5e",
-        status: 'A',
-        pid: '6',
-        category: 'basic'
-    },
-    {
-        name: 'USDC',
-        contract_address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e',
-        strategy_address: "0x3add8a9d3176c4b30dddeeababf9ca5cc3d49944",
-        status: 'A',
-        pid: '7',
-        category: 'basic'
+        category: 'basic',
+        tokenId: 'usd-coin'
     }, 
     {
-        name: 'DAI',
+        name: 'dvlDAI',
         contract_address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d',
-        strategy_address: "0xb951976a7d79fd8a589a7ca9753641380f5c1ab4",
         status: 'A',
-        pid: '8',
-        category: 'basic'
+        pid: '6',
+        category: 'basic',
+        tokenId: 'dai'
     }
 ]);
