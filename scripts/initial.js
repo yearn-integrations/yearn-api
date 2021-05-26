@@ -25,9 +25,61 @@ db.xdvg_token.insert({
     contract_address: '0x07de306FF27a2B630B1141956844eB1552B956B5'
 });
 
-db.stake_pool.insert({
-    name: 'USDT',
-    contract_address: '0x07de306FF27a2B630B1141956844eB1552B956B5',
-    status: 'A',
-    pid: '0'
-});
+db.stake_pool.insertMany([
+    {
+        name: 'dvmUSDT',
+        contract_address: '0x6B150E9BD70E216775c8b73270E64e870a3110c1',
+        status: 'A',
+        pid: '0',
+        category: 'advance',
+        tokenId: 'tether'
+    },
+    {
+        name: 'dvmUSDC',
+        contract_address: '0x6E15e283dc430eca010Ade8b11b5B377902d6e56',
+        status: 'A',
+        pid: '1',
+        category: 'advance',
+        tokenId: 'usd-coin'
+    },
+    {
+        name: 'dvmDAI',
+        contract_address: '0x2428bFD238a3632552B343297c504F60283009eD',
+        status: 'A',
+        pid: '2',
+        category: 'advance',
+        tokenId: 'dai'
+    },
+    {
+        name: 'dvmTUSD',
+        contract_address: '0xEcCb98c36bfc8c49c6065d1cD90bcf1c6F02D4AD',
+        status: 'A',
+        pid: '3',
+        category: 'advance',
+        tokenId: 'true-usd'
+    },
+    {
+        name: 'dvlUSDT',
+        contract_address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52',
+        status: 'A',
+        pid: '4',
+        category: 'basic',
+        tokenId: 'tether'
+    },
+    {
+        name: 'dvlUSDC',
+        contract_address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e',
+        status: 'A',
+        pid: '5',
+        category: 'basic',
+        tokenId: 'usd-coin'
+    }, 
+    {
+        name: 'dvlDAI',
+        contract_address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d',
+        status: 'A',
+        pid: '6',
+        category: 'basic',
+        tokenId: 'dai'
+    }
+]);

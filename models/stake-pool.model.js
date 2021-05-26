@@ -11,6 +11,11 @@ const add = async (params) => {
   const result = await db.collection(collection).findOne({
     name: params.name
   });
+
+  Object.assign(params, {
+    timestamp: new Date().getTime(),
+  });
+
   if (result != null) {
     return await db.collection(collection).updateOne({
       name: params.name
