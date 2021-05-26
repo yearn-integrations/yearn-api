@@ -5,23 +5,12 @@ const Web3 = require("web3");
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
-const web3Url = process.env.WEB3_ENDPOINT;
-const infuraMainnetUrl = `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`;
-const infuraKovanUrl = `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`;
-const infuraRinkebyUrl = `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`;
-const infuraRopstenUrl = `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`;
 const archiveNodeWeb3 = new Web3(archiveNodeUrl);
-
-const infuraWeb3 = new Web3(web3Url);
-const infuraKovanWeb3 = new Web3(infuraKovanUrl);
-const infuraRinkebyWeb3 = new Web3(infuraRinkebyUrl);
-const infuraRopstenWeb3 = new Web3(infuraRopstenUrl);
 
 const {
   testContracts,
   mainContracts,
 } = require("../../../config/serverless/domain");
-const e = require("cors");
 
 const getDecimals = async (contract) => {
   try {
@@ -111,14 +100,14 @@ const getxDVGPrice = async () => {
       ? mainContracts
       : testContracts;
 
-  const DVGcontract = await getTokenContract(contracts.DVG.DVG);
-  const xDVGcontract = await getTokenContract(contracts.vipDVG.xDVG);
+  const DVGcontract = await getTokenContract(contracts.DVG);
+  const xDVGcontract = await getTokenContract(contracts.vipDVG);
   const amountDVG = await getBalance(
     DVGcontract,
-    contracts.vipDVG.xDVG.address
+    contracts.vipDVG.address
   );
   const amountxDVG = await getTotalSupply(xDVGcontract);
-  const priceDVG = await getTokenPrice(contracts.DVG.DVG.tokenId);
+  const priceDVG = await getTokenPrice(contracts.DVG.tokenId);
 
   const pricexDVG = amountxDVG == 0 ? 1 : (amountDVG * priceDVG) / amountxDVG;
   return pricexDVG;
@@ -171,7 +160,7 @@ const getAllTVL = async () => {
     await saveTVL(vault, tvl);
   }
 
-  let _vault = vaults.vipDVG.xDVG;
+  let _vault = vaults.vipDVG;
   let tvl = await getTVLxDVG(_vault);
   tvls.push(tvl);
   await saveTVL("xDVG", tvl);
@@ -209,12 +198,6 @@ const saveTVL = async (name, tvl) => {
     .catch((err) => console.log("err", err));
 };
 
-const getVaults = () => {
-  return process.env.PRODUCTION != null && process.env.PRODUCTION != ""
-    ? mainContracts
-    : testContracts;
-};
-
 // Save All TVLs to database
 module.exports.saveAllTVLhandler = async () => {
   const tvls = await getAllTVL();
@@ -222,20 +205,9 @@ module.exports.saveAllTVLhandler = async () => {
   await saveTotalTVL(totalTvl);
 };
 
-// Read from DB
-module.exports.getTotalTVLhandle = async () => {
-  // Get and save all TVL
-  const totalTvl = await db.getTotalTVL({ limit: 1 });
-
-  res.status(200).json({
-    message: "Total TVL",
-    body: totalTvl,
-  });
-};
-
 /* HANDLERS */
 
-module.exports.getTVLhandle = async (req, res) => {
+module.exports.tvlHandle = async (req, res) => {
   // check if vault param is input
   if (req.params.farmer === null || req.params.farmer === "") {
     res.status(200).json({
@@ -244,57 +216,57 @@ module.exports.getTVLhandle = async (req, res) => {
     });
   }
 
-  const result = await db.getTVL(req.params.farmer + "_tvl", { limit: 1 });
+  let collection = "";
+
+  switch (req.params.farmer) {
+    case db.usdtFarmer:
+      collection = db.usdtFarmer;
+      break;
+    case db.usdcFarmer:
+      collection = db.usdcFarmer;
+      break;
+    case db.daiFarmer:
+      collection = db.daiFarmer;
+      break;
+    case db.tusdFarmer:
+      collection = db.tusdFarmer;
+      break;
+    case db.cUsdtFarmer:
+      collection = db.cUsdtFarmer;
+      break;
+    case db.cUsdcFarmer:
+      collection = db.cUsdcFarmer;
+      break;
+    case db.cDaiFarmer:
+      collection = db.cDaiFarmer;
+      break;
+    default:
+      res.status(200).json({
+        message: "Invalid Farmer",
+        body: null,
+      });
+      return;
+  }
+
+  const result = await db.getTVL(collection, { limit: 1 });
   if (result) {
     res.status(200).json({
       message: `TVL for ${req.params.farmer}`,
       body: result,
     });
   }
+  return;
 };
 
-module.exports.getHistoricalTVLhandle = async (req, res) => {
-  if (req.params.days == null || req.params.days == "") {
-    res.status(200).json({
-      message: "Days is empty.",
-      body: null,
-    });
-  } else if (req.params.farmer == null || req.params.farmer == "") {
-    res.status(200).json({
-      message: "Farmer is empty.",
-      body: null,
-    });
-  } else {
-    let collection = "";
+module.exports.totalHandle = async (req, res) => {
+  // Get and save all TVL
+  const totalTvl = await db.getTotalTVL({ limit: 1 });
 
-    switch (req.params.farmer) {
-      case db.usdtFarmer:
-        collection = db.usdtFarmer;
-        break;
-      case db.usdcFarmer:
-        collection = db.usdcFarmer;
-        break;
-      case db.daiFarmer:
-        collection = db.daiFarmer;
-        break;
-      case db.tusdFarmer:
-        collection = db.tusdFarmer;
-        break;
-      case db.cUsdtFarmer:
-        collection = db.cUsdtFarmer;
-        break;
-      case db.cUsdcFarmer:
-        collection = db.cUsdcFarmer;
-        break;
-      case db.cDaiFarmer:
-        collection = db.cDaiFarmer;
-        break;
-      default:
-        res.status(200).json({
-          message: "Invalid Farmer",
-          body: null,
-        });
-        return;
-    }
-  }
+  delete totalTvl[0]._id;
+
+  res.status(200).json({
+    message: "Total TVL",
+    body: totalTvl,
+  });
+  return;
 };

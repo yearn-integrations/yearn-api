@@ -47,12 +47,11 @@ async function init() {
   app.get("/vaults/historical-apy/:contractAddress/:days", (req, res) =>
     vaultHistoricalAPYSave.handleHistoricialAPY(req, res)
   );
-  app.get("/vaults/tvl/:farmer", (req, res) =>
-    vaultsTvl.getTVLhandle(req, res)
-  );
-
   app.get("/vaults/tvl/total", (req, res) =>
-    vaultsTvl.getTotalTVLhandle(req, res)
+    vaultsTvl.totalHandle(req, res)
+  );
+  app.get("/vaults/tvl/:farmer", (req, res) =>
+    vaultsTvl.tvlHandle(req, res)
   );
 
   app.get("/vaults/category", (req, res) =>

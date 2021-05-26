@@ -139,20 +139,16 @@ const testContracts = {
     },
   },
   vipDVG: {
-    xDVG: {
-      address: "0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424",
-      abi: abi.xDVGABIContract,
-      contractType: "vipDVG",
-      tokenId: "xDVG",
-    },
+    address: "0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424",
+    abi: abi.xDVGABIContract,
+    contractType: "vipDVG",
+    tokenId: "xDVG",
   },
   DVG: {
-    DVG: {
-      address: "0xea9726eFc9831EF0499fD4Db4Ab143F15a797673",
-      abi: abi.DVGABIContract,
-      contractType: "DVG",
-      tokenId: "DVG",
-    },
+    address: "0xea9726eFc9831EF0499fD4Db4Ab143F15a797673",
+    abi: abi.DVGABIContract,
+    contractType: "DVG",
+    tokenId: "DVG",
   },
 };
 
@@ -266,20 +262,16 @@ const mainContracts = {
     },
   },
   vipDVG: {
-    xDVG: {
-      address: "", // TODO: Update mainnet address
-      abi: abi.xDVGABIContract,
-      contractType: "vipDVG",
-      tokenId: "xDVG",
-    },
+    address: "", // TODO: Update mainnet address
+    abi: abi.xDVGABIContract,
+    contractType: "vipDVG",
+    tokenId: "xDVG",
   },
   DVG: {
-    DVG: {
-      address: "", // TODO: Update mainnet address
-      abi: abi.xDVGABIContract,
-      contractType: "vipDVG",
-      tokenId: "xDVG",
-    },
+    address: "", // TODO: Update mainnet address
+    abi: abi.xDVGABIContract,
+    contractType: "vipDVG",
+    tokenId: "xDVG",
   },
 };
 

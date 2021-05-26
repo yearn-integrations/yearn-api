@@ -136,7 +136,7 @@
                     {
                         "name": "farmer",
                         "in": "path",
-                        "description": "Vault ID",
+                        "description": "Vault ID with '_tvl'",
                         "required": true,
                         "type": "string"
                     }
