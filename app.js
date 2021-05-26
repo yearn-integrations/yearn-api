@@ -33,6 +33,7 @@ async function init() {
     jobs.saveHistoricalAPY();
     jobs.saveHistoricalTVL();
     jobs.saveHistoricalPools();
+    jobs.saveABIPools();
   });
 
   app.use(cors());

@@ -26,14 +26,30 @@ const getPoolInfo = async (pool) => {
     return pool;
 }
 
+module.exports.savePoolInfo = async () => {
+    try {
+        const pools = await db.findAll();
+        const poolSize = _.size(pools);
+        for (idx = 0; idx < poolSize; idx++) {
+            if (pools[idx].status === 'A') {
+                const pool = await getPoolInfo(pools[idx]);
+                db.add(pool);
+            }
+        }
+    } catch (err) {
+        console.error(err.message);
+    }
+}
+
 module.exports.getPools = async (req, res) => {
     try {
         const pls = [];
         const pools = await db.findAll();
         const poolSize = _.size(pools);
         for (idx = 0; idx < poolSize; idx++) {
-            const pool = await getPoolInfo(pools[idx]);
-            pls.push(pool);
+            if (pools[idx].status === 'A') {
+                pls.push(pools[idx]);
+            }
         }
 
         res.status(200).json({
