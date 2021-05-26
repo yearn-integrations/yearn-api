@@ -141,14 +141,18 @@ const testContracts = {
   vipDVG: {
     address: "0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424",
     abi: abi.xDVGABIContract,
-    contractType: "vipDVG",
     tokenId: "xDVG",
   },
   DVG: {
     address: "0xea9726eFc9831EF0499fD4Db4Ab143F15a797673",
     abi: abi.DVGABIContract,
-    contractType: "DVG",
     tokenId: "DVG",
+  },
+  daoStake: {
+    address: "0x2d04c8A39fe41Dc94595Df81ABDaB1dD905B38B3",
+    abi: abi.daoStakeContract,
+    startBlock: 25055584,
+    poolPercent: 0.51
   },
 };
 
@@ -264,14 +268,18 @@ const mainContracts = {
   vipDVG: {
     address: "", // TODO: Update mainnet address
     abi: abi.xDVGABIContract,
-    contractType: "vipDVG",
     tokenId: "xDVG",
   },
   DVG: {
     address: "", // TODO: Update mainnet address
     abi: abi.xDVGABIContract,
-    contractType: "vipDVG",
     tokenId: "xDVG",
+  },
+  daoStake: {
+    address: "", // Upadte mainnet address
+    abi: abi.daoStakeContract,
+    startBlock: 25055584, // Update mainnet block
+    poolPercent: 0.51
   },
 };
 
