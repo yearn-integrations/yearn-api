@@ -138,25 +138,25 @@ const testContracts = {
       tokenId: "dai",
     },
     'hfDAI': {
-      address: '0x0f89EE5b95d1d5cfb10F29775d816fC6D8Adb9FC',
+      address: '0x0f89ee5b95d1d5cfb10f29775d816fc6d8adb9fc',
       abi: abi.hfVaultContract,
-      strategyAddress: '0x1032E051bc71D36D82F2FDE298cee1311852Dd29',
+      strategyAddress: '0x1032e051bc71d36d82f2fde298cee1311852dd29',
       strategyABI: abi.hfStrategyContract,
       contractType: 'harvest',
       tokenId: "dai",
     },
     'hfUSDC': {
-      address: '0x54783464848b35d6fb9bba37C1dDd23aC3B1A11A',
+      address: '0x54783464848b35d6fb9bba37c1ddd23ac3b1a11a',
       abi: abi.hfVaultContract,
-      strategyAddress: '0xE5331cAF0B4E15C88E878551b93df0647738Af35',
+      strategyAddress: '0xe5331caf0b4e15c88e878551b93df0647738af35',
       strategyABI: abi.hfStrategyContract,
       contractType: 'harvest',
       tokenId: "usd-coin",
     },
     'hfUSDT': {
-      address: '0xb41A49De82e95dc1E028839C3440Ac97f9A7832C',
+      address: '0xb41a49de82e95dc1e028839c3440ac97f9a7832c',
       abi: abi.hfVaultContract,
-      strategyAddress: '0x0bFA86d10A383B435748E39Cedf8852CFD2B1A9d',
+      strategyAddress: '0x0bfa86d10a383b435748e39cedf8852cfd2b1a9d',
       strategyABI: abi.hfStrategyContract,
       contractType: 'harvest',
       tokenId: "tether",
@@ -271,6 +271,30 @@ const mainContracts = {
       strategyABI: abi.compoundStrategyContract,
       contractType: "compound",
       tokenId: "dai",
+    },
+    hfDAI: {
+      address: '', // TODO: Update that this to mainnet address
+      abi: abi.hfVaultContract,
+      strategyAddress: '',
+      strategyABI:  abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "dai",
+    },
+    hfUSDC: {
+      address: '', // TODO: Update that this to mainnet address
+      abi: abi.hfVaultContract,
+      strategyAddress: '',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "usd-coin",
+    },
+    hfUSDT: {
+      address: '', // TODO: Update that this to mainnet address
+      abi: abi.hfVaultContract,
+      strategyAddress: '',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "tether",
     },
   },
   compund: {

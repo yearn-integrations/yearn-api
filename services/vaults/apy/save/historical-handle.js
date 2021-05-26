@@ -132,16 +132,75 @@ const getApyForVault = async (vault) => {
       apyLoanscan: 0,
       compoundApy,
     };
-  } else {
+  } else if (vault.isHarvest) {
+    // Harvest Vault
+     const vaultContract = new archiveNodeWeb3.eth.Contract(vault.vaultContractABI, vault.vaultContractAddress);
+     const strategyContract = new archiveNodeWeb3.eth.Contract(vault.strategyABI, vault.strategyContractAddress);
+ 
+     // Get current price per full share
+     const pool = strategyContract.methods.pool().call();
+     const totalSupply = vaultContract.methods.totalSupply().call();
+     const currentPricePerFullShare = pool / totalSupply;
+     
+     const dataRequiredForCalculation  = {
+       vaultContract, 
+       strategyContract,
+       currentPricePerFullShare, 
+       lastMeasurement: vault.lastMeasurement
+     };
+   
+     // APR based on one day sample
+     Object.assign(dataRequiredForCalculation, { blockNumber: oneDayAgoBlock });
+     const aprOneDaySample = await getHarvestFarmerAPR(
+                                 vaultContract, 
+                                 strategyContract, 
+                                 oneDayAgoBlock, 
+                                 currentPricePerFullShare);
+     
+     // APR based on three day sample 
+     Object.assign(dataRequiredForCalculation, { blockNumber: threeDaysAgoBlock });                             
+     const aprThreeDaySample = await getHarvestFarmerAPR(
+                                 vaultContract,
+                                 strategyContract, 
+                                 threeDaysAgoBlock, 
+                                 currentPricePerFullShare);
+   
+     // APR based on one week sample        
+     Object.assign(dataRequiredForCalculation, { blockNumber: oneWeekAgoBlock });              
+     const aprOneWeekSample = await getHarvestFarmerAPR(
+                                 vaultContract, 
+                                 strategyContract, 
+                                 oneWeekAgoBlock, 
+                                 currentPricePerFullShare);
+ 
+     // APR based on one month sample
+     Object.assign(dataRequiredForCalculation, { blockNumber: oneMonthAgoBlock });  
+     const aprOneMonthSample = await getHarvestFarmerAPR(
+                                 vaultContract, 
+                                 strategyContract, 
+                                 oneMonthAgoBlock, 
+                                 currentPricePerFullShare);
+ 
+     const aprData = {
+      aprOneDaySample,
+      aprThreeDaySample,
+      aprOneWeekSample, 
+      aprOneMonthSample
+     }
+ 
+     return {
+       ...aprData,
+       compoundApy: 0,
+     };
+  }else {
     // Yearn Vault
     const pool = _.find(pools, { symbol });
     var vaultContract;
-    if (vault.isHarvest) {
-      const envContracts = process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? mainContracts : testContracts;
-      vaultContract = new archiveNodeWeb3.eth.Contract(envContracts.harvest[vault.id].abi, envContracts.harvest[vault.id].address);
-    } else {
-      vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
-    }
+    // if (vault.isHarvest) {
+    //   const envContracts = process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? mainContracts : testContracts;
+    //   vaultContract = new archiveNodeWeb3.eth.Contract(envContracts.harvest[vault.id].abi, envContracts.harvest[vault.id].address);
+    // } else {}
+    vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
     
     const pricePerFullShareInception = await getPricePerFullShare(
       vaultContract,
@@ -305,6 +364,20 @@ const getHistoricalAPY = async (startTime, contractAddress) => {
     case mainContracts.farmer['cUSDT'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.cUsdtFarmer);
       break;
+    case testContracts.farmer['hfDAI'].address: 
+    case mainContracts.farmer['hfDAI'].address:
+      console.log("herererer");
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.hfDaiFarmer);
+      console.log("result", result);
+      break;
+    case testContracts.farmer['hfUSDC'].address: 
+    case mainContracts.farmer['hfUSDC'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.hfUsdcFarmer);
+      break;
+    case testContracts.farmer['hfUSDT'].address: 
+    case mainContracts.farmer['hfUSDT'].address:
+        result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.hfUsdtFarmer);
+      break;
   }
 
   return result;
@@ -357,6 +430,30 @@ const saveAndReadVault = async (vault) => {
   console.log('vaultSymbol', vaultSymbol)
   await saveHistoricalAPY(data, vaultSymbol + '_historical-apy');
   return data;
+};
+
+const getHarvestFarmerAPR = async (vaultData) => {
+  const { 
+    vaultContract,
+    strategyContract, 
+    currentPricePerFullShare,
+    lastMeasurement, 
+    blockNumber, 
+  } = vaultData;
+
+  let apr = 0;
+
+  // To ensure block number happens after contract creation
+  if(blockNumber >= lastMeasurement) {
+    const pool = await strategyContract.methods.pool().call(undefined, blockNumber);
+    const totalSupply = await vaultContract.methods.totalSupply().call(undefined, blockNumber);
+
+    const pricePerFullShareOfBeforeDay  = pool / totalSupply;
+    
+    // APR calculation
+    apr = (currentPricePerFullShare - pricePerFullShareOfBeforeDay) * 100 * 365;
+  }
+  return apr;
 };
 
 module.exports.saveHandler = async () => {

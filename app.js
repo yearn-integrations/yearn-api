@@ -26,8 +26,8 @@ async function init() {
     if (err) throw err;
 
     // jobs.saveVault();
-    jobs.saveVaultAPY();
-    jobs.savePricePerFullShare();
+    // jobs.saveVaultAPY();
+    // jobs.savePricePerFullShare();
     // jobs.saveHistoricalAPY();
     jobs.saveHistoricalTVL();
   });
