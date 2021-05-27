@@ -7,6 +7,10 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0xEeCe6AD323a93d4B021BDAaC587DCC04b5cf0a78', symbol: 'cUSDT' },
     { name: 'basic', contract_address: '0xd1D7f950899C0269a7F2aad5E854cdc3a1350ba9', symbol: 'cUSDC', },
     { name: 'basic', contract_address: '0x43C20638C3914Eca3c96e9cAc8ebE7d652Be45c6', symbol: 'cDAI', },
+    // TODO: add in mainnet contract addresss
+    // { name: 'basic', contract_address: '', symbol: 'hfUSDT'},
+    // { name: 'basic', contract_address: '', symbol: 'hfUSDC'},
+    // { name: 'basic', contract_address: '', symbol: 'hfDAI'},
 ]);
 
 // Testnet Contracts
@@ -18,6 +22,10 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52', symbol: 'cUSDT' },
     { name: 'basic', contract_address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e', symbol: 'cUSDC', },
     { name: 'basic', contract_address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d', symbol: 'cDAI', },
+    // TODO: update name for these harvest fighter series
+    { name: 'basic', contract_address: '0xb41a49de82e95dc1e028839c3440ac97f9a7832c', symbol: 'hfUSDT'},
+    { name: 'basic', contract_address: '0x54783464848b35d6fb9bba37c1ddd23ac3b1a11a', symbol: 'hfUSDC'},
+    { name: 'basic', contract_address: '0x0f89ee5b95d1d5cfb10f29775d816fc6d8adb9fc', symbol: 'hfDAI'},
 ]);
 
 db.xdvg_token.insert({
