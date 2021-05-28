@@ -27,7 +27,7 @@ async function init() {
 
     // jobs.saveVault();
     jobs.saveVaultAPY();
-    jobs.savePricePerFullShare();
+    // jobs.savePricePerFullShare();
     // jobs.saveHistoricalAPY();
     jobs.saveHistoricalTVL();
   });
@@ -64,7 +64,7 @@ async function init() {
   app.get("/staking/get-pools", (req, res) =>
     stakePool.getPools(req, res)
   );
-
+  
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   app.listen(port, () => console.log(`Listening on ${port}`));

@@ -47,19 +47,8 @@ const getCurrentPrice = async () => {
           price: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'harvest') {
-        // Get vault contract and strategy contract
-        const vaultContract = getContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const strategyContract = getContract(contracts.farmer[key].strategyABI, contracts.farmer[key].strategyAddress);
-
-        // Get pool
-        const pool = await strategyContract.methods.pool().call(); 
-
-        // Get total supply
-        const totalSupply = await vaultContract.methods.totalSupply().call();
-
-        // Calculate price per full share
-        const pricePerFullShare = pool / totalSupply;
-     
+        const contract = getContract(contracts.harvest[key].abi, contracts.harvest[key].address);
+        const pricePerFullShare = await getPricePerFullShare(contract);
         await db.add(key + '_price', {
           earnPrice: 0,
           vaultPrice: 0,
