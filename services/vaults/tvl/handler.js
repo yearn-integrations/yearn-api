@@ -229,15 +229,7 @@ module.exports.getHistoricalTVLhandle = async (req, res) => {
       case db.cDaiFarmer:
         collection = db.cDaiFarmer;
         break;
-      case db.hfDaiFarmer: 
-        collection = db.hfDaiFarmer;
-        break;
-      case db.hfUsdcFarmer:
-        collection = db.hfUsdcFarmer;
-        break;
-      case db.hfUsdtFarmer:
-        collection =  db.hfUsdtFarmer;
-        break;
+      case db.
       default:
         res.status(200).json({
           message: "Invalid Farmer",
