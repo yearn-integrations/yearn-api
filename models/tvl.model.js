@@ -51,7 +51,4 @@ module.exports = {
   cUsdtFarmer: "cUSDT_tvl",
   cUsdcFarmer: "cUSDC_tvl",
   cDaiFarmer: "cDAI_tvl",
-  hfDaiFarmer: "hfDAI_tvl",
-  hfUsdtFarmer: "hfUSDT_tvl",
-  hfUsdcFarmer: "hfUSDC_tvl",
 };
