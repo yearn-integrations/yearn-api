@@ -70,6 +70,28 @@ const getCompoundSupplyApy = async (cToken) => {
   return supplyApy;
 };
 
+const getCitadelPricePerFullShare = async (contract, block, inceptionBlockNbr) => {
+  const contractDidntExist = block < inceptionBlockNbr;
+  const inceptionBlock = block === inceptionBlockNbr;
+
+  if (inceptionBlock) {
+    return 1e18;
+  }
+  if (contractDidntExist) {
+    return 0;
+  }
+
+  let pricePerFullShare = 0;
+  try {
+    const pool = await contract.methods.getAllPoolInETH().call(undefined, block);
+    const totalSupply = await contract.methods.totalSupply().call(undefined, block);
+    pricePerFullShare = pool / totalSupply;
+  } catch (ex) {}
+  
+  await delay(delayTime);
+  return pricePerFullShare;
+}
+
 const getVirtualPrice = async (address, block) => {
   const poolContract = new archiveNodeWeb3.eth.Contract(poolABI, address);
   const virtualPrice = await poolContract.methods
@@ -132,7 +154,35 @@ const getApyForVault = async (vault) => {
       apyOneMonthSample: 0,
       apyLoanscan: 0,
       compoundApy,
+      citadelApy: 0,
     };
+  } else if (vault.isCitadel) {
+    // Citadel Vault
+    let contract;
+    if (process.env.PRODUCTION != '') {
+      contract = new archiveNodeWeb3.eth.Contract(mainContracts.farmer['daoCDV'].abi, mainContracts.farmer['daoCDV'].address);
+    } else {
+      contract = new archiveNodeWeb3.eth.Contract(testContracts.farmer['daoCDV'].abi, testContracts.farmer['daoCDV'].address);
+    }
+
+    const pricePerFullShareCurrent = await getCitadelPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    const pricePerFullShareOneDayAgo = await getCitadelPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+
+    // APY Calculation
+    const n = 365 / 2; // Assume 2 days to trigger invest function
+    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+    const apy = Math.pow((1 + apr / n), n) - 1;
+
+    return {
+      apyInceptionSample: 0,
+      apyOneDaySample: 0,
+      apyThreeDaySample: 0,
+      apyOneWeekSample: 0,
+      apyOneMonthSample: 0,
+      apyLoanscan: 0,
+      compoundApy: 0,
+      citadelApy: apy,
+    }
   } else {
     // Yearn Vault
     const pool = _.find(pools, { symbol });
@@ -252,6 +302,7 @@ const getApyForVault = async (vault) => {
       ...apyData,
       apyLoanscan,
       compoundApy: 0,
+      citadelApy: 0,
     };
   }
 };

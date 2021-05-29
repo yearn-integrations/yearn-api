@@ -85,6 +85,8 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     type = testContracts.farmer[symbol].contractType;
   }
 
+  const depositedShares = await getDepositedShares(vaultContract, userAddress);
+
   let depositedAmount = new BigNumber(0);
   if (type === 'yearn') {
     const earnDepositAmount = await strategyContract.methods.getEarnDepositBalance(userAddress).call();
@@ -94,9 +96,11 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   } else if (type === 'compound') {
     depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
     depositedAmount = new BigNumber(depositedAmount);
+  } else if (type === 'citadel') {
+    const pool = await vaultContract.methods.getAllPoolInETH().call();
+    const totalSupply = await vaultContract.methods.totalSupply().call();
+    depositedAmount = new BigNumber(pool).times(depositedShares).div(totalSupply);
   }
-
-  const depositedShares = await getDepositedShares(vaultContract, userAddress);
 
   const {
     deposits,

@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const BigNumber = require("bignumber.js");
 const db = require("../../../models/tvl.model");
 
 const Web3 = require("web3");
@@ -120,12 +121,17 @@ const getxDVGPrice = async () => {
 const getTVL = async (vault) => {
   const { tokenId } = vault;
   let tvl;
-  const contract = await getContract(vault);
-  const poolAmount = await getPoolAmount(contract);
-  const decimals = await getDecimals(contract);
-  const tokenPrice = await getTokenPrice(tokenId);
-
-  tvl = (poolAmount / 10 ** decimals) * tokenPrice;
+  if (vault.contractType === 'citadel') {
+    const contract = await getTokenContract(vault);
+    tvl = await contract.methods.getAllPoolInUSD().call();
+  } else {
+    const contract = await getContract(vault);
+    const poolAmount = await getPoolAmount(contract);
+    const decimals = await getDecimals(contract);
+    const tokenPrice = await getTokenPrice(tokenId);
+    tvl = (poolAmount / 10 ** decimals) * tokenPrice;
+  }
+  
   return tvl;
 };
 
@@ -172,7 +178,15 @@ const getAllTVL = async () => {
 const getTotalTVL = async (tvls) => {
   let totalTVL;
   try {
-    totalTVL = _.sum(tvls);
+    const zero = new BigNumber(0);
+    totalTVL = tvls.reduce(
+      (a, b) => {
+        return new BigNumber(a).plus(new BigNumber(b));
+      }, 
+      zero, 
+      tvls
+    );
+    totalTVL = totalTVL.toFixed();
   } catch (err) {
     // Catch error
     console.log(err);
@@ -239,6 +253,9 @@ module.exports.tvlHandle = async (req, res) => {
       break;
     case db.cDaiFarmer:
       collection = db.cDaiFarmer;
+      break;
+    case db.daoCDVFarmer:
+      collection = db.daoCDVFarmer;
       break;
     default:
       res.status(200).json({
