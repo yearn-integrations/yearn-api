@@ -67,7 +67,6 @@ const getCurrentPrice = async () => {
         }).catch((err) => console.log('err', err));
       }
     } catch (err) {
-      console.log(err);
       await db.add(key + '_price', {
         earnPrice: "0",
         vaultPrice: "0",

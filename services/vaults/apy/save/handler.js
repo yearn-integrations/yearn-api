@@ -171,7 +171,7 @@ const getApyForVault = async (vault) => {
     // APY Calculation
     const n = 365 / 2; // Assume 2 days to trigger invest function
     const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-    const apy = Math.pow((1 + apr / n), n) - 1;
+    const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
 
     return {
       apyInceptionSample: 0,
