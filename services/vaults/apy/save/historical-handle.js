@@ -235,7 +235,7 @@ const getApyForVault = async (vault) => {
         oneDayAgoBlock,
         currentBlockNbr
       )) || apyInceptionSample;
-  
+
     const apyThreeDaySample =
       (getApy(
         pricePerFullShareThreeDaysAgo,
@@ -243,7 +243,7 @@ const getApyForVault = async (vault) => {
         threeDaysAgoBlock,
         currentBlockNbr
       )) || apyInceptionSample;
-  
+
     const apyOneWeekSample =
       (getApy(
         pricePerFullShareOneWeekAgo,

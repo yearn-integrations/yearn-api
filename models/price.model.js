@@ -9,7 +9,7 @@ const findPriceWithTimePeriods = async (collection, startTime, endTime) => {
   const db = mongo.getDB();
   return await db.collection(collection).find({
     timestamp: {
-      $gte: startTime,
+      $gte: startTime * 1000,
       $lte: endTime
     }
   }).toArray();

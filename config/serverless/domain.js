@@ -81,7 +81,7 @@ const testContracts = {
   },
   farmer: {
     yUSDT: {
-      address: "0x6B150E9BD70E216775c8b73270E64e870a3110c1",
+      address: "0x6b150e9bd70e216775c8b73270e64e870a3110c1",
       abi: abi.vaultUSDTABIContract,
       strategyAddress: "0x31324c1c0bb6b4b6f8102acb8346b065307926fa",
       strategyABI: abi.yearnUSDTABIContract,
@@ -89,7 +89,7 @@ const testContracts = {
       tokenId: "tether",
     },
     yUSDC: {
-      address: "0x6E15e283dc430eca010Ade8b11b5B377902d6e56",
+      address: "0x6e15e283dc430eca010ade8b11b5b377902d6e56",
       abi: abi.vaultUSDCABIContract,
       strategyAddress: "0xe77ad5e2c4e7143fdbac6a4dde891727fc395c75",
       strategyABI: abi.yearnUSDCABIContract,
@@ -97,7 +97,7 @@ const testContracts = {
       tokenId: "usd-coin",
     },
     yDAI: {
-      address: "0x2428bFD238a3632552B343297c504F60283009eD",
+      address: "0x2428bfd238a3632552b343297c504f60283009ed",
       abi: abi.vaultDAIABIContract,
       strategyAddress: "0x8615dfb5b53e9ddb3751fbc3fc59512d4aba9a22",
       strategyABI: abi.yearnDAIABIContract,
@@ -105,7 +105,7 @@ const testContracts = {
       tokenId: "dai",
     },
     yTUSD: {
-      address: "0xEcCb98c36bfc8c49c6065d1cD90bcf1c6F02D4AD",
+      address: "0xeccb98c36bfc8c49c6065d1cd90bcf1c6f02d4ad",
       abi: abi.vaultTUSDABIContract,
       strategyAddress: "0xf64674cfc6597d597275144a1a746dad564b0fcd",
       strategyABI: abi.yearnTUSDABIContract,
