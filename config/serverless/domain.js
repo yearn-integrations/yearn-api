@@ -137,9 +137,9 @@ const testContracts = {
       tokenId: "dai",
     },
     daoCDV: {
-      address: "0x00ba7142d3ea3f59a69cc37bfcea4cebf68c63aa",
+      address: "0x542a42496c96b946324f7dce2b030d5643d9ef8a",
       abi: abi.citadelABIContract,
-      strategyAddress: "0x02281600cBf6E072850f8Aa77f03E1C722B3A216",
+      strategyAddress: "0x4996b12560b9a4a85dd437a3e8ff489335dcffa7",
       strategyABI: abi.citadelStrategyABIContract,
       contractType: "citadel",
       tokenId: ["tether", "usd-coin", "dai"],
