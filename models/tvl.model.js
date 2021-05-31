@@ -61,4 +61,5 @@ module.exports = {
   cUsdtFarmer: "cUSDT_tvl",
   cUsdcFarmer: "cUSDC_tvl",
   cDaiFarmer: "cDAI_tvl",
+  daoCDVFarmer: "daoCDV_tvl",
 };

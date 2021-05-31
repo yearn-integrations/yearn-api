@@ -101,6 +101,28 @@ const getPricePerFullShare = async (
   return pricePerFullShare;
 };
 
+const getCitadelPricePerFullShare = async (contract, block, inceptionBlockNbr) => {
+  const contractDidntExist = block < inceptionBlockNbr;
+  const inceptionBlock = block === inceptionBlockNbr;
+
+  if (inceptionBlock) {
+    return 1e18;
+  }
+  if (contractDidntExist) {
+    return 0;
+  }
+
+  let pricePerFullShare = 0;
+  try {
+    const pool = await contract.methods.getAllPoolInETH().call(undefined, block);
+    const totalSupply = await contract.methods.totalSupply().call(undefined, block);
+    pricePerFullShare = pool / totalSupply;
+  } catch (ex) {}
+  
+  await delay(delayTime);
+  return pricePerFullShare;
+};
+
 const getApyForVault = async (vault) => {
   const {
     lastMeasurement: inceptionBlockNbr,
@@ -129,7 +151,35 @@ const getApyForVault = async (vault) => {
       apyOneMonthSample: 0,
       apyLoanscan: 0,
       compoundApy,
+      citadelApy: 0,
     };
+  } else if (vault.isCitadel) {
+    // Citadel Vault
+    let contract;
+    if (process.env.PRODUCTION != '') {
+      contract = new archiveNodeWeb3.eth.Contract(mainContracts.farmer['daoCDV'].abi, mainContracts.farmer['daoCDV'].address);
+    } else {
+      contract = new archiveNodeWeb3.eth.Contract(testContracts.farmer['daoCDV'].abi, testContracts.farmer['daoCDV'].address);
+    }
+
+    const pricePerFullShareCurrent = await getCitadelPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    const pricePerFullShareOneDayAgo = await getCitadelPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+
+    // APY Calculation
+    const n = 365 / 2; // Assume 2 days to trigger invest function
+    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+    const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+    return {
+      apyInceptionSample: 0,
+      apyOneDaySample: 0,
+      apyThreeDaySample: 0,
+      apyOneWeekSample: 0,
+      apyOneMonthSample: 0,
+      apyLoanscan: 0,
+      compoundApy: 0,
+      citadelApy: apy,
+    }
   } else {
     // Yearn Vault
     const pool = _.find(pools, { symbol });
@@ -249,6 +299,7 @@ const getApyForVault = async (vault) => {
       ...apyData,
       apyLoanscan,
       compoundApy: 0,
+      citadelApy: 0,
     };
   }
 };
@@ -300,6 +351,10 @@ const getHistoricalAPY = async (startTime, contractAddress) => {
     case mainContracts.farmer['cUSDT'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.cUsdtFarmer);
       break;
+    case testContracts.farmer['daoCDV'].address:
+    case mainContracts.farmer['daoCDV'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoCDVFarmer);
+      break;
   }
 
   return result;
@@ -322,7 +377,7 @@ const saveAndReadVault = async (vault) => {
   }
   const apy = await getApyForVault(vault);
   var aprs = 0;
-  if (!vault.isCompound && process.env.PRODUCTION != '') {
+  if (vault.isYearn && process.env.PRODUCTION != '') {
     const aprContract = new infuraWeb3.eth.Contract(aggregatedContractABI, aggregatedContractAddress);
     var call = 'getAPROptions';//+asset.symbol
     

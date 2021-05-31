@@ -18,6 +18,7 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52', symbol: 'cUSDT' },
     { name: 'basic', contract_address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e', symbol: 'cUSDC', },
     { name: 'basic', contract_address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d', symbol: 'cDAI', },
+    { name: 'degen', contract_address: '0x542a42496c96b946324f7dce2b030d5643d9ef8a', symbol: 'daoCDV', },
 ]);
 
 db.xdvg_token.insert({
@@ -94,8 +95,16 @@ db.stake_pool.insertMany([
         name: 'ETH<->DVG',
         contract_address: '0x0A15e37442e2a41A3A51A9Eff7fE1DCE0E96f0bB',
         status: 'A',
-        pid: '7',
+        pid: '8',
         category: 'basic',
         tokenId: 'ethDVG'
+    },
+    {
+        name: 'daoCDV',
+        contract_address: '0x542a42496c96b946324f7dce2b030d5643d9ef8a',
+        status: 'A',
+        pid: '9',
+        category: 'degen',
+        tokenId: 'ethereum'
     }
 ]);

@@ -136,6 +136,14 @@ const testContracts = {
       contractType: "compound",
       tokenId: "dai",
     },
+    daoCDV: {
+      address: "0x542a42496c96b946324f7dce2b030d5643d9ef8a",
+      abi: abi.citadelABIContract,
+      strategyAddress: "0x4996b12560b9a4a85dd437a3e8ff489335dcffa7",
+      strategyABI: abi.citadelStrategyABIContract,
+      contractType: "citadel",
+      tokenId: ["tether", "usd-coin", "dai"],
+    }
   },
   vipDVG: {
     address: "0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424",
@@ -255,6 +263,14 @@ const mainContracts = {
       contractType: "compound",
       tokenId: "dai",
     },
+    daoCDV: {
+      address: "", // TODO Update on mainnet
+      abi: abi.citadelABIContract,
+      strategyAddress: "", // TODO Update on mainnet
+      strategyABI: abi.citadelStrategyABIContract,
+      contractType: "citadel",
+      tokenId: ["tether", "usd-coin", "dai"],
+    }
   },
   compund: {
     cUSDT: {
@@ -281,14 +297,14 @@ const mainContracts = {
     tokenId: "DVG",
   },
   daoStake: {
-    address: "", // Update mainnet address
+    address: "", // TODO Update mainnet address
     abi: abi.daoStakeContract,
-    startBlock: 25055584, // Update mainnet block
+    startBlock: 25055584, // TODO Update mainnet block
     poolPercent: 0.51
   },
   uniswap: {
     ethDVG: {
-      address: "", // Update mainnet address
+      address: "", // TODO Update mainnet address
       abi: abi.uniswapPairABIContract,
     }
   }
