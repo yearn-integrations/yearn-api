@@ -49,9 +49,8 @@ const getPoolAmount = async (contract) => {
   }
 };
 
-const getContract = (vault) => {
-  const { strategyABI, strategyAddress } = vault;
-  const contract = new archiveNodeWeb3.eth.Contract(strategyABI, strategyAddress);
+const getContract = (contractAbi, contractAddress) => {
+  const contract = new archiveNodeWeb3.eth.Contract(contractAbi, contractAddress);
   return contract;
 };
 
@@ -80,15 +79,20 @@ const getTokenPrice = async (coingecko_token_id) => {
  */
 const getTVL = async (vault) => {
     try {
-      const { tokenId } = vault;
+      const { 
+        tokenId, 
+        strategyABI, 
+        strategyAddress,
+        abi,
+        address
+      } = vault;
       let tvl;
 
-      const contract = getContract(vault);
-      const poolAmount = await getPoolAmount(contract);
-      
-      let decimals = await getDecimals(contract);
-      decimals = decimals ? decimals : 18;
+      const strategyContract = getContract(strategyABI, strategyAddress);
+      const vaultContract = getContract(abi, address);
 
+      const poolAmount = await getPoolAmount(strategyContract);
+      const decimals = await getDecimals(vaultContract);
       const tokenPrice = await getTokenPrice(tokenId);
   
       tvl = (poolAmount / 10 ** decimals) * tokenPrice;
