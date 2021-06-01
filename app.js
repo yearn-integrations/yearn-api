@@ -11,6 +11,7 @@ const stakeVIP = require('./services/staking/xdvg/handler');
 const stakePool = require('./services/staking/handler');
 const stakeXDvg = require('./services/staking/vipdvg/handler');
 const stakeDaoStakes = require('./services/staking/dao-stake/handler');
+const specialEvent = require("./services/user/special-event/handler");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 8080;
@@ -57,7 +58,6 @@ async function init() {
   app.get("/vaults/tvl/:farmer", (req, res) =>
     vaultsTvl.tvlHandle(req, res)
   );
-
   app.get("/vaults/category", (req, res) =>
     vaultCategory.getVaultCategory(req, res)
   );
@@ -68,6 +68,7 @@ async function init() {
     stakePool.getPools(req, res)
   );
   app.get("/staking/get-xdvg-stake", (req, res) => stakeXDvg.getxDVGStake(req, res));
+  app.get('/event/verify/:amount', (req, res) => specialEvent.handler(req, res));
 
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

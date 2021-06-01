@@ -108,3 +108,11 @@ db.stake_pool.insertMany([
         tokenId: 'ethereum'
     }
 ]);
+
+db.special_event.insertMany([
+    { startTime: 1622390400000, endTime: 1622444400000, threshold: 3000 },
+    { startTime: 1622538000000, endTime: 1622541600000, threshold: 5000 },
+    { startTime: 1622538900000, endTime: 1622540400000, threshold: 7000 },
+    { startTime: 1622542200000, endTime: 1622543400000, threshold: 6000 },
+    { startTime: 1622606400000, endTime: 1622610000000, threshold: 3000 }
+]);
