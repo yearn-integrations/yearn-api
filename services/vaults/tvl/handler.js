@@ -79,15 +79,25 @@ const getTokenPrice = async (coingecko_token_id) => {
  * TVL = poolAmount * tokenPrice
  */
 const getTVL = async (vault) => {
-  const { tokenId } = vault;
-  let tvl;
-  const contract = getContract(vault);
-  const poolAmount = await getPoolAmount(contract);
-  const decimals = await getDecimals(contract);
-  const tokenPrice = await getTokenPrice(tokenId);
+    try {
+      const { tokenId } = vault;
+      let tvl;
 
-  tvl = (poolAmount / 10 ** decimals) * tokenPrice;
-  return tvl;
+      const contract = getContract(vault);
+      const poolAmount = await getPoolAmount(contract);
+      
+      let decimals = await getDecimals(contract);
+      decimals = decimals ? decimals : 18;
+
+      const tokenPrice = await getTokenPrice(tokenId);
+  
+      tvl = (poolAmount / 10 ** decimals) * tokenPrice;
+  
+      return tvl === undefined ? 0 : tvl;
+    } catch (err) {
+      console.log(err); 
+      return 0;
+    }
 };
 
 // Get and Save all TVL of all Vaults
@@ -218,6 +228,15 @@ module.exports.getHistoricalTVLhandle = async (req, res) => {
         break;
       case db.cDaiFarmer:
         collection = db.cDaiFarmer;
+        break;
+      case db.hfDaiFarmer: 
+        collection = db.hfDaiFarmer;
+        break;
+      case db.hfUsdcFarmer:
+        collection = db.hfUsdcFarmer;
+        break;
+      case db.hfUsdtFarmer:
+        collection =  db.hfUsdtFarmer;
         break;
       default:
         res.status(200).json({

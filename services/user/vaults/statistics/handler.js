@@ -95,7 +95,7 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
     depositedAmount = new BigNumber(depositedAmount);
   } else if (type === 'harvest') {
-    depositedAmount = await vaultContract.methods.getCurrentBalance(userAddress).call();
+    depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
     depositedAmount = new BigNumber(depositedAmount);
   }
 
