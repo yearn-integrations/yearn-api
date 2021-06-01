@@ -25,10 +25,10 @@ async function init() {
   db.connectDB(async (err) => {
     if (err) throw err;
 
-    // jobs.saveVault();
-    // jobs.saveVaultAPY();
-    // jobs.savePricePerFullShare();
-    // jobs.saveHistoricalAPY();
+    jobs.saveVault();
+    jobs.saveVaultAPY();
+    jobs.savePricePerFullShare();
+    jobs.saveHistoricalAPY();
     jobs.saveHistoricalTVL();
   });
 

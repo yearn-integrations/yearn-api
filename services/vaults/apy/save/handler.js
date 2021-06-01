@@ -197,14 +197,7 @@ const getApyForVault = async (vault) => {
   } else {
     // Yearn Vault
     const pool = _.find(pools, { symbol });
-    var vaultContract;
-
-    // if (vault.isHarvest) {
-    //   const envContracts = process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? mainContracts : testContracts;
-    //   vaultContract = new archiveNodeWeb3.eth.Contract(envContracts.harvest[vault.id].abi, envContracts.harvest[vault.id].address);
-    // } else {} 
-
-    vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
+    var vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
 
     const pricePerFullShareInception = await getPricePerFullShare(
       vaultContract,
