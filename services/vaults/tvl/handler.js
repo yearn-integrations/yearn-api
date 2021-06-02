@@ -123,7 +123,8 @@ const getTVL = async (vault) => {
   let tvl;
   if (vault.contractType === 'citadel') {
     const contract = await getTokenContract(vault);
-    tvl = await contract.methods.getAllPoolInUSD().call();
+    const usdPool = await contract.methods.getAllPoolInUSD().call();
+    tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
   } else {
     const contract = await getContract(vault);
     const poolAmount = await getPoolAmount(contract);
