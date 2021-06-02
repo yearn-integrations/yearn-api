@@ -89,12 +89,18 @@ const getTVL = async (vault) => {
       let tvl;
 
       const strategyContract = getContract(strategyABI, strategyAddress);
-      const vaultContract = getContract(abi, address);
 
       const poolAmount = await getPoolAmount(strategyContract);
-      const decimals = await getDecimals(vaultContract);
       const tokenPrice = await getTokenPrice(tokenId);
-  
+
+      let decimals = 0;
+      if(vault.contractType === 'harvest') {
+        const vaultContract = getContract(abi, address);
+        decimals =  await getDecimals(vaultContract);
+      } else {
+        decimals = await getDecimals(strategyContract);
+      }
+     
       tvl = (poolAmount / 10 ** decimals) * tokenPrice;
   
       return tvl === undefined ? 0 : tvl;
