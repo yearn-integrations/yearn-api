@@ -143,7 +143,31 @@ const testContracts = {
       strategyABI: abi.citadelStrategyABIContract,
       contractType: "citadel",
       tokenId: ["tether", "usd-coin", "dai"],
-    }
+    },
+    'hfDAI': {
+      address: '0x0f89ee5b95d1d5cfb10f29775d816fc6d8adb9fc',
+      abi: abi.hfVaultContract,
+      strategyAddress: '0x1032e051bc71d36d82f2fde298cee1311852dd29',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "dai",
+    },
+    'hfUSDC': {
+      address: '0x54783464848b35d6fb9bba37c1ddd23ac3b1a11a',
+      abi: abi.hfVaultContract,
+      strategyAddress: '0xe5331caf0b4e15c88e878551b93df0647738af35',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "usd-coin",
+    },
+    'hfUSDT': {
+      address: '0xb41a49de82e95dc1e028839c3440ac97f9a7832c',
+      abi: abi.hfVaultContract,
+      strategyAddress: '0x0bfa86d10a383b435748e39cedf8852cfd2b1a9d',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "tether",
+    },
   },
   vipDVG: {
     address: "0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424",
@@ -164,7 +188,21 @@ const testContracts = {
   uniswap: {
     ethDVG: {
       address: "0x0A15e37442e2a41A3A51A9Eff7fE1DCE0E96f0bB",
-      abi: abi.uniswapPairABIContract,
+      abi: abi.uniswapPairABIContract,  
+    }  
+  },
+  harvest: {
+    'hfDAI': {
+      address: '0xed2ebf9cde8c8fcc4f82ec6e3675130ae5649442',
+      abi: abi.hfVault,
+    },
+    'hfUSDC': {
+      address: '0xeff936f12c1600b8ce60f0e0575f520f82aedce3',
+      abi: abi.hfVault,
+    },
+    'hfUSDT': {
+      address: '0x1298e9b9a2350ad91f2baf68ab4de8ecb9267621',
+      abi: abi.hfVault,
     }
   }
 };
@@ -270,7 +308,31 @@ const mainContracts = {
       strategyABI: abi.citadelStrategyABIContract,
       contractType: "citadel",
       tokenId: ["tether", "usd-coin", "dai"],
-    }
+    },
+    hfDAI: {
+      address: '', // TODO: Update that this to mainnet address
+      abi: abi.hfVaultContract,
+      strategyAddress: '',
+      strategyABI:  abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "dai",
+    },
+    hfUSDC: {
+      address: '', // TODO: Update that this to mainnet address
+      abi: abi.hfVaultContract,
+      strategyAddress: '',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "usd-coin",
+    },
+    hfUSDT: {
+      address: '', // TODO: Update that this to mainnet address
+      abi: abi.hfVaultContract,
+      strategyAddress: '',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "tether",
+    },
   },
   compund: {
     cUSDT: {
@@ -306,6 +368,20 @@ const mainContracts = {
     ethDVG: {
       address: "", // TODO Update mainnet address
       abi: abi.uniswapPairABIContract,
+    }
+  },
+  harvest: {
+    'hfDAI': {
+      address: '', // TODO Update mainnet address
+      abi: abi.hfVault,
+    },
+    'hfUSDC': {
+      address: '', // TODO Update mainnet address
+      abi: abi.hfVault,
+    },
+    'hfUSDT': {
+      address: '', // TODO Update mainnet address
+      abi: abi.hfVault,
     }
   }
 };

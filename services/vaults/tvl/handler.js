@@ -286,4 +286,4 @@ module.exports.totalHandle = async (req, res) => {
     body: totalTvl,
   });
   return;
-};
+}

@@ -183,10 +183,73 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: apy,
     }
+  } else if (vault.isHarvest) {
+    // Harvest Vault
+    const vaultContract = new archiveNodeWeb3.eth.Contract(vault.vaultContractABI, vault.vaultContractAddress);
+    const strategyContract = new archiveNodeWeb3.eth.Contract(vault.strategyABI, vault.strategyContractAddress);
+
+    // Get current price per full share
+    const pool = strategyContract.methods.pool().call();
+    const totalSupply = vaultContract.methods.totalSupply().call();
+    const currentPricePerFullShare = pool / totalSupply;
+    
+    const dataRequiredForCalculation  = {
+      vaultContract, 
+      strategyContract,
+      currentPricePerFullShare, 
+      lastMeasurement: vault.lastMeasurement
+    };
+  
+    // APR based on one day sample
+    Object.assign(dataRequiredForCalculation, { blockNumber: oneDayAgoBlock });
+    const aprOneDaySample = await getHarvestFarmerAPR(
+                                vaultContract, 
+                                strategyContract, 
+                                oneDayAgoBlock, 
+                                currentPricePerFullShare);
+    
+    // APR based on three day sample 
+    Object.assign(dataRequiredForCalculation, { blockNumber: threeDaysAgoBlock });                             
+    const aprThreeDaySample = await getHarvestFarmerAPR(
+                                vaultContract,
+                                strategyContract, 
+                                threeDaysAgoBlock, 
+                                currentPricePerFullShare);
+  
+    // APR based on one week sample        
+    Object.assign(dataRequiredForCalculation, { blockNumber: oneWeekAgoBlock });              
+    const aprOneWeekSample = await getHarvestFarmerAPR(
+                                vaultContract, 
+                                strategyContract, 
+                                oneWeekAgoBlock, 
+                                currentPricePerFullShare);
+
+    // APR based on one month sample
+    Object.assign(dataRequiredForCalculation, { blockNumber: oneMonthAgoBlock });  
+    const aprOneMonthSample = await getHarvestFarmerAPR(
+                                vaultContract, 
+                                strategyContract, 
+                                oneMonthAgoBlock, 
+                                currentPricePerFullShare);
+
+    const aprData = {
+      aprOneDaySample,
+      aprThreeDaySample,
+      aprOneWeekSample, 
+      aprOneMonthSample
+    }
+
+    return {
+      ...aprData,
+      apyLoanscan: 0,
+      compoundApy: 0,
+      citadelApy: 0,
+    };
+
   } else {
     // Yearn Vault
     const pool = _.find(pools, { symbol });
-    const vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
+    var vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
 
     const pricePerFullShareInception = await getPricePerFullShare(
       vaultContract,
@@ -333,11 +396,14 @@ const readVault = async (vault) => {
     vaultContractAddress: address,
     erc20address: tokenAddress,
   } = vault;
+
   console.log(`Reading vault ${vault.name}`);
+  
   if (!abi || !address) {
     console.log(`Vault ABI not found: ${name}`);
     return null;
   }
+
   // const contract = new infuraWeb3.eth.Contract(abi, address);
   const apy = await getApyForVault(vault);
 
@@ -353,8 +419,33 @@ const readVault = async (vault) => {
     timestamp: Date.now(),
     ...apy,
   };
+  
   await saveVaultWithApy(data);
   return data;
+};
+
+const getHarvestFarmerAPR = async (vaultData) => {
+  const { 
+    vaultContract,
+    strategyContract, 
+    currentPricePerFullShare,
+    lastMeasurement, 
+    blockNumber, 
+  } = vaultData;
+
+  let apr = 0;
+
+  // To ensure block number happens after contract creation
+  if(blockNumber >= lastMeasurement) {
+    const pool = await strategyContract.methods.pool().call(undefined, blockNumber);
+    const totalSupply = await vaultContract.methods.totalSupply().call(undefined, blockNumber);
+
+    const pricePerFullShareOfBeforeDay  = pool / totalSupply;
+    
+    // APR calculation
+    apr = (currentPricePerFullShare - pricePerFullShareOfBeforeDay) * 100 * 365;
+  }
+  return apr;
 };
 
 module.exports.handler = async () => {

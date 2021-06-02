@@ -100,6 +100,9 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     const pool = await vaultContract.methods.getAllPoolInETH().call();
     const totalSupply = await vaultContract.methods.totalSupply().call();
     depositedAmount = new BigNumber(pool).times(depositedShares).div(totalSupply);
+  } else if (type === 'harvest') {
+    depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
+    depositedAmount = new BigNumber(depositedAmount);
   }
 
   const {

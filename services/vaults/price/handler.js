@@ -41,6 +41,7 @@ const getCurrentPrice = async () => {
           vaultPrice: vaultPricePerFullShare,
           compoundExchangeRate: 0,
           citadelPrice: 0,
+          harvestPrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'compound') {
         const compoundContract = getContract(contracts.compund[key].abi, contracts.compund[key].address);
@@ -55,6 +56,7 @@ const getCurrentPrice = async () => {
           vaultPrice: 0,
           compoundExchangeRate: exchangeRate,
           citadelPrice: 0,
+          harvestPrice: 0,
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'citadel') {
         const contract = getContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -64,12 +66,37 @@ const getCurrentPrice = async () => {
           vaultPrice: 0,
           compoundExchangeRate: 0,
           citadelPrice: pricePerFullShare,
+          harvestPrice: 0,
         }).catch((err) => console.log('err', err));
+      } else if (contracts.farmer[key].contractType === 'harvest') {
+        // Get vault contract and strategy contract
+        const vaultContract = getContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const strategyContract = getContract(contracts.farmer[key].strategyABI, contracts.farmer[key].strategyAddress);
+
+        // Get pool
+        const pool = await strategyContract.methods.pool().call(); 
+
+        // Get total supply
+        const totalSupply = await vaultContract.methods.totalSupply().call();
+
+        // Calculate price per full share
+        const pricePerFullShare = pool / totalSupply;
+     
+        await db.add(key + '_price', {
+          earnPrice: 0,
+          vaultPrice: 0,
+          compoundExchangeRate: 0,
+          citadelPrice: 0,
+          harvestPrice: pricePerFullShare,
+        })
       }
     } catch (err) {
       await db.add(key + '_price', {
         earnPrice: "0",
         vaultPrice: "0",
+        compoundExchangeRate: 0,
+        citadelPrice: 0,
+        harvestPrice: "0"
       }).catch((err) => console.log('err', err));
     }
   }
@@ -122,6 +149,15 @@ module.exports.handleHistoricialPrice = async (req, res) => {
         break;
       case db.daoCDVFarmer:
         collection = db.daoCDVFarmer;
+        break;
+      case db.hfDaiFarmer: 
+        collection = db.hfDaiFarmer;
+        break;
+      case db.hfUsdcFarmer: 
+        collection = db.hfUsdcFarmer;
+        break;
+      case db.hfUsdtFarmer: 
+        collection = db.hfUsdtFarmer;
         break;
       default:
         res.status(200).json({
