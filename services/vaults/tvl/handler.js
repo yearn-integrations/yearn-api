@@ -56,12 +56,8 @@ const getTotalSupply = async (contract) => {
   }
 };
 
-const getContract = async (vault) => {
-  const { strategyABI, strategyAddress } = vault;
-  const contract = new archiveNodeWeb3.eth.Contract(
-    strategyABI,
-    strategyAddress
-  );
+const getContract = (contractAbi, contractAddress) => {
+  const contract = new archiveNodeWeb3.eth.Contract(contractAbi, contractAddress);
   return contract;
 };
 
@@ -94,7 +90,6 @@ const getTokenPrice = async (coingecko_token_id) => {
 };
 
 const getxDVGPrice = async () => {
-  // TODO: Apply xDVG Price formula
   // xDVG price = DVG amount of xDVG SC * DVG price / xDVG amount
   const contracts =
     process.env.PRODUCTION != null && process.env.PRODUCTION != ""
@@ -119,16 +114,29 @@ const getxDVGPrice = async () => {
  * TVL = poolAmount * tokenPrice
  */
 const getTVL = async (vault) => {
-  const { tokenId } = vault;
+  const { 
+    tokenId, 
+    strategyABI, 
+    strategyAddress,
+    abi,
+    address
+  } = vault;
   let tvl;
   if (vault.contractType === 'citadel') {
     const contract = await getTokenContract(vault);
     tvl = await contract.methods.getAllPoolInUSD().call();
   } else {
-    const contract = await getContract(vault);
-    const poolAmount = await getPoolAmount(contract);
-    const decimals = await getDecimals(contract);
+    const strategyContract = getContract(strategyABI, strategyAddress);
+    const poolAmount = await getPoolAmount(strategyContract);
     const tokenPrice = await getTokenPrice(tokenId);
+    let decimals = 0;
+
+    if(vault.contractType === 'harvest') {
+      const vaultContract = getContract(abi, address);
+      decimals =  await getDecimals(vaultContract);
+    } else {
+      decimals = await getDecimals(strategyContract);
+    }
     tvl = (poolAmount / 10 ** decimals) * tokenPrice;
   }
   
