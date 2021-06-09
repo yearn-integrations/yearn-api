@@ -70,6 +70,21 @@ const getCompoundSupplyApy = async (cToken) => {
   return supplyApy;
 };
 
+const getPriceFromChainLink = async (block) => {
+  let contract, price = 0;
+  if (process.env.PRODUCTION != '') {
+    contract = new archiveNodeWeb3.eth.Contract(mainContracts.chainLink.USDT_ETH.abi, mainContracts.chainLink.USDT_ETH.address);
+  } else {
+    contract = new archiveNodeWeb3.eth.Contract(testContracts.chainLink.USDT_ETH.abi, testContracts.chainLink.USDT_ETH.address);
+  }
+
+  try {
+    price = await contract.methods.latestAnswer().call(undefined, block);
+  } catch (ex) {}
+  await delay(delayTime);
+  return price;
+};
+
 const getCitadelPricePerFullShare = async (contract, block, inceptionBlockNbr) => {
   const contractDidntExist = block < inceptionBlockNbr;
   const inceptionBlock = block === inceptionBlockNbr;
@@ -83,7 +98,8 @@ const getCitadelPricePerFullShare = async (contract, block, inceptionBlockNbr) =
 
   let pricePerFullShare = 0;
   try {
-    const pool = await contract.methods.getAllPoolInETH().call(undefined, block);
+    const price = await getPriceFromChainLink(block);
+    const pool = await contract.methods.getAllPoolInETH(price).call(undefined, block);
     const totalSupply = await contract.methods.totalSupply().call(undefined, block);
     pricePerFullShare = pool / totalSupply;
   } catch (ex) {}

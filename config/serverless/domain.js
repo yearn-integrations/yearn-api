@@ -137,33 +137,33 @@ const testContracts = {
       tokenId: "dai",
     },
     daoCDV: {
-      address: "0x542a42496c96b946324f7dce2b030d5643d9ef8a",
+      address: "0x626c25ca5b86277f395c0e40dbdf51f2a302ab43",
       abi: abi.citadelABIContract,
-      strategyAddress: "0x4996b12560b9a4a85dd437a3e8ff489335dcffa7",
+      strategyAddress: "0xc9939b0b2af53e8becba22ab153795e168140237",
       strategyABI: abi.citadelStrategyABIContract,
       contractType: "citadel",
       tokenId: ["tether", "usd-coin", "dai"],
     },
     'hfDAI': {
-      address: '0x0f89ee5b95d1d5cfb10f29775d816fc6d8adb9fc',
+      address: '0x6d7e8fa90c1ffdc019d691bafc18d6362fdeecd7',
       abi: abi.hfVaultContract,
-      strategyAddress: '0x1032e051bc71d36d82f2fde298cee1311852dd29',
+      strategyAddress: '0xdfeb689aea68f221eaafeeeb91767003265968d6',
       strategyABI: abi.hfStrategyContract,
       contractType: 'harvest',
       tokenId: "dai",
     },
     'hfUSDC': {
-      address: '0x54783464848b35d6fb9bba37c1ddd23ac3b1a11a',
+      address: '0x68b1c860300c4f7d577f08d8b3c3aee23887b280',
       abi: abi.hfVaultContract,
-      strategyAddress: '0xe5331caf0b4e15c88e878551b93df0647738af35',
+      strategyAddress: '0x7da9e06545c4fe6556fc0990f5afd4955379e1d2',
       strategyABI: abi.hfStrategyContract,
       contractType: 'harvest',
       tokenId: "usd-coin",
     },
     'hfUSDT': {
-      address: '0xb41a49de82e95dc1e028839c3440ac97f9a7832c',
+      address: '0x35880615bb18da592ff0feb0940ade2c02249715',
       abi: abi.hfVaultContract,
-      strategyAddress: '0x0bfa86d10a383b435748e39cedf8852cfd2b1a9d',
+      strategyAddress: '0xac783dc15d2cf08d1e1c34e18e531a9b182277b0',
       strategyABI: abi.hfStrategyContract,
       contractType: 'harvest',
       tokenId: "tether",
@@ -203,6 +203,12 @@ const testContracts = {
     'hfUSDT': {
       address: '0x1298e9b9a2350ad91f2baf68ab4de8ecb9267621',
       abi: abi.hfVault,
+    }
+  },
+  chainLink: {
+    USDT_ETH: {
+      address: "0x0bF499444525a23E7Bb61997539725cA2e928138",
+      abi: abi.eacAggregatoorProxyContract,
     }
   }
 };
@@ -382,6 +388,12 @@ const mainContracts = {
     'hfUSDT': {
       address: '', // TODO Update mainnet address
       abi: abi.hfVault,
+    }
+  },
+  chainLink: {
+    USDT_ETH: {
+      address: "0xEe9F2375b4bdF6387aa8265dD4FB8F16512A1d46",
+      abi: abi.eacAggregatoorProxyContract,
     }
   }
 };

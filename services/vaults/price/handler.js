@@ -12,11 +12,30 @@ const db = require('../../../models/price.model');
 const moment = require("moment");
 const delay = require("delay");
 const { delayTime } = require("../apy/save/config");
+const Web3 = require("web3");
+const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
+const archiveNodeWeb3 = new Web3(archiveNodeUrl);
+
+const getPriceFromChainLink = async () => {
+  let contract, price = 0;
+  if (process.env.PRODUCTION != '') {
+    contract = new archiveNodeWeb3.eth.Contract(mainContracts.chainLink.USDT_ETH.abi, mainContracts.chainLink.USDT_ETH.address);
+  } else {
+    contract = new archiveNodeWeb3.eth.Contract(testContracts.chainLink.USDT_ETH.abi, testContracts.chainLink.USDT_ETH.address);
+  }
+
+  try {
+    price = await contract.methods.latestAnswer().call();
+  } catch (ex) {}
+  await delay(delayTime);
+  return price;
+};
 
 const getCitadelPricePerFullShare = async (contract) => {
   let pricePerFullShare = 0;
   try {
-    const pool = await contract.methods.getAllPoolInETH().call();
+    const price = await getPriceFromChainLink();
+    const pool = await contract.methods.getAllPoolInETH(price).call();
     const totalSupply = await contract.methods.totalSupply().call();
     pricePerFullShare = pool / totalSupply;
   } catch (ex) {}

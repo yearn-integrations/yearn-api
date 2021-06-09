@@ -205,7 +205,7 @@ const getTransactions = async (userAddress) => {
 
     //TODO Change dynamic address
     const vaultTransactions = {
-      vaultAddress: farmer.address,
+      vaultAddress: farmer == null ? "" : farmer.address,
       // vaultAddress: process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? prodContract.prodYfUSDTContract : devContract.devYfUSDTContract,
       deposits: depositsToVault.map(correctTransactionAddress),
       withdrawals: withdrawalsFromVault.map(correctTransactionAddress),
