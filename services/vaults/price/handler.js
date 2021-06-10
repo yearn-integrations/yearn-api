@@ -84,7 +84,7 @@ const getCurrentPrice = async () => {
           earnPrice: 0,
           vaultPrice: 0,
           compoundExchangeRate: 0,
-          citadelPrice: pricePerFullShare,
+          citadelPrice: isNaN(pricePerFullShare) ? 0 : pricePerFullShare,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'harvest') {

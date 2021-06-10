@@ -175,10 +175,12 @@ const getAllTVL = async () => {
     await saveTVL(vault, tvl);
   }
 
-  let _vault = vaults.vipDVG;
-  let tvl = await getTVLxDVG(_vault);
-  tvls.push(tvl);
-  await saveTVL("xDVG", tvl);
+  if (process.env.PRODUCTION == null || process.env.PRODUCTION == "") {
+    let _vault = vaults.vipDVG;
+    let tvl = await getTVLxDVG(_vault);
+    tvls.push(tvl);
+    await saveTVL("xDVG", tvl);
+  }
 
   return tvls;
 };

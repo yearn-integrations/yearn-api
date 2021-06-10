@@ -194,7 +194,7 @@ const getApyForVault = async (vault) => {
       apyOneMonthSample: 0,
       apyLoanscan: 0,
       compoundApy: 0,
-      citadelApy: apy,
+      citadelApy: isNaN(apy) ? 0 : apy,
     }
   } else if (vault.isHarvest) {
     // Harvest Vault
