@@ -9,7 +9,7 @@ const findWithTimePeriods = async (startTime, endTime, collection) => {
   const db = mongo.getDB();
   return await db.collection(collection).find({
     timestamp: {
-      $gte: startTime,
+      $gte: startTime * 1000,
       $lte: endTime
     }
   }).toArray();
@@ -34,4 +34,8 @@ module.exports = {
   cUsdtFarmer: 'cUSDT_historical-apy',
   cUsdcFarmer: 'cUSDC_historical-apy',
   cDaiFarmer: 'cDAI_historical-apy',
+  daoCDVFarmer: 'daoCDV_historical-apy',
+  hfDaiFarmer: 'hfDAI_historical-apy',
+  hfUsdcFarmer: 'hfUSDC_historical-apy',
+  hfUsdtFarmer: 'hfUSDT_historical-apy'
 };

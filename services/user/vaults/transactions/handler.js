@@ -45,39 +45,6 @@ module.exports.handler = async (req, res) => {
 };
 
 const getGraphTransactions = async (userAddress) => {
-  // const query = `
-  // { 
-  //     deposits: deposits (where: {account: "${userAddress}"}, orderBy: blockNumber) {
-  //       transactionAddress: id
-  //       vaultAddress
-  //       amount
-  //       timestamp
-  //     }
-  //     withdrawals: withdraws (where: {account: "${userAddress}"}, orderBy: blockNumber) { 
-  //       transactionAddress: id
-  //       vaultAddress
-  //       amount
-  //       timestamp
-  //     }
-  //     transfersIn: transfers(where: {to: "${userAddress}", from_not: "0x0000000000000000000000000000000000000000"}, orderBy: blockNumber) {
-  //       transactionAddress: id
-  //       timestamp
-  //       vaultAddress
-  //       balance
-  //       totalSupply
-  //       shares: value
-  //     }
-  //     transfersOut: transfers(where: {from: "${userAddress}", to_not: "0x0000000000000000000000000000000000000000"}, orderBy: blockNumber) {
-  //       transactionAddress: id
-  //       shares: value
-  //       vaultAddress
-  //       timestamp
-  //       balance
-  //       totalSupply
-  //       shares: value
-  //     }
-  //   }
-  // `;
   const query = `
   { 
       deposits: deposits (where: {account: "${userAddress}"}) {
@@ -208,7 +175,7 @@ const getTransactions = async (userAddress) => {
     userAddress,
     graphTransactions
   );
-
+  
   const farmers = process.env.PRODUCTION == '' ? Object.values(testContracts.farmer) : Object.values(mainContracts.farmer);
 
   const removeVaultAddressField = (deposit) => _.omit(deposit, "vaultAddress");
@@ -238,7 +205,7 @@ const getTransactions = async (userAddress) => {
 
     //TODO Change dynamic address
     const vaultTransactions = {
-      vaultAddress: farmer.address,
+      vaultAddress: farmer == null ? "" : farmer.address,
       // vaultAddress: process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? prodContract.prodYfUSDTContract : devContract.devYfUSDTContract,
       deposits: depositsToVault.map(correctTransactionAddress),
       withdrawals: withdrawalsFromVault.map(correctTransactionAddress),

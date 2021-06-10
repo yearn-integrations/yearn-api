@@ -9,7 +9,7 @@ const findPriceWithTimePeriods = async (collection, startTime, endTime) => {
   const db = mongo.getDB();
   return await db.collection(collection).find({
     timestamp: {
-      $gte: startTime,
+      $gte: startTime * 1000,
       $lte: endTime
     }
   }).toArray();
@@ -34,4 +34,8 @@ module.exports = {
   cUsdtFarmer: 'cUSDT_price',
   cUsdcFarmer: 'cUSDC_price',
   cDaiFarmer: 'cDAI_price',
+  daoCDVFarmer: 'daoCDV_price',
+  hfDaiFarmer: 'hfDAI_price',
+  hfUsdcFarmer: 'hfUSDC_price',
+  hfUsdtFarmer: 'hfUSDT_price',
 };

@@ -70,6 +70,44 @@ const getCompoundSupplyApy = async (cToken) => {
   return supplyApy;
 };
 
+const getPriceFromChainLink = async (block) => {
+  let contract, price = 0;
+  if (process.env.PRODUCTION != '') {
+    contract = new archiveNodeWeb3.eth.Contract(mainContracts.chainLink.USDT_ETH.abi, mainContracts.chainLink.USDT_ETH.address);
+  } else {
+    contract = new archiveNodeWeb3.eth.Contract(testContracts.chainLink.USDT_ETH.abi, testContracts.chainLink.USDT_ETH.address);
+  }
+
+  try {
+    price = await contract.methods.latestAnswer().call(undefined, block);
+  } catch (ex) {}
+  await delay(delayTime);
+  return price;
+};
+
+const getCitadelPricePerFullShare = async (contract, block, inceptionBlockNbr) => {
+  const contractDidntExist = block < inceptionBlockNbr;
+  const inceptionBlock = block === inceptionBlockNbr;
+
+  if (inceptionBlock) {
+    return 1e18;
+  }
+  if (contractDidntExist) {
+    return 0;
+  }
+
+  let pricePerFullShare = 0;
+  try {
+    const price = await getPriceFromChainLink(block);
+    const pool = await contract.methods.getAllPoolInETH(price).call(undefined, block);
+    const totalSupply = await contract.methods.totalSupply().call(undefined, block);
+    pricePerFullShare = pool / totalSupply;
+  } catch (ex) {}
+  
+  await delay(delayTime);
+  return pricePerFullShare;
+}
+
 const getVirtualPrice = async (address, block) => {
   const poolContract = new archiveNodeWeb3.eth.Contract(poolABI, address);
   const virtualPrice = await poolContract.methods
@@ -93,9 +131,14 @@ const getPricePerFullShare = async (
   if (contractDidntExist) {
     return 0;
   }
-  const pricePerFullShare = await vaultContract.methods
+
+  let pricePerFullShare = 0;
+  try {
+    pricePerFullShare = await vaultContract.methods
     .getPricePerFullShare()
     .call(undefined, block);
+  } catch (ex) {}
+  
   await delay(delayTime);
   return pricePerFullShare;
 };
@@ -107,7 +150,6 @@ const getApyForVault = async (vault) => {
     vaultContractAddress: address,
     symbol,
   } = vault;
-
   // Compound Vault
   if (vault.isCompound) {
     let cToken;
@@ -128,24 +170,115 @@ const getApyForVault = async (vault) => {
       apyOneMonthSample: 0,
       apyLoanscan: 0,
       compoundApy,
+      citadelApy: 0,
     };
+  } else if (vault.isCitadel) {
+    // Citadel Vault
+    let contract;
+    if (process.env.PRODUCTION != '') {
+      contract = new archiveNodeWeb3.eth.Contract(mainContracts.farmer['daoCDV'].abi, mainContracts.farmer['daoCDV'].address);
+    } else {
+      contract = new archiveNodeWeb3.eth.Contract(testContracts.farmer['daoCDV'].abi, testContracts.farmer['daoCDV'].address);
+    }
+
+    const pricePerFullShareCurrent = await getCitadelPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    const pricePerFullShareOneDayAgo = await getCitadelPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+
+    // APY Calculation
+    const n = 365 / 2; // Assume 2 days to trigger invest function
+    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+    const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+    return {
+      apyInceptionSample: 0,
+      apyOneDaySample: 0,
+      apyThreeDaySample: 0,
+      apyOneWeekSample: 0,
+      apyOneMonthSample: 0,
+      apyLoanscan: 0,
+      compoundApy: 0,
+      citadelApy: apy,
+    }
+  } else if (vault.isHarvest) {
+    // Harvest Vault
+    const vaultContract = new archiveNodeWeb3.eth.Contract(vault.vaultContractABI, vault.vaultContractAddress);
+    const strategyContract = new archiveNodeWeb3.eth.Contract(vault.strategyABI, vault.strategyContractAddress);
+
+    // Get current price per full share
+    const pool = strategyContract.methods.pool().call();
+    const totalSupply = vaultContract.methods.totalSupply().call();
+    const currentPricePerFullShare = pool / totalSupply;
+    
+    const dataRequiredForCalculation  = {
+      vaultContract, 
+      strategyContract,
+      currentPricePerFullShare, 
+      lastMeasurement: vault.lastMeasurement
+    };
+  
+    // APR based on one day sample
+    Object.assign(dataRequiredForCalculation, { blockNumber: oneDayAgoBlock });
+    const aprOneDaySample = await getHarvestFarmerAPR(
+                                vaultContract, 
+                                strategyContract, 
+                                oneDayAgoBlock, 
+                                currentPricePerFullShare);
+    
+    // APR based on three day sample 
+    Object.assign(dataRequiredForCalculation, { blockNumber: threeDaysAgoBlock });                             
+    const aprThreeDaySample = await getHarvestFarmerAPR(
+                                vaultContract,
+                                strategyContract, 
+                                threeDaysAgoBlock, 
+                                currentPricePerFullShare);
+  
+    // APR based on one week sample        
+    Object.assign(dataRequiredForCalculation, { blockNumber: oneWeekAgoBlock });              
+    const aprOneWeekSample = await getHarvestFarmerAPR(
+                                vaultContract, 
+                                strategyContract, 
+                                oneWeekAgoBlock, 
+                                currentPricePerFullShare);
+
+    // APR based on one month sample
+    Object.assign(dataRequiredForCalculation, { blockNumber: oneMonthAgoBlock });  
+    const aprOneMonthSample = await getHarvestFarmerAPR(
+                                vaultContract, 
+                                strategyContract, 
+                                oneMonthAgoBlock, 
+                                currentPricePerFullShare);
+
+    const aprData = {
+      aprOneDaySample,
+      aprThreeDaySample,
+      aprOneWeekSample, 
+      aprOneMonthSample
+    }
+
+    return {
+      ...aprData,
+      apyLoanscan: 0,
+      compoundApy: 0,
+      citadelApy: 0,
+    };
+
   } else {
     // Yearn Vault
     const pool = _.find(pools, { symbol });
-    const vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
+    var vaultContract = new archiveNodeWeb3.eth.Contract(abi, address);
 
     const pricePerFullShareInception = await getPricePerFullShare(
       vaultContract,
       inceptionBlockNbr,
       inceptionBlockNbr
     );
-  
+      
     const pricePerFullShareCurrent = await getPricePerFullShare(
       vaultContract,
       currentBlockNbr,
       inceptionBlockNbr
     );
-  
+
     const pricePerFullShareOneDayAgo = await getPricePerFullShare(
       vaultContract,
       oneDayAgoBlock,
@@ -248,6 +381,7 @@ const getApyForVault = async (vault) => {
       ...apyData,
       apyLoanscan,
       compoundApy: 0,
+      citadelApy: 0,
     };
   }
 };
@@ -278,11 +412,14 @@ const readVault = async (vault) => {
     vaultContractAddress: address,
     erc20address: tokenAddress,
   } = vault;
+
   console.log(`Reading vault ${vault.name}`);
+  
   if (!abi || !address) {
     console.log(`Vault ABI not found: ${name}`);
     return null;
   }
+
   // const contract = new infuraWeb3.eth.Contract(abi, address);
   const apy = await getApyForVault(vault);
 
@@ -298,8 +435,33 @@ const readVault = async (vault) => {
     timestamp: Date.now(),
     ...apy,
   };
+  
   await saveVaultWithApy(data);
   return data;
+};
+
+const getHarvestFarmerAPR = async (vaultData) => {
+  const { 
+    vaultContract,
+    strategyContract, 
+    currentPricePerFullShare,
+    lastMeasurement, 
+    blockNumber, 
+  } = vaultData;
+
+  let apr = 0;
+
+  // To ensure block number happens after contract creation
+  if(blockNumber >= lastMeasurement) {
+    const pool = await strategyContract.methods.pool().call(undefined, blockNumber);
+    const totalSupply = await vaultContract.methods.totalSupply().call(undefined, blockNumber);
+
+    const pricePerFullShareOfBeforeDay  = pool / totalSupply;
+    
+    // APR calculation
+    apr = (currentPricePerFullShare - pricePerFullShareOfBeforeDay) * 100 * 365;
+  }
+  return apr;
 };
 
 module.exports.handler = async () => {

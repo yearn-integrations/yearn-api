@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const abi = require('../abi');
+const abi = require("../abi");
 const config = require("../../services/vaults/apy/save/config");
 
 const DEFAULT = {
@@ -19,7 +19,7 @@ module.exports.prod = () => DEFAULT;
 
 module.exports.staging = () => {
   return _.merge({}, DEFAULT, {
-    domainName: `staging-${DEFAULT.domainName}`
+    domainName: `staging-${DEFAULT.domainName}`,
   });
 };
 
@@ -28,214 +28,375 @@ module.exports.dev = () => {
     domainName: `dev-${DEFAULT.domainName}`,
   });
 };
-
 const testContracts = {
   earn: {
-    'yUSDT': {
-      address: '0xdb12e805d004698fc58f6e4fbdd876268df2dffe',
+    yUSDT: {
+      address: "0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd",
       abi: abi.earnUSDTABIContract,
     },
-    'yUSDC': {
-      address: '0xC6Be21D8533e90Fd136905eBe70c9d9148237f2d',
+    yUSDC: {
+      address: "0x2200a7e736821f5915ed3c40e7088a7e56dea64a",
       abi: abi.earnUSDCABIContract,
     },
-    'yDAI': {
-      address: '0x21857b392b7d0ca20c439bc39896f38ee74c6023',
+    yDAI: {
+      address: "0x690bcadb0d5633766510be078b97796d90acc7d8",
       abi: abi.earnDAIABIContract,
     },
-    'yTUSD': {
-      address: '0x63659fcb4a1f62e0c80690ddc67084e8e1560c61',
+    yTUSD: {
+      address: "0x6c45ba691a8f587e3fd7f17c7adefce8dfa452aa",
       abi: abi.earnTUSDABIContract,
     },
   },
   vault: {
-    'yUSDT': {
-      address: '0x359902517f43b8d38cf9718fe90e552375476f05',
+    yUSDT: {
+      address: "0xa5c53c76729e92630a2a3c549215110a330c902d",
       abi: config.vaultContractV2ABI,
     },
-    'yUSDC': {
-      address: '0x231991d392dbe5980586665bc1a066f8efac78c8',
+    yUSDC: {
+      address: "0xabdb489ded91b6646fadc8eeb0ca82ea1d526182",
       abi: config.vaultContractABI,
     },
-    'yDAI': {
-      address: '0x193b83e8cc108c86362e47a4c2d3048837d4996e',
+    yDAI: {
+      address: "0x5c2eea0a960cc1f604bf3c35a52ca2273f12e67e",
       abi: config.vaultContractV2ABI,
     },
-    'yTUSD': {
-      address: '0x0c9ddf949e32221612145807e34483ccf946b2b9',
+    yTUSD: {
+      address: "0xa8564f8d255c33175d4882e55f1a6d19e7a7d351",
       abi: config.vaultContractV2ABI,
-    },
-  },
-  farmer: {
-    'yUSDT': {
-      address: '0x132b495eC9451c9D572A791Ef9cB6f96Dcb67020',
-      abi: abi.vaultUSDTABIContract,
-      strategyAddress: '0x157fbacbbf6ba50c45e1375ae728f88f0cde1615',
-      strategyABI: abi.yearnUSDTABIContract,
-      contractType: 'yearn'
-    },
-    'yUSDC': {
-      address: '0xBdf7cC9c7a9dFF3d54Aa976e9586CE9935484005',
-      abi: abi.vaultUSDCABIContract,
-      strategyAddress: '0xf5a1988a9d02ce26b2cca31a56368e5f6a9b55ac',
-      strategyABI: abi.yearnUSDCABIContract,
-      contractType: 'yearn'
-    },
-    'yDAI': {
-      address: '0x2BB53Ee2592319e3c3cF2323f1a81B1bF7854B7C',
-      abi: abi.vaultDAIABIContract,
-      strategyAddress: '0x26cd801a2dbd05caad547b9d67ac2665e45dbc7e',
-      strategyABI: abi.yearnDAIABIContract,
-      contractType: 'yearn'
-    },
-    'yTUSD': {
-      address: '0xa8B73aE1E978315886E318FB086504231A3Ef917',
-      abi: abi.vaultTUSDABIContract,
-      strategyAddress: '0x5abeadf41fe9ea8dbd49ddf4e9659dd098da9610',
-      strategyABI: abi.yearnTUSDABIContract,
-      contractType: 'yearn'
-    },
-    'cUSDT': {
-      address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52',
-      abi: abi.compoundVaultContract,
-      strategyAddress: '0xa5c956aef6a21c986665de9cf889ef36613c7d5e',
-      strategyABI: abi.compoundStrategyContract,
-      contractType: 'compound'
-    },
-    'cUSDC': {
-      address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e',
-      abi: abi.compoundVaultContract,
-      strategyAddress: '0x3add8a9d3176c4b30dddeeababf9ca5cc3d49944',
-      strategyABI: abi.compoundStrategyContract,
-      contractType: 'compound'
-    },
-    'cDAI': {
-      address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d',
-      abi: abi.compoundVaultContract,
-      strategyAddress: '0xb951976a7d79fd8a589a7ca9753641380f5c1ab4',
-      strategyABI: abi.compoundStrategyContract,
-      contractType: 'compound'
     },
   },
   compund: {
-    'cUSDT': {
-      address: '0x3f0a0ea2f86bae6362cf9799b523ba06647da018',
+    cUSDT: {
+      address: "0x3f0a0ea2f86bae6362cf9799b523ba06647da018",
       abi: abi.cUSDTContract,
     },
-    'cUSDC': {
-      address: '0x4a92e71227d294f041bd82dd8f78591b75140d63',
+    cUSDC: {
+      address: "0x4a92e71227d294f041bd82dd8f78591b75140d63",
       abi: abi.cUSDCContract,
     },
-    'cDAI': {
-      address: '0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad',
+    cDAI: {
+      address: "0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad",
       abi: abi.cDAIContract,
+    },
+  },
+  farmer: {
+    yUSDT: {
+      address: "0x6b150e9bd70e216775c8b73270e64e870a3110c1",
+      abi: abi.vaultUSDTABIContract,
+      strategyAddress: "0x31324c1c0bb6b4b6f8102acb8346b065307926fa",
+      strategyABI: abi.yearnUSDTABIContract,
+      contractType: "yearn",
+      tokenId: "tether",
+    },
+    yUSDC: {
+      address: "0x6e15e283dc430eca010ade8b11b5b377902d6e56",
+      abi: abi.vaultUSDCABIContract,
+      strategyAddress: "0xe77ad5e2c4e7143fdbac6a4dde891727fc395c75",
+      strategyABI: abi.yearnUSDCABIContract,
+      contractType: "yearn",
+      tokenId: "usd-coin",
+    },
+    yDAI: {
+      address: "0x2428bfd238a3632552b343297c504f60283009ed",
+      abi: abi.vaultDAIABIContract,
+      strategyAddress: "0x8615dfb5b53e9ddb3751fbc3fc59512d4aba9a22",
+      strategyABI: abi.yearnDAIABIContract,
+      contractType: "yearn",
+      tokenId: "dai",
+    },
+    yTUSD: {
+      address: "0xeccb98c36bfc8c49c6065d1cd90bcf1c6f02d4ad",
+      abi: abi.vaultTUSDABIContract,
+      strategyAddress: "0xf64674cfc6597d597275144a1a746dad564b0fcd",
+      strategyABI: abi.yearnTUSDABIContract,
+      contractType: "yearn",
+      tokenId: "true-usd",
+    },
+    cUSDT: {
+      address: "0x5d102e0bdf2037899e1ff2e8cc50987108533c52",
+      abi: abi.compoundVaultContract,
+      strategyAddress: "0xa5c956aef6a21c986665de9cf889ef36613c7d5e",
+      strategyABI: abi.compoundStrategyContract,
+      contractType: "compound",
+      tokenId: "tether",
+    },
+    cUSDC: {
+      address: "0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e",
+      abi: abi.compoundVaultContract,
+      strategyAddress: "0x3add8a9d3176c4b30dddeeababf9ca5cc3d49944",
+      strategyABI: abi.compoundStrategyContract,
+      contractType: "compound",
+      tokenId: "usd-coin",
+    },
+    cDAI: {
+      address: "0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d",
+      abi: abi.compoundVaultContract,
+      strategyAddress: "0xb951976a7d79fd8a589a7ca9753641380f5c1ab4",
+      strategyABI: abi.compoundStrategyContract,
+      contractType: "compound",
+      tokenId: "dai",
+    },
+    daoCDV: {
+      address: "0x626c25ca5b86277f395c0e40dbdf51f2a302ab43",
+      abi: abi.citadelABIContract,
+      strategyAddress: "0xc9939b0b2af53e8becba22ab153795e168140237",
+      strategyABI: abi.citadelStrategyABIContract,
+      contractType: "citadel",
+      tokenId: ["tether", "usd-coin", "dai"],
+    },
+    'hfDAI': {
+      address: '0x6d7e8fa90c1ffdc019d691bafc18d6362fdeecd7',
+      abi: abi.hfVaultContract,
+      strategyAddress: '0xdfeb689aea68f221eaafeeeb91767003265968d6',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "dai",
+    },
+    'hfUSDC': {
+      address: '0x68b1c860300c4f7d577f08d8b3c3aee23887b280',
+      abi: abi.hfVaultContract,
+      strategyAddress: '0x7da9e06545c4fe6556fc0990f5afd4955379e1d2',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "usd-coin",
+    },
+    'hfUSDT': {
+      address: '0x35880615bb18da592ff0feb0940ade2c02249715',
+      abi: abi.hfVaultContract,
+      strategyAddress: '0xac783dc15d2cf08d1e1c34e18e531a9b182277b0',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "tether",
+    },
+  },
+  vipDVG: {
+    address: "0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424",
+    abi: abi.xDVGABIContract,
+    tokenId: "xDVG",
+  },
+  DVG: {
+    address: "0xea9726eFc9831EF0499fD4Db4Ab143F15a797673",
+    abi: abi.DVGABIContract,
+    tokenId: "DVG",
+  },
+  daoStake: {
+    address: "0x2d04c8A39fe41Dc94595Df81ABDaB1dD905B38B3",
+    abi: abi.daoStakeContract,
+    startBlock: 25055584,
+    poolPercent: 0.51
+  },
+  uniswap: {
+    ethDVG: {
+      address: "0x0A15e37442e2a41A3A51A9Eff7fE1DCE0E96f0bB",
+      abi: abi.uniswapPairABIContract,  
+    }  
+  },
+  harvest: {
+    'hfDAI': {
+      address: '0xed2ebf9cde8c8fcc4f82ec6e3675130ae5649442',
+      abi: abi.hfVault,
+    },
+    'hfUSDC': {
+      address: '0xeff936f12c1600b8ce60f0e0575f520f82aedce3',
+      abi: abi.hfVault,
+    },
+    'hfUSDT': {
+      address: '0x1298e9b9a2350ad91f2baf68ab4de8ecb9267621',
+      abi: abi.hfVault,
+    }
+  },
+  chainLink: {
+    USDT_ETH: {
+      address: "0x0bF499444525a23E7Bb61997539725cA2e928138",
+      abi: abi.eacAggregatoorProxyContract,
     }
   }
 };
 
 const mainContracts = {
   earn: {
-    'yUSDT': {
-      address: '0xdb12e805d004698fc58f6e4fbdd876268df2dffe',
+    yUSDT: {
+      address: "0xdb12e805d004698fc58f6e4fbdd876268df2dffe",
       abi: abi.earnUSDTABIContract,
     },
-    'yUSDC': {
-      address: '0xC6Be21D8533e90Fd136905eBe70c9d9148237f2d',
+    yUSDC: {
+      address: "0xC6Be21D8533e90Fd136905eBe70c9d9148237f2d",
       abi: abi.earnUSDCABIContract,
     },
-    'yDAI': {
-      address: '0x21857b392b7d0ca20c439bc39896f38ee74c6023',
+    yDAI: {
+      address: "0x21857b392b7d0ca20c439bc39896f38ee74c6023",
       abi: abi.earnDAIABIContract,
     },
-    'yTUSD': {
-      address: '0x63659fcb4a1f62e0c80690ddc67084e8e1560c61',
+    yTUSD: {
+      address: "0x63659fcb4a1f62e0c80690ddc67084e8e1560c61",
       abi: abi.earnTUSDABIContract,
     },
   },
   vault: {
-    'yUSDT': {
-      address: '0x2f08119c6f07c006695e079aafc638b8789faf18',
+    yUSDT: {
+      address: "0x2f08119c6f07c006695e079aafc638b8789faf18",
       abi: config.vaultContractV2ABI,
     },
-    'yUSDC': {
-      address: '0x597ad1e0c13bfe8025993d9e79c69e1c0233522e',
+    yUSDC: {
+      address: "0x597ad1e0c13bfe8025993d9e79c69e1c0233522e",
       abi: config.vaultContractABI,
     },
-    'yDAI': {
-      address: '0xacd43e627e64355f1861cec6d3a6688b31a6f952',
+    yDAI: {
+      address: "0xacd43e627e64355f1861cec6d3a6688b31a6f952",
       abi: config.vaultContractV2ABI,
     },
-    'yTUSD': {
-      address: '0x37d19d1c4e1fa9dc47bd1ea12f742a0887eda74a',
+    yTUSD: {
+      address: "0x37d19d1c4e1fa9dc47bd1ea12f742a0887eda74a",
       abi: config.vaultContractV2ABI,
     },
   },
   farmer: {
-    'yUSDT': {
-      address: '0x4F0C1c9bA6B9CCd0BEd6166e86b672ac8EE621F7',
+    yUSDT: {
+      address: "0x4F0C1c9bA6B9CCd0BEd6166e86b672ac8EE621F7",
       abi: abi.vaultUSDTABIContract,
-      strategyAddress: '0x3DB93e95c9881BC7D9f2C845ce12e97130Ebf5f2',
+      strategyAddress: "0x3DB93e95c9881BC7D9f2C845ce12e97130Ebf5f2",
       strategyABI: abi.yearnUSDTABIContract,
-      contractType: 'yearn'
+      contractType: "yearn",
+      tokenId: "tether",
     },
-    'yUSDC': {
-      address: '0x9f0230FbDC0379E5FefAcca89bE03A42Fec5fb6E',
+    yUSDC: {
+      address: "0x9f0230FbDC0379E5FefAcca89bE03A42Fec5fb6E",
       abi: abi.vaultUSDCABIContract,
-      strategyAddress: '0x4A9dE4dA5eC67E1dbc8e18F26E178B40D690A11D',
+      strategyAddress: "0x4A9dE4dA5eC67E1dbc8e18F26E178B40D690A11D",
       strategyABI: abi.yearnUSDCABIContract,
-      contractType: 'yearn'
+      contractType: "yearn",
+      tokenId: "usd-coin",
     },
-    'yDAI': { 
-      address: '0x2bFc2Da293C911e5FfeC4D2A2946A599Bc4Ae770',
+    yDAI: {
+      address: "0x2bFc2Da293C911e5FfeC4D2A2946A599Bc4Ae770",
       abi: abi.vaultDAIABIContract,
-      strategyAddress: '0x3685fB7CA1C555Cb5BD5A246422ee1f2c53DdB71',
+      strategyAddress: "0x3685fB7CA1C555Cb5BD5A246422ee1f2c53DdB71",
       strategyABI: abi.yearnDAIABIContract,
-      contractType: 'yearn'
+      contractType: "yearn",
+      tokenId: "dai",
     },
-    'yTUSD': {
-      address: '0x2C8de02aD4312069355B94Fb936EFE6CFE0C8FF6',
+    yTUSD: {
+      address: "0x2C8de02aD4312069355B94Fb936EFE6CFE0C8FF6",
       abi: abi.vaultTUSDABIContract,
-      strategyAddress: '0xA6F1409a259B21a84c8346ED1B0826D656959a54',
+      strategyAddress: "0xA6F1409a259B21a84c8346ED1B0826D656959a54",
       strategyABI: abi.yearnTUSDABIContract,
-      contractType: 'yearn'
+      contractType: "yearn",
+      tokenId: "true-usd",
     },
-    'cUSDT': {
-      address: '0xEeCe6AD323a93d4B021BDAaC587DCC04b5cf0a78',
+    cUSDT: {
+      address: "0xEeCe6AD323a93d4B021BDAaC587DCC04b5cf0a78",
       abi: abi.compoundVaultContract,
-      strategyAddress: '0x11af10648ed5094f41753ccb69a2f74135697631',
+      strategyAddress: "0x11af10648ed5094f41753ccb69a2f74135697631",
       strategyABI: abi.compoundStrategyContract,
-      contractType: 'compound'
+      contractType: "compound",
+      tokenId: "tether",
     },
-    'cUSDC': {
-      address: '0xd1D7f950899C0269a7F2aad5E854cdc3a1350ba9',
+    cUSDC: {
+      address: "0xd1D7f950899C0269a7F2aad5E854cdc3a1350ba9",
       abi: abi.compoundVaultContract,
-      strategyAddress: '0x89be389b0529ca3187b6e81e689496cb3bad8557',
+      strategyAddress: "0x89be389b0529ca3187b6e81e689496cb3bad8557",
       strategyABI: abi.compoundStrategyContract,
-      contractType: 'compound'
+      contractType: "compound",
+      tokenId: "usd-coin",
     },
-    'cDAI': {
-      address: '0x43C20638C3914Eca3c96e9cAc8ebE7d652Be45c6',
+    cDAI: {
+      address: "0x43C20638C3914Eca3c96e9cAc8ebE7d652Be45c6",
       abi: abi.compoundVaultContract,
-      strategyAddress: '0x0c5cff1c9ec7ce8e28998503471b19c848c5a581',
+      strategyAddress: "0x0c5cff1c9ec7ce8e28998503471b19c848c5a581",
       strategyABI: abi.compoundStrategyContract,
-      contractType: 'compound'
+      contractType: "compound",
+      tokenId: "dai",
+    },
+    daoCDV: {
+      address: "", // TODO Update on mainnet
+      abi: abi.citadelABIContract,
+      strategyAddress: "", // TODO Update on mainnet
+      strategyABI: abi.citadelStrategyABIContract,
+      contractType: "citadel",
+      tokenId: ["tether", "usd-coin", "dai"],
+    },
+    hfDAI: {
+      address: '', // TODO: Update that this to mainnet address
+      abi: abi.hfVaultContract,
+      strategyAddress: '',
+      strategyABI:  abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "dai",
+    },
+    hfUSDC: {
+      address: '', // TODO: Update that this to mainnet address
+      abi: abi.hfVaultContract,
+      strategyAddress: '',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "usd-coin",
+    },
+    hfUSDT: {
+      address: '', // TODO: Update that this to mainnet address
+      abi: abi.hfVaultContract,
+      strategyAddress: '',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "tether",
     },
   },
   compund: {
-    'cUSDT': {
-      address: '0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9',
+    cUSDT: {
+      address: "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9",
       abi: abi.cUSDTContract,
     },
-    'cUSDC': {
-      address: '0x39aa39c021dfbae8fac545936693ac917d5e7563',
+    cUSDC: {
+      address: "0x39aa39c021dfbae8fac545936693ac917d5e7563",
       abi: abi.cUSDTContract,
     },
-    'cDAI': {
-      address: '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643',
+    cDAI: {
+      address: "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643",
       abi: abi.cDAIContract,
+    },
+  },
+  vipDVG: {
+    address: "", // TODO: Update mainnet address
+    abi: abi.xDVGABIContract,
+    tokenId: "xDVG",
+  },
+  DVG: {
+    address: "", // TODO: Update mainnet address
+    abi: abi.xDVGABIContract,
+    tokenId: "DVG",
+  },
+  daoStake: {
+    address: "", // TODO Update mainnet address
+    abi: abi.daoStakeContract,
+    startBlock: 25055584, // TODO Update mainnet block
+    poolPercent: 0.51
+  },
+  uniswap: {
+    ethDVG: {
+      address: "", // TODO Update mainnet address
+      abi: abi.uniswapPairABIContract,
+    }
+  },
+  harvest: {
+    'hfDAI': {
+      address: '', // TODO Update mainnet address
+      abi: abi.hfVault,
+    },
+    'hfUSDC': {
+      address: '', // TODO Update mainnet address
+      abi: abi.hfVault,
+    },
+    'hfUSDT': {
+      address: '', // TODO Update mainnet address
+      abi: abi.hfVault,
+    }
+  },
+  chainLink: {
+    USDT_ETH: {
+      address: "0xEe9F2375b4bdF6387aa8265dD4FB8F16512A1d46",
+      abi: abi.eacAggregatoorProxyContract,
     }
   }
-}
+};
 
 const devEarnContract = "0xdb12e805d004698fc58f6e4fbdd876268df2dffe";
 const devVaultContract = "0x99dd34943c741E17EB772041cd3D7E8d317FA92f";
@@ -255,12 +416,10 @@ module.exports.prodContract = {
   prodEarnContract,
   prodVaultContract,
   prodYfUSDTContract,
-}
+};
 
 module.exports = {
   testContracts,
   mainContracts,
   aggregatedContractAddress,
-}
-
-
+};

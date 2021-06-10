@@ -11,7 +11,7 @@ Yearn API intentions are as follows:
 
 ## Interact
 
-https://yearn.tools
+[https://test.daoventures.co/api/api-docs/]
 
 ## Setup Instructions
 
@@ -20,8 +20,8 @@ https://yearn.tools
 - Install docker
 - Execute terminal commands
 
-```
-git clone https://github.com/yearn-integrations/yearn-api.git
+```cmd
+git clone [https://github.com/daoventures/yearn-api.git]
 cd yearn-api
 cp .env.example .env
 docker-compose up
@@ -48,15 +48,13 @@ docker-compose up
 ## Stages
 
 - Currently three stages are available
-- `prod` is used for production deployments. Production endpoint is https://api.yearn.tools
-- `dev` is used for development purposes. Development endpoint is https://dev-api.yearn.tools
-- `staging` is used for APIs pending production deployment. Staging endpoint is https://staging-api.yearn.tools
+- `beta` is used for beta deployments. Beta endpoint is [https://beta.daoventures.co/api/]
+- `test` is used for development purposes. Development endpoint is [https://test.daoventures.co/api/]
 
-### Reset a stage
+## Testing Locally
 
-- Use the command `sls remove --stage dev` to remove all functions and custom domains associated with a stage
+Comment out the following line in docker-compose.yml
 
-### API deployment
-
-- Use the command `sls deploy --stage dev` to deploy
-- You can also deploy a single function using `sls deploy function -f functionName --stage dev`
+```yml
+command: [--auth]
+```
