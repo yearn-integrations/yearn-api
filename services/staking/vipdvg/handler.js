@@ -36,15 +36,15 @@ const getTokenPrice = async (coingecko_token_id) => {
     return;
 }
 
-// Get vipDVG's total supply
-const getxDVGTotalSupply = async(xDVGContract) => {
+const getDecimals = async (contract) => {
     try {
-        const xDVGTotalSupply = await xDVGContract.methods.totalSupply().call();
-        return xDVGTotalSupply;
-    } catch(err) {
-        console.log("Error in getxDVGTotalSupply(): ", err);
+      let decimals = await contract.methods.decimals().call();
+      return decimals;
+    } catch (err) {
+      // Catch error
+      console.log(err);
     }
-}
+};
 
 // DVG's balance of vipDVG contract
 const getDVGBalanceOfxDVG = async(dvgContract, xDVGAddress) => {
@@ -56,28 +56,45 @@ const getDVGBalanceOfxDVG = async(dvgContract, xDVGAddress) => {
     }
 }
 
-// xDVGPrice Formula :  xDVG price = ( DVG amount of xDVG SC * DVG price) / xDVG amount
-const getxDVGPrice = async (xDVGAmount, dvgBalanceOfxDVG, dvgPrice) => {
-    return (dvgBalanceOfxDVG * dvgPrice) / xDVGAmount;
+// xDVGPrice Formula :  xDVG price = ( DVG amount of xDVG SC * DVG price) / xDVG totalSupply
+const getxDVGPrice = async (xDVGTotalSupply, dvgBalanceOfxDVG, dvgPrice) => {
+    return (dvgBalanceOfxDVG * dvgPrice) / xDVGTotalSupply;
 }
 
+const getTotalSupply = async (contract) => {
+    try {
+      let totalSupply = await contract.methods.totalSupply().call();
+      return totalSupply;
+    } catch (err) {
+      // Catch error
+      console.log(err);
+    }
+};
+
+/**
+ * Get TVL of xDVG.
+ * TVL = totalSupply * xDVG Price
+ */
+ const getTVLxDVG = async (vault, totalSupply, tokenPrice) => {
+    let tvl;
+    const contract = await getContract(vault);
+    const decimals = await getDecimals(contract);
+  
+    tvl = (totalSupply / 10 ** decimals) * tokenPrice;
+    return tvl;
+};
+
 // APR calculation Formula : (xDVG's total supply * xDVG price) / (DVG.balanceOf(xDVG) * DVG price)
-const getxDVGAPR = async (dvgContract, xDVGContract) => {
-    const xDVGTotalSupply = await getxDVGTotalSupply(xDVGContract);
+const getxDVGAPR = async (dvgContract, xDVGContract, xDVGContractInfo) => {
+    const xDVGTotalSupply = await getTotalSupply(xDVGContract);
     const dvgBalOfxDVG = await getDVGBalanceOfxDVG(dvgContract, xDVGContract._address);
 
     const dvgPrice = await getTokenPrice("daoventures");
     const xDVGPrice = await getxDVGPrice(xDVGTotalSupply, dvgBalOfxDVG, dvgPrice);
-
-    console.log("total supply: ", xDVGTotalSupply);
-    console.log("balance: ", dvgBalOfxDVG);
-    console.log("dvg price: ", dvgPrice);
-    console.log("xDVG price", xDVGPrice);
-
+    const tvl = await getTVLxDVG(xDVGContractInfo, xDVGTotalSupply, xDVGPrice);
     const apr = (xDVGTotalSupply * xDVGPrice) / (dvgBalOfxDVG * dvgPrice);
-    console.log("apr", apr);
 
-    return { apr, dvgPrice };
+    return { apr, dvgPrice, tvl, xDVGPrice };
 }
 
 module.exports.getxDVGStake = async(req, res) => {
@@ -90,7 +107,7 @@ module.exports.getxDVGStake = async(req, res) => {
         const dvgContractInfo = getContractInfo("DVG");
         const dvgContract = await getContract(dvgContractInfo);
          
-        let result = await getxDVGAPR(dvgContract, xDVGContract);
+        let result = await getxDVGAPR(dvgContract, xDVGContract, xDVGContractInfo);
 
         if(!result.apr || isNaN(result.apr)) {
             result.apr = 0.00;
