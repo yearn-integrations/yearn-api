@@ -65,9 +65,9 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     if (vault.vaultAddress == null) return false;
     return vault.vaultAddress.toLowerCase() === contractAddress;
   }
-    
-  const transactionsForVault = _.find(transactions, findVault);
 
+  const transactionsForVault = _.find(transactions, findVault);
+ 
   // Get User Deposit Amount
   let strategyContract;
   let vaultContract;
@@ -80,6 +80,7 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     type = mainContracts.farmer[symbol].contractType;
   } else {
     const symbol = Object.keys(testContracts.farmer).find(key => testContracts.farmer[key].address.toLowerCase() === contractAddress.toLowerCase());
+    
     strategyContract = getContract(testContracts.farmer[symbol].strategyABI, testContracts.farmer[symbol].strategyAddress);
     vaultContract = getContract(testContracts.farmer[symbol].abi, testContracts.farmer[symbol].address);
     type = testContracts.farmer[symbol].contractType;
@@ -123,8 +124,22 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     return sum;
   };
 
+  const getSumForUSD = (data) => {
+    const zero = new BigNumber(0);
+    const sum = data.reduce(
+      (dataItem, item) => {
+        return dataItem.plus(item.amountInUSD ? item.amountInUSD : 0);
+      },
+      zero,
+      data
+    );
+    return sum;
+  }
+
   const totalDeposits = getSum(deposits);
+  const totalDepositsInUSD = getSumForUSD(deposits);
   const totalWithdrawals = getSum(withdrawals);
+  const totalWithdrawalsInUSD = getSumForUSD(withdrawals);
   const totalTransferredIn = getSum(transfersIn);
   const totalTransferredOut = getSum(transfersOut);
 
@@ -137,7 +152,9 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   const statistics = {
     contractAddress,
     totalDeposits: totalDeposits.toFixed(),
+    totalDepositsInUSD: totalDepositsInUSD.toFixed(),
     totalWithdrawals: totalWithdrawals.toFixed(),
+    totalWithdrawalsInUSD: totalWithdrawalsInUSD.toFixed(),
     totalTransferredIn: totalTransferredIn.toFixed(),
     totalTransferredOut: totalTransferredOut.toFixed(),
     depositedShares,
