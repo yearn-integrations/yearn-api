@@ -128,8 +128,13 @@ const getxDVGAPR = async (dvgContract, xDVGContract, xDVGContractInfo) => {
 
     const dvgPrice = await getTokenPrice("daoventures");
     const xDVGPrice = await getxDVGPrice(xDVGTotalSupply, dvgBalOfxDVG, dvgPrice);
-    const apr = await calculateAPR((xDVGTotalSupply * xDVGPrice) / (dvgBalOfxDVG * dvgPrice), xDVGContractInfo.lastMeasurement);
-    return { ...apr };
+    let apr = (xDVGTotalSupply * xDVGPrice) / (dvgBalOfxDVG * dvgPrice);
+
+    if (isNaN(apr)) {
+        apr = 0;
+    }
+    const aprInfo = await calculateAPR(apr, xDVGContractInfo.lastMeasurement);
+    return { ...aprInfo, apr };
 }
 
 const getxDVGInfo = async (dvgContract, xDVGContract, xDVGContractInfo) => {
