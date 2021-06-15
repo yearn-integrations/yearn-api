@@ -55,6 +55,7 @@ const getGraphTransactions = async (userAddress) => {
           id
         }
         amount
+        amountInUSD
         transaction {
           timestamp
         }
@@ -67,6 +68,7 @@ const getGraphTransactions = async (userAddress) => {
           id
         }
         amount
+        amountInUSD
         transaction {
           timestamp
         }
@@ -121,6 +123,7 @@ const getVaultAddressesForUserWithGraphTransactions = (
     transfersOut,
   } = graphTransactions;
 
+
   const txMapping = (tx) => {
     tx.vaultAddress = tx.vaultAddress.id;
     tx.transactionAddress = tx. transactionAddress.id;
@@ -142,6 +145,7 @@ const getVaultAddressesForUserWithGraphTransactions = (
     ...pluck("vaultAddress", transfersIn),
     ...pluck("vaultAddress", transfersOut),
   ]);
+
   return vaultAddressesForUser;
 };
 
