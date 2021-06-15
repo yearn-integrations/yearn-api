@@ -144,8 +144,8 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   const totalTransferredOut = getSum(transfersOut);
 
   const earnings = depositedAmount
-    .minus(totalDeposits)
-    .plus(totalWithdrawals)
+    .minus(totalDepositsInUSD)
+    .plus(totalWithdrawalsInUSD)
     .minus(totalTransferredIn)
     .plus(totalTransferredOut);
 
