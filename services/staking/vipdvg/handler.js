@@ -2,10 +2,19 @@ const { testContracts, mainContracts } = require("../../../config/serverless/dom
 
 const Web3 = require("web3");
 const CoinGecko = require("coingecko-api");
+const moment = require("moment");
+const delay = require("delay");
+const EthDater = require("../../vaults/apy/save/ethereum-block-by-date");
+const { delayTime } = require("../../vaults/apy/save/config");
+const db = require("../../../models/vip-apy.model");
 const CoinGeckoClient = new CoinGecko();
 
+const infuraUrl = process.env.WEB3_ENDPOINT;
 const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
 const archiveNodeWeb3 = new Web3(archiveNodeUrl);
+const infuraWeb3 = new Web3(infuraUrl);
+const blocks = new EthDater(archiveNodeWeb3, delayTime);
+const DB_CONSTANT = 'daoVip';
 
 // Get VIP DVG contract info from domain based on enviroment
 const getContractInfo = (name) => {
@@ -84,6 +93,34 @@ const getTotalSupply = async (contract) => {
     return tvl;
 };
 
+const calculateAPR = async (apr, lastMeasurement) => {
+    const oneDayAgo = moment().subtract(1, "days").valueOf();
+    await delay(delayTime);
+    const oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;
+    const currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
+    const nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
+    const days = (currentBlockNbr - lastMeasurement) / nbrBlocksInDay;
+    const aprPerDay = apr / days;
+    return {
+        aprOneDay: aprPerDay,
+        aprOneWeek: aprPerDay * 7,
+        aprOneMonth: aprPerDay * 30,
+        aprOneYear: aprPerDay * 365,
+    }
+}
+
+const getAPR = async () => {
+    const apr = await db.findOne({
+        name: DB_CONSTANT,
+    });
+
+    if (apr != null) {
+        delete apr._id;
+        delete apr.name;
+    }
+    return apr;
+}
+
 // APR calculation Formula : (xDVG's total supply * xDVG price) / (DVG.balanceOf(xDVG) * DVG price)
 const getxDVGAPR = async (dvgContract, xDVGContract, xDVGContractInfo) => {
     const xDVGTotalSupply = await getTotalSupply(xDVGContract);
@@ -91,10 +128,37 @@ const getxDVGAPR = async (dvgContract, xDVGContract, xDVGContractInfo) => {
 
     const dvgPrice = await getTokenPrice("daoventures");
     const xDVGPrice = await getxDVGPrice(xDVGTotalSupply, dvgBalOfxDVG, dvgPrice);
-    const tvl = await getTVLxDVG(xDVGContractInfo, xDVGTotalSupply, xDVGPrice);
-    const apr = (xDVGTotalSupply * xDVGPrice) / (dvgBalOfxDVG * dvgPrice);
+    const apr = await calculateAPR((xDVGTotalSupply * xDVGPrice) / (dvgBalOfxDVG * dvgPrice), xDVGContractInfo.lastMeasurement);
+    return { ...apr };
+}
 
-    return { apr, dvgPrice, tvl, xDVGPrice };
+const getxDVGInfo = async (dvgContract, xDVGContract, xDVGContractInfo) => {
+    const xDVGTotalSupply = await getTotalSupply(xDVGContract);
+    const dvgBalOfxDVG = await getDVGBalanceOfxDVG(dvgContract, xDVGContract._address);
+
+    const dvgPrice = await getTokenPrice("daoventures");
+    const xDVGPrice = await getxDVGPrice(xDVGTotalSupply, dvgBalOfxDVG, dvgPrice);
+    const tvl = await getTVLxDVG(xDVGContractInfo, xDVGTotalSupply, xDVGPrice);
+    const apr = await getAPR();
+    return { ...apr, dvgPrice, tvl, xDVGPrice };
+}
+
+module.exports.getVipAPY = async () => {
+    try {
+        // Get vipDVG contract
+        const xDVGContractInfo = getContractInfo("vipDVG");
+        const xDVGContract = await getContract(xDVGContractInfo);
+
+        // Get DVG contract
+        const dvgContractInfo = getContractInfo("DVG");
+        const dvgContract = await getContract(dvgContractInfo);
+
+        let result = await getxDVGAPR(dvgContract, xDVGContract, xDVGContractInfo);
+        await db.add({
+            ...result,
+            name: DB_CONSTANT,
+        })
+    } catch (err) {}
 }
 
 module.exports.getxDVGStake = async(req, res) => {
@@ -107,11 +171,7 @@ module.exports.getxDVGStake = async(req, res) => {
         const dvgContractInfo = getContractInfo("DVG");
         const dvgContract = await getContract(dvgContractInfo);
          
-        let result = await getxDVGAPR(dvgContract, xDVGContract, xDVGContractInfo);
-
-        if(!result.apr || isNaN(result.apr)) {
-            result.apr = 0.00;
-        }
+        let result = await getxDVGInfo(dvgContract, xDVGContract, xDVGContractInfo);
 
         res.status(200).json({
             message: 'Successful Response',
