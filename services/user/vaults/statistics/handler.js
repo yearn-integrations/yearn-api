@@ -98,7 +98,11 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
     depositedAmount = new BigNumber(depositedAmount);
   } else if (type === 'citadel') {
-    depositedAmount = await vaultContract.methods._balanceOfDeposit(userAddress).call();
+    const pool = await vaultContract.methods.getAllPoolInUSD().call();
+    const totalSupply = await vaultContract.methods.totalSupply().call(); 
+
+    // depositedAmount = await vaultContract.methods._balanceOfDeposit(userAddress).call();
+    depositedAmount = (depositedShares * pool) / totalSupply;
     depositedAmount = new BigNumber(depositedAmount);
   } else if (type === 'harvest') {
     depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
@@ -145,8 +149,8 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
 
   let earnings = 0;
   if(type === "citadel") {
-    let exactDepositedAmount = (depositedAmount / 10 ** 18);
-    exactDepositedAmount = BigNumber(exactDepositedAmount);
+    let exactDepositedAmount = depositedAmount / 10 ** 6;
+    exactDepositedAmount = new BigNumber(exactDepositedAmount);
     earnings = exactDepositedAmount
               .minus(totalDepositsInUSD)
               .plus(totalWithdrawalsInUSD)
