@@ -141,11 +141,22 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   const totalTransferredIn = getSum(transfersIn);
   const totalTransferredOut = getSum(transfersOut);
 
-  const earnings = depositedAmount
-    .minus(totalDepositsInUSD)
-    .plus(totalWithdrawalsInUSD)
+  let earnings = 0;
+  if(type === "citadel") {
+    let exactDepositedAmount = (depositedAmount / 10 ** 18);
+    exactDepositedAmount = BigNumber(exactDepositedAmount);
+    earnings = exactDepositedAmount
+              .minus(totalDepositsInUSD)
+              .plus(totalWithdrawalsInUSD)
+              .minus(totalTransferredIn)
+              .plus(totalTransferredOut)
+  } else {
+    earnings = depositedAmount
+    .minus(totalDeposits)
+    .plus(totalWithdrawals)
     .minus(totalTransferredIn)
     .plus(totalTransferredOut);
+  } 
 
   const statistics = {
     contractAddress,
