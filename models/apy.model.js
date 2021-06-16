@@ -8,12 +8,13 @@ const findAll = async () => {
 
 const add = async (params) => {
   const db = mongo.getDB();
+  
   const result = await db.collection(collection).findOne({
-    name: params.name
+    vaultSymbol: params.vaultSymbol
   });
   if (result != null) {
     return await db.collection(collection).updateOne({
-      name: params.name
+      vaultSymbol: params.vaultSymbol
     },
     {
       $set: {
