@@ -13,6 +13,109 @@ db.vault_categories.insertMany([
     // { name: 'basic', contract_address: '', symbol: 'hfDAI'},
 ]);
 
+db.stake_pool.insertMany([
+    {
+        name: 'dvmUSDT',
+        label: 'Yearn Fighter USDT LP',
+        contract_address: '0x4f0c1c9ba6b9ccd0bed6166e86b672ac8ee621f7',
+        status: 'A',
+        pid: '0',
+        category: 'Advance',
+        tokenId: 'tether',
+        symbol: 'USDT'
+    },
+    {
+        name: 'dvmUSDC',
+        label: 'Yearn Fighter USDC LP',
+        contract_address: '0x9f0230fbdc0379e5fefacca89be03a42fec5fb6e',
+        status: 'A',
+        pid: '1',
+        category: 'Advance',
+        tokenId: 'usd-coin',
+        symbol: 'USDC'
+    },
+    {
+        name: 'dvmDAI',
+        label: 'Yearn Fighter DAI LP',
+        contract_address: '0x2bfc2da293c911e5ffec4d2a2946a599bc4ae770',
+        status: 'A',
+        pid: '2',
+        category: 'Advance',
+        tokenId: 'dai',
+        symbol: 'DAI'
+    },
+    {
+        name: 'dvmTUSD',
+        label: 'Yearn Fighter TUSD LP',
+        contract_address: '0x2c8de02ad4312069355b94fb936efe6cfe0c8ff6',
+        status: 'A',
+        pid: '3',
+        category: 'Advance',
+        tokenId: 'true-usd',
+        symbol: 'TUSD'
+    },
+    {
+        name: 'dvlUSDT',
+        label: 'Compound Fighter USDT LP',
+        contract_address: '0xeece6ad323a93d4b021bdaac587dcc04b5cf0a78',
+        status: 'A',
+        pid: '4',
+        category: 'Basic',
+        tokenId: 'tether',
+        symbol: 'USDT'
+    },
+    {
+        name: 'dvlUSDC',
+        label: 'Compound Fighter USDC LP',
+        contract_address: '0xd1d7f950899c0269a7f2aad5e854cdc3a1350ba9',
+        status: 'A',
+        pid: '5',
+        category: 'Basic',
+        tokenId: 'usd-coin',
+        symbol: 'USDC'
+    }, 
+    {
+        name: 'dvlDAI',
+        label: 'Compound Fighter DAI LP',
+        contract_address: '0x43c20638c3914eca3c96e9cac8ebe7d652be45c6',
+        status: 'A',
+        pid: '6',
+        category: 'Basic',
+        tokenId: 'dai',
+        symbol: 'DAI'
+    },
+    {
+        name: 'vipDVG',
+        label: 'vipDVG LP',
+        contract_address: '', // TODO: Update to mainnet address
+        status: 'A',
+        pid: '7',
+        category: 'Basic',
+        tokenId: 'xDVG', 
+        symbol: 'xDVG'
+    },
+    {
+        name: 'ETH<->DVG',
+        label: 'Uniswap DVG-ETH LP',
+        contract_address: '', // TODO: Update to mainnet address
+        status: 'A',
+        pid: '8',
+        category: 'Basic',
+        tokenId: 'ethDVG',
+        symbol: 'ethDVG'
+    },
+    {
+        name: 'daoCDV',
+        label: 'DAO Citadel LP',
+        contract_address: '0x8fe826cc1225b03aa06477ad5af745aed5fe7066',
+        status: 'A',
+        pid: '9',
+        category: 'Expert',
+        tokenId: 'ethereum',
+        symbol: 'daoCDV'
+    }
+]);
+
 // Testnet Contracts
 db.vault_categories.insertMany([
     { name: 'advance', contract_address: '0x6B150E9BD70E216775c8b73270E64e870a3110c1', symbol: 'yUSDT' },
@@ -36,83 +139,103 @@ db.xdvg_token.insert({
 db.stake_pool.insertMany([
     {
         name: 'dvmUSDT',
+        label: 'Yearn Fighter USDT LP',
         contract_address: '0x6B150E9BD70E216775c8b73270E64e870a3110c1',
         status: 'A',
         pid: '0',
-        category: 'advance',
-        tokenId: 'tether'
+        category: 'Advance',
+        tokenId: 'tether',
+        symbol: 'USDT'
     },
     {
         name: 'dvmUSDC',
+        label: 'Yearn Fighter USDC LP',
         contract_address: '0x6E15e283dc430eca010Ade8b11b5B377902d6e56',
         status: 'A',
         pid: '1',
-        category: 'advance',
-        tokenId: 'usd-coin'
+        category: 'Advance',
+        tokenId: 'usd-coin',
+        symbol: 'USDC'
     },
     {
         name: 'dvmDAI',
+        label: 'Yearn Fighter DAI LP',
         contract_address: '0x2428bFD238a3632552B343297c504F60283009eD',
         status: 'A',
         pid: '2',
-        category: 'advance',
-        tokenId: 'dai'
+        category: 'Advance',
+        tokenId: 'dai',
+        symbol: 'DAI'
     },
     {
         name: 'dvmTUSD',
+        label: 'Yearn Fighter TUSD LP',
         contract_address: '0xEcCb98c36bfc8c49c6065d1cD90bcf1c6F02D4AD',
         status: 'A',
         pid: '3',
-        category: 'advance',
-        tokenId: 'true-usd'
+        category: 'Advance',
+        tokenId: 'true-usd',
+        symbol: 'TUSD'
     },
     {
         name: 'dvlUSDT',
+        label: 'Compound Fighter USDT LP',
         contract_address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52',
         status: 'A',
         pid: '4',
-        category: 'basic',
-        tokenId: 'tether'
+        category: 'Basic',
+        tokenId: 'tether',
+        symbol: 'USDT'
     },
     {
         name: 'dvlUSDC',
+        label: 'Compound Fighter USDC LP',
         contract_address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e',
         status: 'A',
         pid: '5',
-        category: 'basic',
-        tokenId: 'usd-coin'
+        category: 'Basic',
+        tokenId: 'usd-coin',
+        symbol: 'USDC'
     }, 
     {
         name: 'dvlDAI',
+        label: 'Compound Fighter DAI LP',
         contract_address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d',
         status: 'A',
         pid: '6',
-        category: 'basic',
-        tokenId: 'dai'
+        category: 'Basic',
+        tokenId: 'dai',
+        symbol: 'DAI'
     },
     {
-        name: 'xDVG',
+        name: 'vipDVG',
+        label: 'vipDVG LP',
         contract_address: '0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424',
         status: 'A',
         pid: '7',
-        category: 'basic',
-        tokenId: 'xDVG'
+        category: 'Basic',
+        tokenId: 'xDVG', 
+        symbol: 'xDVG'
     },
     {
         name: 'ETH<->DVG',
+        label: 'Uniswap DVG-ETH LP',
         contract_address: '0x0A15e37442e2a41A3A51A9Eff7fE1DCE0E96f0bB',
         status: 'A',
         pid: '8',
-        category: 'basic',
-        tokenId: 'ethDVG'
+        category: 'Basic',
+        tokenId: 'ethDVG',
+        symbol: 'ethDVG'
     },
     {
         name: 'daoCDV',
+        label: 'DAO Citadel LP',
         contract_address: '0x542a42496c96b946324f7dce2b030d5643d9ef8a',
         status: 'A',
         pid: '9',
-        category: 'degen',
-        tokenId: 'ethereum'
+        category: 'Expert',
+        tokenId: 'ethereum',
+        symbol: 'daoCDV'
     }
 ]);
 
