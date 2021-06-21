@@ -69,6 +69,7 @@ async function init() {
     stakePool.getPools(req, res)
   );
   app.get("/staking/get-xdvg-stake", (req, res) => stakeXDvg.getxDVGStake(req, res));
+  app.get('/event/verify', (req,res) => specialEvent.handleVerifyEvent(req, res));
   app.get('/event/verify/:amount', (req, res) => specialEvent.handler(req, res));
 
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

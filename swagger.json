@@ -204,6 +204,18 @@
                 "responses": {}
             }
         },
+        "/event/verify" : {
+            "get": {
+                "tags": [
+                    "Vaults"
+                ],
+                "description": "Check if any happy hour event at current time.",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {}
+            }
+        },
         "/event/verify/{amount}" : {
             "get": {
                 "tags": [
