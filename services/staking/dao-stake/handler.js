@@ -229,7 +229,7 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
     // TVL Calculation
     const tvl = tokenBalOfDAOStake * poolTokenPrice;
 
-    Object.assign(pool, { apr: apr === Infinity ? 0 : apr, tvl });
+    Object.assign(pool, { apr: apr === Infinity ? 0 : apr, tvl , multiplier});
 
     return pool;
 }
