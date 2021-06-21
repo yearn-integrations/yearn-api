@@ -270,11 +270,13 @@ module.exports.saveStakedPools = async () => {
         poolAbiContractMap.set(contracts.uniswap.ethDVG.address, contracts.uniswap.ethDVG.abi)
        
         for (index = 0 ; index < poolSize; index ++) {
-            if(poolAbiContractMap.has(pools[index].contract_address) && pools[index].status == 'A') {
+            const contractAddressToLowerCase = pools[index].contract_address.toLowerCase();
+            
+            if(poolAbiContractMap.has(contractAddressToLowerCase) && pools[index].status == 'A') {
                 // Fetch abi of pool contract
                 const poolContractInfo = { 
                     address: pools[index].contract_address, 
-                    abi: poolAbiContractMap.get(pools[index].contract_address)
+                    abi: poolAbiContractMap.get(contractAddressToLowerCase)
                 };
 
                 // Get pool contract
