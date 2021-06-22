@@ -355,12 +355,12 @@ const mainContracts = {
     },
   },
   vipDVG: {
-    address: "", // TODO: Update mainnet address
+    address: "0xD6Ce913C3e81b5e67a6b94d705d9E7cDdf073A7e",
     abi: abi.xDVGABIContract,
     tokenId: "xDVG",
   },
   DVG: {
-    address: "", // TODO: Update mainnet address
+    address: "0x51e00a95748DBd2a3F47bC5c3b3E7B3F0fea666c", 
     abi: abi.xDVGABIContract,
     tokenId: "DVG",
   },
