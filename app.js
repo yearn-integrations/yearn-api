@@ -61,13 +61,13 @@ async function init() {
   app.get("/vaults/category", (req, res) =>
     vaultCategory.getVaultCategory(req, res)
   );
-  // app.get("/staking/get-vip-tokens", (req, res) =>
-  //   stakeVIP.getVipDVGToken(req, res)
-  // );
+  app.get("/staking/get-vip-tokens", (req, res) =>
+    stakeVIP.getVipDVGToken(req, res)
+  );
   // app.get("/staking/get-pools", (req, res) =>
   //   stakePool.getPools(req, res)
   // );
-  // app.get("/staking/get-xdvg-stake", (req, res) => stakeXDvg.getxDVGStake(req, res));
+  app.get("/staking/get-xdvg-stake", (req, res) => stakeXDvg.getxDVGStake(req, res));
 
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
