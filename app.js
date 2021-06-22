@@ -34,6 +34,7 @@ async function init() {
     jobs.saveHistoricalTVL();
     // jobs.saveHistoricalPools();
     // jobs.saveABIPools();
+    jobs.saveVipApr();
   });
 
   app.use(cors());

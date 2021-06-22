@@ -173,6 +173,7 @@ const testContracts = {
     address: "0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424",
     abi: abi.xDVGABIContract,
     tokenId: "xDVG",
+    lastMeasurement: 24819747,
   },
   DVG: {
     address: "0xea9726eFc9831EF0499fD4Db4Ab143F15a797673",
@@ -358,6 +359,7 @@ const mainContracts = {
     address: "0xD6Ce913C3e81b5e67a6b94d705d9E7cDdf073A7e",
     abi: abi.xDVGABIContract,
     tokenId: "xDVG",
+    lastMeasurement: 0, // TODO Update lastMeasurement
   },
   DVG: {
     address: "0x51e00a95748DBd2a3F47bC5c3b3E7B3F0fea666c", 
