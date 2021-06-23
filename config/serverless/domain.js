@@ -178,7 +178,7 @@ const testContracts = {
   DVG: {
     address: "0xea9726eFc9831EF0499fD4Db4Ab143F15a797673",
     abi: abi.DVGABIContract,
-    tokenId: "DVG",
+    tokenId: "daoventures",
   },
   daoStake: {
     address: "0x2d04c8A39fe41Dc94595Df81ABDaB1dD905B38B3",
@@ -364,7 +364,7 @@ const mainContracts = {
   DVG: {
     address: "0x51e00a95748DBd2a3F47bC5c3b3E7B3F0fea666c", 
     abi: abi.xDVGABIContract,
-    tokenId: "DVG",
+    tokenId: "daoventures",
   },
   daoStake: {
     address: "", // TODO Update mainnet address
