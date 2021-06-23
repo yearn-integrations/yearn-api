@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const db = require("./config/db");
 const vaultsApy = require("./services/vaults/apy/handler");

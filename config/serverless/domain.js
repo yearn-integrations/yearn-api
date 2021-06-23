@@ -144,6 +144,14 @@ const testContracts = {
       contractType: "citadel",
       tokenId: ["tether", "usd-coin", "dai"],
     },
+    daoELO: {
+      address: "0xf03fa8553379d872b4e2Bafbc679409Fb82604c2",
+      abi: abi.elonApeVaultContract,
+      strategyAddress: "0xa4F71f88bd522b33af3ae515Caafa956BD1bbFa1",
+      strategyABI: abi.elonApeStrategyContract,
+      contractType: "elon",
+      tokenId: ["tether", "usd-coin", "dai"],
+    },
     'hfDAI': {
       address: '0x6d7e8fa90c1ffdc019d691bafc18d6362fdeecd7',
       abi: abi.hfVaultContract,
@@ -314,6 +322,14 @@ const mainContracts = {
       strategyAddress: "", // TODO Update on mainnet
       strategyABI: abi.citadelStrategyABIContract,
       contractType: "citadel",
+      tokenId: ["tether", "usd-coin", "dai"],
+    },
+    daoELO: {
+      address: "", // TODO Update on mainnet
+      abi: abi.elonApeVaultContract,
+      strategyAddress: "", // TODO Update on mainnet
+      strategyABI: abi.elonApeStrategyContract,
+      contractType: "elon",
       tokenId: ["tether", "usd-coin", "dai"],
     },
     hfDAI: {

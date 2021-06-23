@@ -122,7 +122,7 @@ const getTVL = async (vault) => {
     address
   } = vault;
   let tvl;
-  if (vault.contractType === 'citadel') {
+  if (vault.contractType === 'citadel' || vault.contractType === 'elon') {
     const contract = await getTokenContract(vault);
     const usdPool = await contract.methods.getAllPoolInUSD().call();
     tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
@@ -265,6 +265,9 @@ module.exports.tvlHandle = async (req, res) => {
       break;
     case db.daoCDVFarmer:
       collection = db.daoCDVFarmer;
+      break;
+    case db.daoELOFarmer:
+      collection = db.daoELOFarmer;
       break;
     default:
       res.status(200).json({
