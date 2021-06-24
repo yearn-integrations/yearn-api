@@ -137,7 +137,7 @@ const testContracts = {
       tokenId: "dai",
     },
     daoCDV: {
-      address: "0x542a42496c96b946324f7dce2b030d5643d9ef8a",
+      address: "0x626c25ca5b86277f395c0e40dbdf51f2a302ab43",
       abi: abi.citadelABIContract,
       strategyAddress: "0x4996b12560b9a4a85dd437a3e8ff489335dcffa7",
       strategyABI: abi.citadelStrategyABIContract,
