@@ -151,7 +151,7 @@ db.stake_pool.insertMany([
     {
         name: 'dvmUSDT',
         label: 'Yearn Fighter USDT LP',
-        contract_address: '0x6B150E9BD70E216775c8b73270E64e870a3110c1',
+        contract_address: '0x6b150e9bd70e216775c8b73270e64e870a3110c1',
         status: 'A',
         pid: '0',
         category: 'Advance',
@@ -161,7 +161,7 @@ db.stake_pool.insertMany([
     {
         name: 'dvmUSDC',
         label: 'Yearn Fighter USDC LP',
-        contract_address: '0x6E15e283dc430eca010Ade8b11b5B377902d6e56',
+        contract_address: '0x6e15e283dc430eca010ade8b11b5b377902d6e56',
         status: 'A',
         pid: '1',
         category: 'Advance',
@@ -171,7 +171,7 @@ db.stake_pool.insertMany([
     {
         name: 'dvmDAI',
         label: 'Yearn Fighter DAI LP',
-        contract_address: '0x2428bFD238a3632552B343297c504F60283009eD',
+        contract_address: '0x2428bfd238a3632552b343297c504f60283009ed',
         status: 'A',
         pid: '2',
         category: 'Advance',
@@ -181,7 +181,7 @@ db.stake_pool.insertMany([
     {
         name: 'dvmTUSD',
         label: 'Yearn Fighter TUSD LP',
-        contract_address: '0xEcCb98c36bfc8c49c6065d1cD90bcf1c6F02D4AD',
+        contract_address: '0xeccb98c36bfc8c49c6065d1cd90bcf1c6f02d4ad',
         status: 'A',
         pid: '3',
         category: 'Advance',
@@ -221,7 +221,7 @@ db.stake_pool.insertMany([
     {
         name: 'vipDVG',
         label: 'vipDVG LP',
-        contract_address: '0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424',
+        contract_address: '0x3aa8e8b6d3562a1e7acb0dddd02b27896c00c424',
         status: 'A',
         pid: '7',
         category: 'Basic',
@@ -231,7 +231,7 @@ db.stake_pool.insertMany([
     {
         name: 'ETH<->DVG',
         label: 'Uniswap DVG-ETH LP',
-        contract_address: '0x0A15e37442e2a41A3A51A9Eff7fE1DCE0E96f0bB',
+        contract_address: '0x0a15e37442e2a41a3a51a9eff7fe1dce0e96f0bb',
         status: 'A',
         pid: '8',
         category: 'Basic',
@@ -241,7 +241,7 @@ db.stake_pool.insertMany([
     {
         name: 'daoCDV',
         label: 'DAO Citadel LP',
-        contract_address: '0x542a42496c96b946324f7dce2b030d5643d9ef8a',
+        contract_address: '0x626c25ca5b86277f395c0e40dbdf51f2a302ab43',
         status: 'A',
         pid: '9',
         category: 'Expert',

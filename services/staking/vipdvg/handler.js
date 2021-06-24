@@ -145,7 +145,7 @@ const getxDVGInfo = async (dvgContract, xDVGContract, xDVGContractInfo) => {
     const xDVGPrice = await getxDVGPrice(xDVGTotalSupply, dvgBalOfxDVG, dvgPrice);
     const tvl = await getTVLxDVG(xDVGContractInfo, xDVGTotalSupply, xDVGPrice);
     const apr = await getAPR();
-    return { ...apr, dvgPrice, tvl, xDVGPrice };
+    return { ...apr, dvgPrice, tvl, xDVGPrice: xDVGPrice/dvgPrice };
 }
 
 module.exports.getVipAPY = async () => {

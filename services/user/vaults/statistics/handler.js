@@ -148,21 +148,29 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   }
 
   const totalDeposits = getSum(deposits);
-  const totalDepositsInUSD = getSumForUSD(deposits);
   const totalWithdrawals = getSum(withdrawals);
-  const totalWithdrawalsInUSD = getSumForUSD(withdrawals);
   const totalTransferredIn = getSum(transfersIn);
   const totalTransferredOut = getSum(transfersOut);
-
+ 
   let earnings = 0;
+  let totalDepositsInUSD = 0;
+  let totalWithdrawalsInUSD = 0;
+  let totalTransferredInUSD = 0;
+  let totalTransferredOutInUSD = 0;
+
   if(type === "citadel" || type === "elon") {
+    totalDepositsInUSD = getSumForUSD(deposits);
+    totalWithdrawalsInUSD = getSumForUSD(withdrawals);
+    totalTransferredInUSD = getSumForUSD(transfersIn);
+    totalTransferredOutInUSD = getSumForUSD(transfersOut);
+    
     let exactDepositedAmount = depositedAmount / 10 ** 6;
     exactDepositedAmount = new BigNumber(exactDepositedAmount);
     earnings = exactDepositedAmount
               .minus(totalDepositsInUSD)
               .plus(totalWithdrawalsInUSD)
-              .minus(totalTransferredIn)
-              .plus(totalTransferredOut)
+              .minus(totalTransferredInUSD)
+              .plus(totalTransferredOutInUSD)
   } else {
     earnings = depositedAmount
     .minus(totalDeposits)
@@ -178,7 +186,9 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     totalWithdrawals: totalWithdrawals.toFixed(),
     totalWithdrawalsInUSD: totalWithdrawalsInUSD.toFixed(),
     totalTransferredIn: totalTransferredIn.toFixed(),
+    totalTransferredInUSD: totalTransferredInUSD.toFixed(),
     totalTransferredOut: totalTransferredOut.toFixed(),
+    totalTransferredOutInUSD: totalTransferredOutInUSD.toFixed(),
     depositedShares,
     depositedAmount: depositedAmount,
     earnings: earnings.toFixed(0),
