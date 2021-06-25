@@ -19549,4 +19549,6 @@ module.exports = {
   eacAggregatoorProxyContract,
   elonApeVaultContract,
   elonApeStrategyContract,
+  daoFaangStonkVaultContract,
+  daoFaangStonkStrategyContract
 };
