@@ -145,9 +145,9 @@ const testContracts = {
       tokenId: ["tether", "usd-coin", "dai"],
     },
     daoELO: {
-      address: "0xf03fa8553379d872b4e2Bafbc679409Fb82604c2",
+      address: "0xf03fa8553379d872b4e2bafbc679409fb82604c2",
       abi: abi.elonApeVaultContract,
-      strategyAddress: "0xa4F71f88bd522b33af3ae515Caafa956BD1bbFa1",
+      strategyAddress: "0xa4f71f88bd522b33af3ae515caafa956bd1bbfa1",
       strategyABI: abi.elonApeStrategyContract,
       contractType: "elon",
       tokenId: ["tether", "usd-coin", "dai"],
