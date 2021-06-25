@@ -26,12 +26,12 @@ const checkEligibilityForEvent = async(amount) => {
         result.amountAboveThreshold = false,
         result.happyHour = true,
         result.happyHourInfo = event;
-        result.message = "Your Deposit amount is not eligible for Gas-free Deposit. Minimum Deposit amount for gas-free deposits is " + event.threshold
+        result.message = "Your Deposit amount is not eligible for Gas-free Deposit. Minimum Deposit amount for gas-free deposits is " + event.threshold + "."
         return result; 
     }
 
     result.happyHourInfo = event;
-    result.message = "Valid";
+    result.message = "Congratulations! You’re about to make a gas-free transaction! Proceed to Sign the transaction.";
     return result;
 }
 
