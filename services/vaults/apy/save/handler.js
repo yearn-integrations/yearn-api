@@ -17,7 +17,6 @@ const archiveNodeWeb3 = new Web3(archiveNodeUrl);
 const infuraWeb3 = new Web3(infuraUrl);
 const blocks = new EthDater(archiveNodeWeb3, delayTime);
 const { testContracts, mainContracts } = require('../../../../config/serverless/domain');
-const { validate } = require("node-cron");
 
 let currentBlockNbr;
 let oneDayAgoBlock;
