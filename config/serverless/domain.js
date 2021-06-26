@@ -189,9 +189,9 @@ const testContracts = {
     tokenId: "daoventures",
   },
   daoStake: {
-    address: "0x2d04c8A39fe41Dc94595Df81ABDaB1dD905B38B3",
+    address: "0xd8f59a99acfc597feb84914fef3769def87e7553",
     abi: abi.daoStakeContract,
-    startBlock: 25055584,
+    startBlock: 25711879,
     poolPercent: 0.51
   },
   uniswap: {
