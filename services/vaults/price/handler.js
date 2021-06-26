@@ -57,9 +57,20 @@ const getElonPricePerFullShare = async (contract) => {
   return pricePerFullShare;
 }
 
+const getFaangPricePerFullShare = async (contract) => {
+  let pricePerFullShare = 0;
+  try {
+    const pool = await contract.methods.getTotalValueInPool().call();
+    const totalSupply = await contract.methods.totalSupply().call();
+    pricePerFullShare = pool / totalSupply;
+  } catch (ex) {}
+  await delay(delayTime);
+  return pricePerFullShare;
+}
+
 const getCurrentPrice = async () => {
   let contracts = process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? mainContracts : testContracts;
-
+  
   for (const key of Object.keys(contracts.farmer)) {
     try {
       if (contracts.farmer[key].contractType === 'yearn') {
@@ -90,6 +101,7 @@ const getCurrentPrice = async () => {
           compoundExchangeRate: exchangeRate,
           citadelPrice: 0,
           elonPrice: 0,
+          faangPrice: 0,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'citadel') {
@@ -101,6 +113,7 @@ const getCurrentPrice = async () => {
           compoundExchangeRate: 0,
           citadelPrice: pricePerFullShare,
           elonPrice: 0,
+          faangPrice: 0,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'elon') {
@@ -112,6 +125,19 @@ const getCurrentPrice = async () => {
           compoundExchangeRate: 0,
           citadelPrice: 0,
           elonPrice: pricePerFullShare,
+          faangPrice: 0,
+          harvestPrice: 0,
+        }).catch((err) => console.log('err', err));
+      } else if(contracts.farmer[key].contractType === 'daoFaang') {
+        const contract = getContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getFaangPricePerFullShare(contract);
+        await db.add(key + '_price', {
+          earnPrice: 0,
+          vaultPrice: 0,
+          compoundExchangeRate: 0,
+          citadelPrice: 0,
+          elonPrice: 0,
+          faangPrice: pricePerFullShare,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'harvest') {
@@ -134,6 +160,7 @@ const getCurrentPrice = async () => {
           compoundExchangeRate: 0,
           citadelPrice: 0,
           elonPrice: 0,
+          faangPrice: 0,
           harvestPrice: pricePerFullShare,
         })
       }
@@ -144,6 +171,7 @@ const getCurrentPrice = async () => {
         compoundExchangeRate: 0,
         citadelPrice: 0,
         elonPrice: 0,
+        faangPrice: 0,
         harvestPrice: "0"
       }).catch((err) => console.log('err', err));
     }
@@ -200,6 +228,9 @@ module.exports.handleHistoricialPrice = async (req, res) => {
         break;
       case db.daoELOFarmer:
         collection = db.daoELOFarmer;
+        break;
+      case db.daoSTOFarmer: 
+        collection = db.daoSTOFarmer;
         break;
       case db.hfDaiFarmer: 
         collection = db.hfDaiFarmer;
