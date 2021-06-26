@@ -144,7 +144,7 @@ const getFaangPricePerFullShare = async (contract, block, inceptionBlockNbr) => 
 
   let pricePerFullShare = 0;
   try {
-    const pool = await contract.methods.getTotalValueInPool(price).call(undefined, block);
+    const pool = await contract.methods.getTotalValueInPool().call(undefined, block);
     const totalSupply = await contract.methods.totalSupply().call(undefined, block);
     pricePerFullShare = pool / totalSupply;
   } catch (ex) { }
@@ -283,8 +283,8 @@ const getApyForVault = async (vault) => {
       contract = new archiveNodeWeb3.eth.Contract(testContracts.farmer['daoSTO'].abi, testContracts.farmer['daoSTO'].address);
     }
 
-    const pricePerFullShareCurrent = await getElonPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    const pricePerFullShareOneDayAgo = await getElonPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    const pricePerFullShareCurrent = await getFaangPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    const pricePerFullShareOneDayAgo = await getFaangPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
 
     // APY Calculation
     const n = 365 / 2; // Assume 2 days to trigger invest function
