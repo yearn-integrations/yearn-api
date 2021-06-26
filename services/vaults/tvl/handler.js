@@ -126,6 +126,11 @@ const getTVL = async (vault) => {
     const contract = await getTokenContract(vault);
     const usdPool = await contract.methods.getAllPoolInUSD().call();
     tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
+  } else if(vault.contractType === 'daoFaang'){
+    const contract = await getTokenContract(vault);
+    const poolAmount = await contract.methods.getTotalValueInPool().call();
+    const decimals = await contract.methods.decimals().call();
+    tvl = poolAmount / 10 ** decimals;
   } else {
     const strategyContract = getContract(strategyABI, strategyAddress);
     const poolAmount = await getPoolAmount(strategyContract);
@@ -268,6 +273,9 @@ module.exports.tvlHandle = async (req, res) => {
       break;
     case db.daoELOFarmer:
       collection = db.daoELOFarmer;
+      break;
+    case db.daoSTOFarmer:
+      collection = db.daoSTOFarmer;
       break;
     default:
       res.status(200).json({
