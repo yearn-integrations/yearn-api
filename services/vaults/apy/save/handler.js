@@ -217,6 +217,7 @@ const getApyForVault = async (vault) => {
       compoundApy,
       citadelApy: 0,
       elonApy: 0,
+      faangApy: 0,
     };
   } else if (vault.isCitadel) {
     // Citadel Vault
@@ -245,6 +246,7 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: apy,
       elonApy: 0,
+      faangApy: 0,
     }
   } else if (vault.isElon) {
     // Elon's Ape Vault
@@ -273,6 +275,7 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: 0,
       elonApy: apy,
+      faangApy: 0,
     }
   } else if (vault.isFaang) {
     // FAANG Stonk vault
@@ -300,6 +303,7 @@ const getApyForVault = async (vault) => {
       apyLoanscan: 0,
       compoundApy: 0,
       citadelApy: 0,
+      elonApy: 0,
       faangApy: apy,
     }
   } else if (vault.isHarvest) {
@@ -364,6 +368,7 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: 0,
       elonApy: 0,
+      faangApy: 0,
     };
 
   } else {
@@ -487,6 +492,7 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: 0,
       elonApy: 0,
+      faangApy: 0,
     };
   }
 };
