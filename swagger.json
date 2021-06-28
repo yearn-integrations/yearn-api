@@ -203,6 +203,39 @@
                 ],
                 "responses": {}
             }
+        },
+        "/event/verify" : {
+            "get": {
+                "tags": [
+                    "Vaults"
+                ],
+                "description": "Check if any happy hour event at current time.",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {}
+            }
+        },
+        "/event/verify/{amount}" : {
+            "get": {
+                "tags": [
+                    "Vaults"
+                ],
+                "description": "Verify user eligible for special event deposit.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "amount",
+                        "in": "path",
+                        "description": "Amount to deposit",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {}
+            }
         }
-    }
+    } 
 }
