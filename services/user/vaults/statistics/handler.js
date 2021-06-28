@@ -7,6 +7,9 @@ const BigNumber = require("bignumber.js");
 const subgraphUrl = process.env.SUBGRAPH_ENDPOINT;
 const Web3 = require("web3");
 const web3 = new Web3(process.env.WEB3_ENDPOINT);
+const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
+const archiveNodeWeb3 = new Web3(archiveNodeUrl);
+const delay = require("delay");
 const earnABIContract = require('../../../../config/abi').earnABIContract;
 const vaultABIContract = require('../../../../config/abi').vaultABIContract;
 const yfUSDTABIContract = require('../../../../config/abi').yfUSDTABIContract;
@@ -58,6 +61,16 @@ const getTotalSupply = async (contract) => {
     .totalSupply()
     .call();
   return totalSupply;
+};
+
+// Get USDT <-> USD Price
+const getPriceFromChainLink = async (contract) => {
+  let price = 0;
+  try {
+    price = await contract.methods.latestAnswer().call();
+  } catch (ex) { }
+  await delay(500);
+  return price;
 };
 
 const getVaultStatistics = async (contractAddress, transactions, userAddress) => {
@@ -113,7 +126,20 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
     depositedAmount = new BigNumber(depositedAmount);
   } else if (type === 'daoFaang') {
-    depositedAmount = await vaultContract.methods.depositedAmount(userAddress).call();
+
+    let usdtToUsdPriceFeedContract;
+    if (process.env.PRODUCTION != '') {
+      usdtToUsdPriceFeedContract = new archiveNodeWeb3.eth.Contract(mainContracts.chainLink.USDT_USD.abi, mainContracts.chainLink.USDT_USD.address);
+    } else {
+      usdtToUsdPriceFeedContract = new archiveNodeWeb3.eth.Contract(testContracts.chainLink.USDT_USD.abi, testContracts.chainLink.USDT_USD.address);
+    }
+
+    const usdtToUsdPrice = await getPriceFromChainLink(usdtToUsdPriceFeedContract);
+    const pool = await vaultContract.methods.getTotalValueInPool().call(); 
+    const totalSupply = await vaultContract.methods.totalSupply().call(); 
+    const poolInUSD = (pool * usdtToUsdPrice) / (10 ** 20); // The reason to divide 20: pool in 18 , price feed in 8 , ( 18 + 8 ) / 20 =  6 decimals
+  
+    depositedAmount = (depositedShares * poolInUSD) / totalSupply;
     depositedAmount = new BigNumber(depositedAmount);
   }
 
@@ -164,10 +190,8 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     totalWithdrawalsInUSD = getSumForUSD(withdrawals);
     totalTransferredInUSD = getSumForUSD(transfersIn);
     totalTransferredOutInUSD = getSumForUSD(transfersOut);
-    
-    const decimals = (type === "daoFaang") ? 18 : 6;
-
-    let exactDepositedAmount = depositedAmount / 10 ** decimals;
+  
+    let exactDepositedAmount = depositedAmount / 10 ** 6;
     exactDepositedAmount = new BigNumber(exactDepositedAmount);
     earnings = exactDepositedAmount
               .minus(totalDepositsInUSD)
