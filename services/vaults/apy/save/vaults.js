@@ -198,7 +198,7 @@ module.exports = [
     description: "DAO Vault Stonks for 3 stablecoins",
     vaultSymbol: "daoSTO",
     erc20address: ["0x07de306ff27a2b630b1141956844eb1552b956b5", "0xb7a4f3e9097c08da09517b5ab877f7a917224ede", "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa"],
-    vaultContractAddress: "0xe97f5e5a755f8e633d23a2bae167b628dec22948",
+    vaultContractAddress: "0xf03fa8553379d872b4e2Bafbc679409Fb82604c2",
     vaultContractABI: abi.daoFaangStonkVaultContract,
     balance: 0,
     vaultBalance: 0,
