@@ -1,4 +1,5 @@
 require("dotenv").config();
+const BigNumber = require("bignumber.js");
 const AWS = require("aws-sdk");
 // const db = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
 const db = require('../../../../models/apy.model');
@@ -108,6 +109,28 @@ const getCitadelPricePerFullShare = async (contract, block, inceptionBlockNbr) =
   return pricePerFullShare;
 }
 
+const getElonPricePerFullShare = async (contract, block, inceptionBlockNbr) => {
+  const contractDidntExist = block < inceptionBlockNbr;
+  const inceptionBlock = block === inceptionBlockNbr;
+
+  if (inceptionBlock) {
+    return 1e18;
+  }
+  if (contractDidntExist) {
+    return 0;
+  }
+
+  let pricePerFullShare = 0;
+  try {
+    const pool = await contract.methods.getAllPoolInUSD().call(undefined, block); // All pool in USD (6 decimals)
+    const totalSupply = await contract.methods.totalSupply().call(undefined, block);
+    pricePerFullShare = (new BigNumber(pool)).shiftedBy(12).dividedBy(totalSupply).toNumber();
+  } catch (ex) {}
+
+  await delay(delayTime);
+  return pricePerFullShare;
+}
+
 const getVirtualPrice = async (address, block) => {
   const poolContract = new archiveNodeWeb3.eth.Contract(poolABI, address);
   const virtualPrice = await poolContract.methods
@@ -171,6 +194,7 @@ const getApyForVault = async (vault) => {
       apyLoanscan: 0,
       compoundApy,
       citadelApy: 0,
+      elonApy: 0,
     };
   } else if (vault.isCitadel) {
     // Citadel Vault
@@ -198,6 +222,35 @@ const getApyForVault = async (vault) => {
       apyLoanscan: 0,
       compoundApy: 0,
       citadelApy: isNaN(apy) ? 0 : apy,
+      elonApy: 0,
+    }
+  } else if (vault.isElon) {
+    // Elon's Ape Vault
+    let contract;
+    if (process.env.PRODUCTION != '') {
+      contract = new archiveNodeWeb3.eth.Contract(mainContracts.farmer['daoELO'].abi, mainContracts.farmer['daoELO'].address);
+    } else {
+      contract = new archiveNodeWeb3.eth.Contract(testContracts.farmer['daoELO'].abi, testContracts.farmer['daoELO'].address);
+    }
+
+    const pricePerFullShareCurrent = await getElonPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    const pricePerFullShareOneDayAgo = await getElonPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+
+    // APY Calculation
+    const n = 365 / 2; // Assume 2 days to trigger invest function
+    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+    const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+    return {
+      apyInceptionSample: 0,
+      apyOneDaySample: 0,
+      apyThreeDaySample: 0,
+      apyOneWeekSample: 0,
+      apyOneMonthSample: 0,
+      apyLoanscan: 0,
+      compoundApy: 0,
+      citadelApy: 0,
+      elonApy: apy,
     }
   } else if (vault.isHarvest) {
     // Harvest Vault
@@ -260,6 +313,7 @@ const getApyForVault = async (vault) => {
       apyLoanscan: 0,
       compoundApy: 0,
       citadelApy: 0,
+      elonApy: 0,
     };
 
   } else {
@@ -382,6 +436,7 @@ const getApyForVault = async (vault) => {
       apyLoanscan,
       compoundApy: 0,
       citadelApy: 0,
+      elonApy: 0,
     };
   }
 };

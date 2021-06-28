@@ -104,6 +104,13 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     // depositedAmount = await vaultContract.methods._balanceOfDeposit(userAddress).call();
     depositedAmount = (depositedShares * pool) / totalSupply;
     depositedAmount = new BigNumber(depositedAmount);
+  } else if (type === 'elon') {
+    const pool = await vaultContract.methods.getAllPoolInUSD().call();
+    const totalSupply = await vaultContract.methods.totalSupply().call(); 
+
+    // depositedAmount = await vaultContract.methods._balanceOfDeposit(userAddress).call();
+    depositedAmount = (depositedShares * pool) / totalSupply;
+    depositedAmount = new BigNumber(depositedAmount);
   } else if (type === 'harvest') {
     depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
     depositedAmount = new BigNumber(depositedAmount);
@@ -141,21 +148,29 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   }
 
   const totalDeposits = getSum(deposits);
-  const totalDepositsInUSD = getSumForUSD(deposits);
   const totalWithdrawals = getSum(withdrawals);
-  const totalWithdrawalsInUSD = getSumForUSD(withdrawals);
   const totalTransferredIn = getSum(transfersIn);
   const totalTransferredOut = getSum(transfersOut);
-
+ 
   let earnings = 0;
-  if(type === "citadel") {
+  let totalDepositsInUSD = 0;
+  let totalWithdrawalsInUSD = 0;
+  let totalTransferredInUSD = 0;
+  let totalTransferredOutInUSD = 0;
+
+  if(type === "citadel" || type === "elon") {
+    totalDepositsInUSD = getSumForUSD(deposits);
+    totalWithdrawalsInUSD = getSumForUSD(withdrawals);
+    totalTransferredInUSD = getSumForUSD(transfersIn);
+    totalTransferredOutInUSD = getSumForUSD(transfersOut);
+    
     let exactDepositedAmount = depositedAmount / 10 ** 6;
     exactDepositedAmount = new BigNumber(exactDepositedAmount);
     earnings = exactDepositedAmount
               .minus(totalDepositsInUSD)
               .plus(totalWithdrawalsInUSD)
-              .minus(totalTransferredIn)
-              .plus(totalTransferredOut)
+              .minus(totalTransferredInUSD)
+              .plus(totalTransferredOutInUSD)
   } else {
     earnings = depositedAmount
     .minus(totalDeposits)
@@ -171,7 +186,9 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     totalWithdrawals: totalWithdrawals.toFixed(),
     totalWithdrawalsInUSD: totalWithdrawalsInUSD.toFixed(),
     totalTransferredIn: totalTransferredIn.toFixed(),
+    totalTransferredInUSD: totalTransferredInUSD.toFixed(),
     totalTransferredOut: totalTransferredOut.toFixed(),
+    totalTransferredOutInUSD: totalTransferredOutInUSD.toFixed(),
     depositedShares,
     depositedAmount: depositedAmount,
     earnings: earnings.toFixed(0),

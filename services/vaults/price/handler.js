@@ -9,6 +9,7 @@ const {
   getPricePerFullShare
 } = require('../../user/vaults/statistics/handler');
 const db = require('../../../models/price.model');
+const BigNumber = require("bignumber.js");
 const moment = require("moment");
 const delay = require("delay");
 const { delayTime } = require("../apy/save/config");
@@ -44,6 +45,18 @@ const getCitadelPricePerFullShare = async (contract) => {
   return pricePerFullShare;
 }
 
+const getElonPricePerFullShare = async (contract) => {
+  let pricePerFullShare = 0;
+  try {
+    const pool = await contract.methods.getAllPoolInUSD().call(); // All pool in USD (6 decimals)
+    const totalSupply = await contract.methods.totalSupply().call();
+    pricePerFullShare = (new BigNumber(pool)).shiftedBy(12).dividedBy(totalSupply).toNumber();
+  } catch (ex) {}
+
+  await delay(delayTime);
+  return pricePerFullShare;
+}
+
 const getCurrentPrice = async () => {
   let contracts = process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? mainContracts : testContracts;
 
@@ -60,6 +73,7 @@ const getCurrentPrice = async () => {
           vaultPrice: vaultPricePerFullShare,
           compoundExchangeRate: 0,
           citadelPrice: 0,
+          elonPrice: 0,
           harvestPrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'compound') {
@@ -75,6 +89,7 @@ const getCurrentPrice = async () => {
           vaultPrice: 0,
           compoundExchangeRate: exchangeRate,
           citadelPrice: 0,
+          elonPrice: 0,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'citadel') {
@@ -85,6 +100,18 @@ const getCurrentPrice = async () => {
           vaultPrice: 0,
           compoundExchangeRate: 0,
           citadelPrice: isNaN(pricePerFullShare) ? 0 : pricePerFullShare,
+          elonPrice: 0,
+          harvestPrice: 0,
+        }).catch((err) => console.log('err', err));
+      } else if (contracts.farmer[key].contractType === 'elon') {
+        const contract = getContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getElonPricePerFullShare(contract);
+        await db.add(key + '_price', {
+          earnPrice: 0,
+          vaultPrice: 0,
+          compoundExchangeRate: 0,
+          citadelPrice: 0,
+          elonPrice: pricePerFullShare,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'harvest') {
@@ -106,6 +133,7 @@ const getCurrentPrice = async () => {
           vaultPrice: 0,
           compoundExchangeRate: 0,
           citadelPrice: 0,
+          elonPrice: 0,
           harvestPrice: pricePerFullShare,
         })
       }
@@ -115,6 +143,7 @@ const getCurrentPrice = async () => {
         vaultPrice: "0",
         compoundExchangeRate: 0,
         citadelPrice: 0,
+        elonPrice: 0,
         harvestPrice: "0"
       }).catch((err) => console.log('err', err));
     }
@@ -168,6 +197,9 @@ module.exports.handleHistoricialPrice = async (req, res) => {
         break;
       case db.daoCDVFarmer:
         collection = db.daoCDVFarmer;
+        break;
+      case db.daoELOFarmer:
+        collection = db.daoELOFarmer;
         break;
       case db.hfDaiFarmer: 
         collection = db.hfDaiFarmer;

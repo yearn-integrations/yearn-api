@@ -196,8 +196,19 @@ const getUniswapLPTokenPrice = async (poolContract, poolAddress, tokenPrices, to
     return price;
 }
 
+const getDecimal = async (poolContract) => {
+    try {
+        const decimal = await poolContract.methods.decimals().call();
+        return decimal;
+    } catch (err) {
+        console.log("Err in getDecimal()", err);
+    }
+   
+}
+
 // Calculate APR and TVL for pool
 const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
+
     let apr = 0;
 
     // Extract data from daoStake param
@@ -229,7 +240,9 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
     // TVL Calculation
     const tvl = tokenBalOfDAOStake * poolTokenPrice;
 
-    Object.assign(pool, { apr: apr === Infinity ? 0 : apr, tvl });
+    const decimal = await getDecimal(poolContract);
+
+    Object.assign(pool, { apr: apr === Infinity ? 0 : apr, tvl , multiplier, decimal});
 
     return pool;
 }
@@ -260,21 +273,26 @@ module.exports.saveStakedPools = async () => {
         // Find pool contract and contract abi value pair
         const poolAbiContractMap = new Map();
         Object.values(contracts.farmer).map(v => {
-            poolAbiContractMap.set(v.address, v.abi);
+            poolAbiContractMap.set(v.address.toLowerCase(), v.abi);
         });
 
         // DAOvip
-        poolAbiContractMap.set(contracts.vipDVG.address, contracts.vipDVG.abi);
+        poolAbiContractMap.set(contracts.vipDVG.address.toLowerCase(), contracts.vipDVG.abi);
 
         // Uniswap ETH <-> DVG Pool 
-        poolAbiContractMap.set(contracts.uniswap.ethDVG.address, contracts.uniswap.ethDVG.abi)
+        poolAbiContractMap.set(contracts.uniswap.ethDVG.address.toLowerCase(), contracts.uniswap.ethDVG.abi);
+
+        // daoCDV
+        poolAbiContractMap.set(contracts.uniswap.ethDVG.address.toLowerCase(), contracts.uniswap.ethDVG.abi);
        
         for (index = 0 ; index < poolSize; index ++) {
-            if(poolAbiContractMap.has(pools[index].contract_address) && pools[index].status == 'A') {
+            const contractAddressToLowerCase = pools[index].contract_address.toLowerCase();
+           
+            if(poolAbiContractMap.has(contractAddressToLowerCase) && pools[index].status == 'A') {
                 // Fetch abi of pool contract
                 const poolContractInfo = { 
                     address: pools[index].contract_address, 
-                    abi: poolAbiContractMap.get(pools[index].contract_address)
+                    abi: poolAbiContractMap.get(contractAddressToLowerCase)
                 };
 
                 // Get pool contract

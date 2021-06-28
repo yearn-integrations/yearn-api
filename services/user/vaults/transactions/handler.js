@@ -84,6 +84,7 @@ const getGraphTransactions = async (userAddress) => {
           id
         }
         amount
+        amountInUSD
         shares: value
       }
       transfersOut: transfers(where: {from: "${userAddress}", to_not: "0x0000000000000000000000000000000000000000"}) {
@@ -98,6 +99,7 @@ const getGraphTransactions = async (userAddress) => {
           id
         }
         amount
+        amountInUSD
       }
     }
   `;
@@ -186,7 +188,6 @@ const getTransactions = async (userAddress) => {
 
   const getTransactionsByVaultAddress = (vaultAddress) => {
     const findItemByVaultAddress = (item) => item.vaultAddress === vaultAddress;
-
     const findVault = (vault) => vault.address.toLowerCase() === vaultAddress.toLowerCase();
 
     const depositsToVault = deposits
