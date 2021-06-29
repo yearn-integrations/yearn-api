@@ -254,8 +254,10 @@ const getApyForVault = async (vault) => {
       contract = new archiveNodeWeb3.eth.Contract(testContracts.farmer['daoELO'].abi, testContracts.farmer['daoELO'].address);
     }
 
-    const pricePerFullShareCurrent = await getElonPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    const pricePerFullShareOneDayAgo = await getElonPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    let pricePerFullShareCurrent = await getElonPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    let pricePerFullShareOneDayAgo = await getElonPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1; // 0 can't be used as a reference for apy.
+    pricePerFullShareOneDayAgo = (0 < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1; // 0 can't be used as a reference for apy.
 
     // APY Calculation
     const n = 365 / 2; // Assume 2 days to trigger invest function
@@ -657,18 +659,22 @@ module.exports.saveHandler = async () => {
     console.log("oneMonthAgoBlock", oneMonthAgoBlock);
     nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
     console.log("Done fetching historical blocks");
-
-    const vaultsWithApy = [];
-    for (const vault of vaults) {
-      const vaultWithApy = await saveAndReadVault(vault);
-      if (vaultWithApy !== null) {
-        vaultsWithApy.push(vaultWithApy);
-      }
-      await delay(delayTime);
-    }
   } catch (err) {
     console.error(err);
   }
+
+    const vaultsWithApy = [];
+    for (const vault of vaults) {
+      try {
+        const vaultWithApy = await saveAndReadVault(vault);
+        if (vaultWithApy !== null) {
+          vaultsWithApy.push(vaultWithApy);
+        }
+        await delay(delayTime);
+      } catch (err) {
+        console.error(err);
+      }
+    }
 }
 
 module.exports.handleHistoricialAPY = async (req, res) => {

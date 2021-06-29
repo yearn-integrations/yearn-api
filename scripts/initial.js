@@ -119,10 +119,10 @@ db.stake_pool.insertMany([
     {
         name: 'daoELO',
         label: 'Elon\'s APE LP',
-        contract_address: '', // TODO: Update to mainnet address
+        contract_address: '0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8',
         status: 'A',
         pid: '10',
-        category: 'Basic',
+        category: 'Degen',
         tokenId: 'ethereum',
         symbol: 'daoELO'
     },

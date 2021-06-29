@@ -255,8 +255,10 @@ const getApyForVault = async (vault) => {
       contract = new archiveNodeWeb3.eth.Contract(testContracts.farmer['daoELO'].abi, testContracts.farmer['daoELO'].address);
     }
 
-    const pricePerFullShareCurrent = await getElonPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    const pricePerFullShareOneDayAgo = await getElonPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    let pricePerFullShareCurrent = await getElonPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    let pricePerFullShareOneDayAgo = await getElonPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1; // 0 can't be used as a reference for apy.
+    pricePerFullShareOneDayAgo = (0 < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1; // 0 can't be used as a reference for apy.
 
     // APY Calculation
     const n = 365 / 2; // Assume 2 days to trigger invest function
@@ -300,6 +302,7 @@ const getApyForVault = async (vault) => {
       apyLoanscan: 0,
       compoundApy: 0,
       citadelApy: 0,
+      elonApy: 0,
       faangApy: apy,
     }
   } else if (vault.isHarvest) {

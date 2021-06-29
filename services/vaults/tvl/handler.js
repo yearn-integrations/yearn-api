@@ -174,16 +174,24 @@ const getAllTVL = async () => {
 
   let tvls = Array();
   for (vault in vaults.farmer) {
-    let _vault = vaults.farmer[vault];
-    let tvl = await getTVL(_vault);
-    tvls.push(tvl);
-    await saveTVL(vault, tvl);
+    try {
+      let _vault = vaults.farmer[vault];
+      let tvl = await getTVL(_vault);
+      tvls.push(tvl);
+      await saveTVL(vault, tvl);
+    } catch(err) {
+      console.error(err);
+    }
   }
 
-  let _vault = vaults.vipDVG;
-  let tvl = await getTVLxDVG(_vault);
-  tvls.push(tvl);
-  await saveTVL("xDVG", tvl);
+  try {
+    let _vault = vaults.vipDVG;
+    let tvl = await getTVLxDVG(_vault);
+    tvls.push(tvl);
+    await saveTVL("xDVG", tvl);
+  } catch (err) {
+    console.error(err);
+  }
 
   return tvls;
 };

@@ -325,7 +325,7 @@ const mainContracts = {
       tokenId: "dai",
     },
     daoCDV: {
-      address: "", // TODO Update on mainnet
+      address: "0x8fe826cc1225b03aa06477ad5af745aed5fe7066", // TODO Update on mainnet
       abi: abi.citadelABIContract,
       strategyAddress: "", // TODO Update on mainnet
       strategyABI: abi.citadelStrategyABIContract,
@@ -333,9 +333,9 @@ const mainContracts = {
       tokenId: ["tether", "usd-coin", "dai"],
     },
     daoELO: {
-      address: "", // TODO Update on mainnet
+      address: "0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8", // TODO Update on mainnet
       abi: abi.elonApeVaultContract,
-      strategyAddress: "", // TODO Update on mainnet
+      strategyAddress: "0x8a00046ab28051a952e64a886cd8961ca90a59bd", // TODO Update on mainnet
       strategyABI: abi.elonApeStrategyContract,
       contractType: "elon",
       tokenId: ["tether", "usd-coin", "dai"],
