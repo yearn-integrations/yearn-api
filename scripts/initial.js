@@ -7,7 +7,7 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0xEeCe6AD323a93d4B021BDAaC587DCC04b5cf0a78', symbol: 'cUSDT' },
     { name: 'basic', contract_address: '0xd1D7f950899C0269a7F2aad5E854cdc3a1350ba9', symbol: 'cUSDC', },
     { name: 'basic', contract_address: '0x43C20638C3914Eca3c96e9cAc8ebE7d652Be45c6', symbol: 'cDAI', },
-    { name: 'expert', contract_address: '0x8fe826cc1225b03aa06477ad5af745aed5fe7066', symbol: 'daoCDV', },
+    { name: 'degen', contract_address: '0x8fe826cc1225b03aa06477ad5af745aed5fe7066', symbol: 'daoCDV', },
     { name: 'basic', contract_address: '0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8', symbol: 'daoELO', },
     { name: 'basic', contract_address: '0xe4e6ce7c1d9ff44db27f622accbb0753c2f48955', symbol: 'hfUSDT'},
     { name: 'basic', contract_address: '0xd0f0858578c7780f2d65f6d81bc7ddbe166367cc', symbol: 'hfUSDC'},
@@ -118,13 +118,23 @@ db.stake_pool.insertMany([
     {
         name: 'daoELO',
         label: 'Elon\'s APE LP',
-        contract_address: '', // TODO: Update to mainnet address
+        contract_address: '0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8',
         status: 'A',
         pid: '10',
-        category: 'Basic',
+        category: 'Degen',
         tokenId: 'ethereum',
         symbol: 'daoELO'
-    }
+    },
+    // {
+    //     name: "daoSTO",
+    //     label: "DAO Vault Stonks LP",
+    //     contract_address: '', // TODO: Update to mainnet address
+    //     status: 'A',
+    //     pid: '11',
+    //     category: 'Basic',
+    //     tokenId: 'ethereum',
+    //     symbol: 'daoSTO'
+    // }
 ]);
 
 // Testnet Contracts
@@ -138,6 +148,7 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d', symbol: 'cDAI', },
     { name: 'degen', contract_address: '0x542a42496c96b946324f7dce2b030d5643d9ef8a', symbol: 'daoCDV', },
     { name: 'basic', contract_address: '0xf03fa8553379d872b4e2bafbc679409fb82604c2', symbol: 'daoELO', },
+    { name: 'advance', contract_address: '0xe97f5e5a755f8e633d23a2bae167b628dec22948', symbol: 'daoSTO', },
     { name: 'basic', contract_address: '0xb41a49de82e95dc1e028839c3440ac97f9a7832c', symbol: 'hfUSDT'},
     { name: 'basic', contract_address: '0x54783464848b35d6fb9bba37c1ddd23ac3b1a11a', symbol: 'hfUSDC'},
     { name: 'basic', contract_address: '0x0f89ee5b95d1d5cfb10f29775d816fc6d8adb9fc', symbol: 'hfDAI'},
@@ -258,7 +269,17 @@ db.stake_pool.insertMany([
         category: 'Basic',
         tokenId: 'ethereum',
         symbol: 'daoELO'
-    }
+    },
+    // {
+    //     name: "daoSTO",
+    //     label: "DAO Vault Stonks LP",
+    //     contract_address: '', // TODO: Update to mainnet address
+    //     status: 'A',
+    //     pid: '11',
+    //     category: 'Advance',
+    //     tokenId: 'ethereum',
+    //     symbol: 'daoSTO'
+    // }
 ]);
 
 db.special_event.insertMany([

@@ -126,6 +126,11 @@ const getTVL = async (vault) => {
     const contract = await getTokenContract(vault);
     const usdPool = await contract.methods.getAllPoolInUSD().call();
     tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
+  } else if(vault.contractType === 'daoFaang'){
+    const contract = await getTokenContract(vault);
+    const poolAmount = await contract.methods.getTotalValueInPool().call();
+    const decimals = await contract.methods.decimals().call();
+    tvl = poolAmount / 10 ** decimals;
   } else {
     const strategyContract = getContract(strategyABI, strategyAddress);
     const poolAmount = await getPoolAmount(strategyContract);
@@ -169,16 +174,24 @@ const getAllTVL = async () => {
 
   let tvls = Array();
   for (vault in vaults.farmer) {
-    let _vault = vaults.farmer[vault];
-    let tvl = await getTVL(_vault);
-    tvls.push(tvl);
-    await saveTVL(vault, tvl);
+    try {
+      let _vault = vaults.farmer[vault];
+      let tvl = await getTVL(_vault);
+      tvls.push(tvl);
+      await saveTVL(vault, tvl);
+    } catch(err) {
+      console.error(err);
+    }
   }
 
-  let _vault = vaults.vipDVG;
-  let tvl = await getTVLxDVG(_vault);
-  tvls.push(tvl);
-  await saveTVL("xDVG", tvl);
+  try {
+    let _vault = vaults.vipDVG;
+    let tvl = await getTVLxDVG(_vault);
+    tvls.push(tvl);
+    await saveTVL("xDVG", tvl);
+  } catch (err) {
+    console.error(err);
+  }
 
   return tvls;
 };
@@ -268,6 +281,9 @@ module.exports.tvlHandle = async (req, res) => {
       break;
     case db.daoELOFarmer:
       collection = db.daoELOFarmer;
+      break;
+    case db.daoSTOFarmer:
+      collection = db.daoSTOFarmer;
       break;
     default:
       res.status(200).json({
