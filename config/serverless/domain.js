@@ -391,7 +391,7 @@ const mainContracts = {
     address: "0xD6Ce913C3e81b5e67a6b94d705d9E7cDdf073A7e",
     abi: abi.xDVGABIContract,
     tokenId: "xDVG",
-    lastMeasurement: 0, // TODO Update lastMeasurement
+    lastMeasurement: 12670237, 
   },
   DVG: {
     address: "0x51e00a95748DBd2a3F47bC5c3b3E7B3F0fea666c", 
@@ -399,9 +399,9 @@ const mainContracts = {
     tokenId: "daoventures",
   },
   daoStake: {
-    address: "", // TODO Update mainnet address
+    address: "0x8437a6bf9235fd003d50cd4024fa7ec6979208d5", 
     abi: abi.daoStakeContract,
-    startBlock: 25055584, // TODO Update mainnet block
+    startBlock: 12734615, 
     poolPercent: 0.51
   },
   uniswap: {
