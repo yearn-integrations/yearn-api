@@ -406,7 +406,7 @@ const mainContracts = {
   },
   uniswap: {
     ethDVG: {
-      address: "", // TODO Update mainnet address
+      address: "0xd11aD84D720A5e7fA11c8412Af6C1cAA815a436d",
       abi: abi.uniswapPairABIContract,
     }
   },
