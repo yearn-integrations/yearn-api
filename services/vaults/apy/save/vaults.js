@@ -1,7 +1,7 @@
 const config = require("./config.js");
 const abi = require('../../../../config/abi')
 
-const mainVaults = [
+const testVaults = [
   {
     id: "cDAI",
     name: "Compound DAI",
@@ -176,7 +176,7 @@ const mainVaults = [
     symbol: ["USDT","USDC","DAI"],
     description: "DAO Vault Elon for 3 stablecoins",
     vaultSymbol: "daoELO",
-    erc20address: ["0xdAC17F958D2ee523a2206206994597C13D831ec7", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0x6b175474e89094c44da98b954eedeac495271d0f"],
+    erc20address: ["0xdac17f958d2ee523a2206206994597c13d831ec7", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0x6b175474e89094c44da98b954eedeac495271d0f"],
     vaultContractAddress: "0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8",
     vaultContractABI: abi.elonApeVaultContract,
     balance: 0,
@@ -283,7 +283,7 @@ const mainVaults = [
   },
 ];
 
-const testVaults = [
+const mainVaults = [
   {
     id: "cDAI",
     name: "Compound DAI",
@@ -458,7 +458,7 @@ const testVaults = [
     symbol: ["USDT","USDC","DAI"],
     description: "DAO Vault Elon for 3 stablecoins",
     vaultSymbol: "daoELO",
-    erc20address: ["0xdac17f958d2ee523a2206206994597c13d831ec7", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0x6b175474e89094c44da98b954eedeac495271d0f"],
+    erc20address: ["0xdAC17F958D2ee523a2206206994597C13D831ec7", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0x6b175474e89094c44da98b954eedeac495271d0f"],
     vaultContractAddress: "0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8",
     vaultContractABI: abi.elonApeVaultContract,
     balance: 0,
@@ -472,27 +472,6 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isElon: true,
-  },
-  {
-    id: "daoSTO",
-    name: "DAO Vault Stonks",
-    symbol: ["USDT","USDC","DAI"],
-    description: "DAO Vault Stonks for 3 stablecoins",
-    vaultSymbol: "daoSTO",
-    erc20address: ["0x07de306ff27a2b630b1141956844eb1552b956b5", "0xb7a4f3e9097c08da09517b5ab877f7a917224ede", "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa"],
-    vaultContractAddress: "0xf03fa8553379d872b4e2Bafbc679409Fb82604c2",
-    vaultContractABI: abi.daoFaangStonkVaultContract,
-    balance: 0,
-    vaultBalance: 0,
-    decimals: 18,
-    deposit: true,
-    depositAll: true,
-    withdraw: true,
-    withdrawAll: true,
-    lastMeasurement: 25680643,
-    measurement: 1e18,
-    price_id: ["tether", "usd-coin", "dai"],
-    isFaang: true,
   },
   {
     id: "hfDAI",
