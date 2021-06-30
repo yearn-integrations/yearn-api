@@ -36,6 +36,7 @@ module.exports = {
   cDaiFarmer: 'cDAI_historical-apy',
   daoCDVFarmer: 'daoCDV_historical-apy',
   daoELOFarmer: 'daoELO_historical-apy',
+  daoSTOFarmer: 'daoSTO_historical-apy',
   hfDaiFarmer: 'hfDAI_historical-apy',
   hfUsdcFarmer: 'hfUSDC_historical-apy',
   hfUsdtFarmer: 'hfUSDT_historical-apy',  

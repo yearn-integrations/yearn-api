@@ -26,12 +26,12 @@ const checkEligibilityForEvent = async(amount) => {
         result.amountAboveThreshold = false,
         result.happyHour = true,
         result.happyHourInfo = event;
-        result.message = "Deposited amount is less than threshold. Threshold: " + event.threshold
-        return result;
+        result.message = "Below required deposit (" + event.threshold + ") for Happy Hour. Gas fee will be required."
+        return result; 
     }
 
     result.happyHourInfo = event;
-    result.message = "Valid";
+    result.message = "Gas fee is on us!";
     return result;
 }
 

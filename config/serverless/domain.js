@@ -152,6 +152,14 @@ const testContracts = {
       contractType: "elon",
       tokenId: ["tether", "usd-coin", "dai"],
     },
+    daoSTO: {
+      address: "0xe97f5e5a755f8e633d23a2bae167b628dec22948",
+      abi: abi.daoFaangStonkVaultContract,
+      strategyAddress: "0xccced6278e9c6e68210f3bdc1bc3444e830cad33",
+      strategyABI: abi.daoFaangStonkStrategyContract,
+      contractType: "daoFaang",
+      tokenId: ["tether", "usd-coin", "dai"],
+    },
     'hfDAI': {
       address: '0x6d7e8fa90c1ffdc019d691bafc18d6362fdeecd7',
       abi: abi.hfVaultContract,
@@ -189,9 +197,9 @@ const testContracts = {
     tokenId: "daoventures",
   },
   daoStake: {
-    address: "0x2d04c8A39fe41Dc94595Df81ABDaB1dD905B38B3",
+    address: "0xd8f59a99acfc597feb84914fef3769def87e7553",
     abi: abi.daoStakeContract,
-    startBlock: 25055584,
+    startBlock: 25711879,
     poolPercent: 0.51
   },
   uniswap: {
@@ -330,6 +338,14 @@ const mainContracts = {
       strategyAddress: "0x24d281dcc7d435500669459eaa393dc5200595b1", 
       strategyABI: abi.elonApeStrategyContract,
       contractType: "elon",
+      tokenId: ["tether", "usd-coin", "dai"],
+    },
+    daoSTO: {
+      address: "0",// TODO Update on mainnet
+      abi: abi.daoFaangStonkVaultContract,
+      strategyAddress: "", // TODO Update on mainnet
+      strategyABI: abi.daoFaangStonkStrategyContract,
+      contractType: "daoFaang",
       tokenId: ["tether", "usd-coin", "dai"],
     },
     hfDAI: {
