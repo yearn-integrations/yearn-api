@@ -271,16 +271,16 @@ db.stake_pool.insertMany([
         tokenId: 'ethereum',
         symbol: 'daoELO'
     },
-    // {
-    //     name: "daoSTO",
-    //     label: "DAO Vault Stonks LP",
-    //     contract_address: '', // TODO: Update to mainnet address
-    //     status: 'A',
-    //     pid: '11',
-    //     category: 'Advance',
-    //     tokenId: 'ethereum',
-    //     symbol: 'daoSTO'
-    // }
+    {
+        name: "daoSTO",
+        label: "DAO Vault Stonks LP",
+        contract_address: '0xe97F5e5A755F8e633d23A2bae167b628deC22948', 
+        status: 'A',
+        pid: '11',
+        category: 'Advance',
+        tokenId: 'ethereum',
+        symbol: 'daoSTO'
+    }
 ]);
 
 db.special_event.insertMany([
