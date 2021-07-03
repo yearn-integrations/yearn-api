@@ -153,9 +153,9 @@ const testContracts = {
       tokenId: ["tether", "usd-coin", "dai"],
     },
     daoSTO: {
-      address: "0xe97f5e5a755f8e633d23a2bae167b628dec22948",
+      address: "0xd6af81e5288be43137debf969d7f2c03482c8cc1",
       abi: abi.daoFaangStonkVaultContract,
-      strategyAddress: "0xccced6278e9c6e68210f3bdc1bc3444e830cad33",
+      strategyAddress: "0xc0f43b6db13e5988c92aa8c7c286a51f493620d4",
       strategyABI: abi.daoFaangStonkStrategyContract,
       contractType: "daoFaang",
       tokenId: ["tether", "usd-coin", "dai"],
