@@ -18442,6 +18442,21 @@ const daoFaangStonkVaultContract = [
         "internalType": "address",
         "name": "_strategy",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_biconomy",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_communityWallet",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_strategist",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -18509,6 +18524,38 @@ const daoFaangStonkVaultContract = [
       {
         "indexed": false,
         "internalType": "address",
+        "name": "admin",
+        "type": "address"
+      }
+    ],
+    "name": "EmergencyWithdraw",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "oldAdmin",
         "type": "address"
       },
@@ -18528,11 +18575,62 @@ const daoFaangStonkVaultContract = [
       {
         "indexed": false,
         "internalType": "address",
+        "name": "biconomy",
+        "type": "address"
+      }
+    ],
+    "name": "SetBiconomy",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldCommunityWallet",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newcommunityWallet",
+        "type": "address"
+      }
+    ],
+    "name": "SetCommunityWallet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "newStrategy",
         "type": "address"
       }
     ],
     "name": "SetPendingStrategy",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldStrategistWallet",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newStrategistWallet",
+        "type": "address"
+      }
+    ],
+    "name": "SetStrategistWallet",
     "type": "event"
   },
   {
@@ -18558,6 +18656,19 @@ const daoFaangStonkVaultContract = [
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetWithdrawlFee",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "from",
@@ -18577,6 +18688,19 @@ const daoFaangStonkVaultContract = [
       }
     ],
     "name": "Transfer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "unlockTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnlockMigrateFunds",
     "type": "event"
   },
   {
@@ -18650,6 +18774,19 @@ const daoFaangStonkVaultContract = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "Router",
+    "outputs": [
+      {
+        "internalType": "contract IUniswapV2Router02",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -18769,6 +18906,45 @@ const daoFaangStonkVaultContract = [
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "communityWallet",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "customNetworkFeePerc",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "customNetworkFeeTier",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -18919,6 +19095,38 @@ const daoFaangStonkVaultContract = [
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "isEmergency",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "forwarder",
+        "type": "address"
+      }
+    ],
+    "name": "isTrustedForwarder",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "contract IERC20",
@@ -18945,6 +19153,57 @@ const daoFaangStonkVaultContract = [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "networkFeePerc",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "networkFeeTier2",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "pendingStrategy",
     "outputs": [
@@ -18959,7 +19218,27 @@ const daoFaangStonkVaultContract = [
   },
   {
     "inputs": [],
+    "name": "profitSharingFeePerc",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "reInvest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -19004,11 +19283,50 @@ const daoFaangStonkVaultContract = [
     "inputs": [
       {
         "internalType": "address",
+        "name": "_biconomy",
+        "type": "address"
+      }
+    ],
+    "name": "setBiconomy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_newCommunityWallet",
+        "type": "address"
+      }
+    ],
+    "name": "setCommunityWallet",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_strategy",
         "type": "address"
       }
     ],
     "name": "setPendingStrategy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_strategist",
+        "type": "address"
+      }
+    ],
+    "name": "setStrategistWallet",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -19037,6 +19355,19 @@ const daoFaangStonkVaultContract = [
     "name": "setWithdrawalFee",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "strategist",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -19132,8 +19463,34 @@ const daoFaangStonkVaultContract = [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "treasuryWallet",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "trustedForwarder",
     "outputs": [
       {
         "internalType": "address",
@@ -19165,6 +19522,19 @@ const daoFaangStonkVaultContract = [
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "versionRecipient",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -19178,6 +19548,13 @@ const daoFaangStonkVaultContract = [
       }
     ],
     "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "yield",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -19195,11 +19572,6 @@ const daoFaangStonkStrategyContract =[
       {
         "internalType": "address",
         "name": "_mirustPool",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_admin",
         "type": "address"
       },
       {
@@ -19227,17 +19599,23 @@ const daoFaangStonkStrategyContract =[
     "type": "constructor"
   },
   {
-    "inputs": [],
-    "name": "admin",
-    "outputs": [
+    "anonymous": false,
+    "inputs": [
       {
+        "indexed": true,
         "internalType": "address",
-        "name": "",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
         "type": "address"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "name": "OwnershipTransferred",
+    "type": "event"
   },
   {
     "inputs": [
@@ -19360,6 +19738,19 @@ const daoFaangStonkStrategyContract =[
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "contract ILPPool",
@@ -19393,7 +19784,7 @@ const daoFaangStonkStrategyContract =[
   },
   {
     "inputs": [],
-    "name": "reInvest",
+    "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -19415,11 +19806,11 @@ const daoFaangStonkStrategyContract =[
     "inputs": [
       {
         "internalType": "address",
-        "name": "_admin",
+        "name": "_vault",
         "type": "address"
       }
     ],
-    "name": "setAdmin",
+    "name": "setVault",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -19428,11 +19819,11 @@ const daoFaangStonkStrategyContract =[
     "inputs": [
       {
         "internalType": "address",
-        "name": "_vault",
+        "name": "newOwner",
         "type": "address"
       }
     ],
-    "name": "setVault",
+    "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -19509,6 +19900,13 @@ const daoFaangStonkStrategyContract =[
       }
     ],
     "name": "withdrawAllFunds",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "yield",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

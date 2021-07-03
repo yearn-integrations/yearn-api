@@ -198,7 +198,7 @@ const testVaults = [
     description: "DAO Vault Stonks for 3 stablecoins",
     vaultSymbol: "daoSTO",
     erc20address: ["0x07de306ff27a2b630b1141956844eb1552b956b5", "0xb7a4f3e9097c08da09517b5ab877f7a917224ede", "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa"],
-    vaultContractAddress: "0xe97f5e5a755f8e633d23a2bae167b628dec22948",
+    vaultContractAddress: "0xd6af81e5288be43137debf969d7f2c03482c8cc1",
     vaultContractABI: abi.daoFaangStonkVaultContract,
     balance: 0,
     vaultBalance: 0,
