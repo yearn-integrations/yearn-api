@@ -329,53 +329,53 @@ const mainContracts = {
       tokenId: "dai",
     },
     daoCDV: {
-      address: "", // TODO Update on mainnet
+      address: "0x8fe826cc1225b03aa06477ad5af745aed5fe7066", 
       abi: abi.citadelABIContract,
-      strategyAddress: "", // TODO Update on mainnet
+      strategyAddress: "0x8a00046ab28051a952e64a886cd8961ca90a59bd", 
       strategyABI: abi.citadelStrategyABIContract,
       contractType: "citadel",
       tokenId: ["tether", "usd-coin", "dai"],
     },
     daoELO: {
-      address: "", // TODO Update on mainnet
+      address: "0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8", 
       abi: abi.elonApeVaultContract,
-      strategyAddress: "", // TODO Update on mainnet
+      strategyAddress: "0x24d281dcc7d435500669459eaa393dc5200595b1", 
       strategyABI: abi.elonApeStrategyContract,
       contractType: "elon",
       tokenId: ["tether", "usd-coin", "dai"],
     },
     daoSTO: {
-      address: "0",// TODO Update on mainnet
+      address: "0x742a85daf742ca0213b06fdae449434e0448691e",
       abi: abi.daoFaangStonkVaultContract,
-      strategyAddress: "", // TODO Update on mainnet
+      strategyAddress: "0x7f1cffb0e0a7351a72ef53cb51796221e2bac3a5",
       strategyABI: abi.daoFaangStonkStrategyContract,
       contractType: "daoFaang",
       tokenId: ["tether", "usd-coin", "dai"],
     },
-    hfDAI: {
-      address: '', // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: '',
-      strategyABI:  abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "dai",
-    },
-    hfUSDC: {
-      address: '', // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: '',
-      strategyABI: abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "usd-coin",
-    },
-    hfUSDT: {
-      address: '', // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: '',
-      strategyABI: abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "tether",
-    },
+    // hfDAI: {
+    //   address: '', // TODO: Update that this to mainnet address
+    //   abi: abi.hfVaultContract,
+    //   strategyAddress: '',
+    //   strategyABI:  abi.hfStrategyContract,
+    //   contractType: 'harvest',
+    //   tokenId: "dai",
+    // },
+    // hfUSDC: {
+    //   address: '', // TODO: Update that this to mainnet address
+    //   abi: abi.hfVaultContract,
+    //   strategyAddress: '',
+    //   strategyABI: abi.hfStrategyContract,
+    //   contractType: 'harvest',
+    //   tokenId: "usd-coin",
+    // },
+    // hfUSDT: {
+    //   address: '', // TODO: Update that this to mainnet address
+    //   abi: abi.hfVaultContract,
+    //   strategyAddress: '',
+    //   strategyABI: abi.hfStrategyContract,
+    //   contractType: 'harvest',
+    //   tokenId: "tether",
+    // },
   },
   compund: {
     cUSDT: {
