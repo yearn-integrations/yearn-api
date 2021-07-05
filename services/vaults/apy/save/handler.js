@@ -217,6 +217,7 @@ const getApyForVault = async (vault) => {
       compoundApy,
       citadelApy: 0,
       elonApy: 0,
+      faangApy: 0,
     };
   } else if (vault.isCitadel) {
     // Citadel Vault
@@ -245,6 +246,7 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: isNaN(apy) ? 0 : apy,
       elonApy: 0,
+      faangApy: 0,
     }
   } else if (vault.isElon) {
     // Elon's Ape Vault
@@ -275,6 +277,7 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: 0,
       elonApy: apy,
+      faangApy: 0,
     }
   } else if (vault.isFaang) {
     // FAANG Stonk vault
@@ -285,8 +288,10 @@ const getApyForVault = async (vault) => {
       contract = new archiveNodeWeb3.eth.Contract(testContracts.farmer['daoSTO'].abi, testContracts.farmer['daoSTO'].address);
     }
 
-    const pricePerFullShareCurrent = await getFaangPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    const pricePerFullShareOneDayAgo = await getFaangPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    let pricePerFullShareCurrent = await getFaangPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    let pricePerFullShareOneDayAgo = await getFaangPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
+    pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
 
     // APY Calculation
     const n = 365 / 2; // Assume 2 days to trigger invest function
@@ -367,6 +372,7 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: 0,
       elonApy: 0,
+      faangApy: 0,
     };
 
   } else {
@@ -490,6 +496,7 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: 0,
       elonApy: 0,
+      faangApy: 0,
     };
   }
 };

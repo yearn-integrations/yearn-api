@@ -153,9 +153,9 @@ const testContracts = {
       tokenId: ["tether", "usd-coin", "dai"],
     },
     daoSTO: {
-      address: "0xe97f5e5a755f8e633d23a2bae167b628dec22948",
+      address: "0xd6af81e5288be43137debf969d7f2c03482c8cc1",
       abi: abi.daoFaangStonkVaultContract,
-      strategyAddress: "0xccced6278e9c6e68210f3bdc1bc3444e830cad33",
+      strategyAddress: "0xc0f43b6db13e5988c92aa8c7c286a51f493620d4",
       strategyABI: abi.daoFaangStonkStrategyContract,
       contractType: "daoFaang",
       tokenId: ["tether", "usd-coin", "dai"],
@@ -225,6 +225,10 @@ const testContracts = {
   chainLink: {
     USDT_ETH: {
       address: "0x0bF499444525a23E7Bb61997539725cA2e928138",
+      abi: abi.eacAggregatoorProxyContract,
+    },
+    USDT_USD: {
+      address: "0x2ca5A90D34cA333661083F89D831f757A9A50148",
       abi: abi.eacAggregatoorProxyContract,
     }
   }
@@ -341,9 +345,9 @@ const mainContracts = {
       tokenId: ["tether", "usd-coin", "dai"],
     },
     daoSTO: {
-      address: "0",// TODO Update on mainnet
+      address: "0x742a85daf742ca0213b06fdae449434e0448691e",
       abi: abi.daoFaangStonkVaultContract,
-      strategyAddress: "", // TODO Update on mainnet
+      strategyAddress: "0x7f1cffb0e0a7351a72ef53cb51796221e2bac3a5",
       strategyABI: abi.daoFaangStonkStrategyContract,
       contractType: "daoFaang",
       tokenId: ["tether", "usd-coin", "dai"],
@@ -391,7 +395,7 @@ const mainContracts = {
     address: "0xD6Ce913C3e81b5e67a6b94d705d9E7cDdf073A7e",
     abi: abi.xDVGABIContract,
     tokenId: "xDVG",
-    lastMeasurement: 0, // TODO Update lastMeasurement
+    lastMeasurement: 12670237, 
   },
   DVG: {
     address: "0x51e00a95748DBd2a3F47bC5c3b3E7B3F0fea666c", 
@@ -399,20 +403,24 @@ const mainContracts = {
     tokenId: "daoventures",
   },
   daoStake: {
-    address: "", // TODO Update mainnet address
+    address: "0x8437a6bf9235fd003d50cd4024fa7ec6979208d5", 
     abi: abi.daoStakeContract,
-    startBlock: 25055584, // TODO Update mainnet block
+    startBlock: 12734615, 
     poolPercent: 0.51
   },
   uniswap: {
     ethDVG: {
-      address: "", // TODO Update mainnet address
+      address: "0xd11aD84D720A5e7fA11c8412Af6C1cAA815a436d",
       abi: abi.uniswapPairABIContract,
     }
   },
   chainLink: {
     USDT_ETH: {
       address: "0xEe9F2375b4bdF6387aa8265dD4FB8F16512A1d46",
+      abi: abi.eacAggregatoorProxyContract,
+    },
+    USDT_USD: {
+      address: "0x3E7d1eAB13ad0104d2750B8863b489D65364e32D",
       abi: abi.eacAggregatoorProxyContract,
     }
   }
