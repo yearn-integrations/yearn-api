@@ -34,8 +34,8 @@ async function init() {
     jobs.savePricePerFullShare();
     jobs.saveHistoricalAPY();
     jobs.saveHistoricalTVL();
-    // jobs.saveHistoricalPools();
-    // jobs.saveABIPools();
+    jobs.saveHistoricalPools();
+    jobs.saveABIPools();
     jobs.saveVipApr();
   });
 
@@ -66,9 +66,9 @@ async function init() {
   app.get("/staking/get-vip-tokens", (req, res) =>
     stakeVIP.getVipDVGToken(req, res)
   );
-  // app.get("/staking/get-pools", (req, res) =>
-  //   stakePool.getPools(req, res)
-  // );
+  app.get("/staking/get-pools", (req, res) =>
+    stakePool.getPools(req, res)
+  );
   app.get("/staking/get-xdvg-stake", (req, res) => stakeXDvg.getxDVGStake(req, res));
   app.get('/event/verify', (req,res) => specialEvent.handleVerifyEvent(req, res));
   app.get('/event/verify/:amount', (req, res) => specialEvent.handler(req, res));
