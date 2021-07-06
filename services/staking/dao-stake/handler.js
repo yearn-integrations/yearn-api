@@ -141,8 +141,10 @@ const getLPTokenBalanceOfDAOStake = async (contract, daoStakeAddress) => {
 // getMultiplier() from DAOstake contract
 const getMultiplier = async(start, current, daoStakeContract) => {
     try {
-        const currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
-        let multiplier = await daoStakeContract.methods.getMultiplier(start, currentBlockNbr).call();
+        //const currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
+        // let multiplier = await daoStakeContract.methods.getMultiplier(start, currentBlockNbr).call();
+        const endBlockNumber = start + (4 * 60 * 24 * 365); // Temporaly fix
+        let multiplier = await daoStakeContract.methods.getMultiplier(start, endBlockNumber).call();
         multiplier = multiplier / (10 ** 18);
         return multiplier;
     } catch (err) {
@@ -232,7 +234,7 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
     const tokenBalOfDAOStake = await getLPTokenBalanceOfDAOStake(poolContract, daoStakeContract._address);
     
     // Pass in start block, last reward block to invoke getMultiplier() in DAOstake contract
-    const multiplier = await getMultiplier(startBlock,lastRewardBlock, daoStakeContract);
+    const multiplier = await getMultiplier(startBlock, lastRewardBlock, daoStakeContract);
    
     // Find pool token price
     const poolTokenPrice = tokens.find(t => t.tokenId === pool.tokenId).price;
@@ -240,6 +242,7 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
     // APR Calculation
     apr = (multiplier * poolPercent * dvgPrice * (poolWeight / 100)) / 
                     ((totalPoolWeight / 100) * tokenBalOfDAOStake * poolTokenPrice);
+    apr = apr * 100; // For percent display on frontend.
 
     // TVL Calculation
     const tvl = tokenBalOfDAOStake * poolTokenPrice;
