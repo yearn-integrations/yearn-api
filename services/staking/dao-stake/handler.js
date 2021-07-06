@@ -242,6 +242,7 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
     // APR Calculation
     apr = (multiplier * poolPercent * dvgPrice * (poolWeight / 100)) / 
                     ((totalPoolWeight / 100) * tokenBalOfDAOStake * poolTokenPrice);
+    apr = apr * 100; // For percent display on frontend.
 
     // TVL Calculation
     const tvl = tokenBalOfDAOStake * poolTokenPrice;
