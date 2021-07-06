@@ -128,12 +128,12 @@ db.stake_pool.insertMany([
     },
     {
         name: "daoSTO",
-        label: "DAO Vault Stonks LP",
+        label: "DAO FAANG Stonk",
         contract_address: '0x742a85daf742ca0213b06fdae449434e0448691e',
         status: 'A',
         pid: '11',
         category: 'Basic',
-        tokenId: 'ethereum',
+        tokenId: 'tether',
         symbol: 'daoSTO'
     }
 ]);
@@ -273,12 +273,12 @@ db.stake_pool.insertMany([
     },
     {
         name: "daoSTO",
-        label: "DAO Vault Stonks LP",
+        label: "DAO FAANG Stonk",
         contract_address: '0xd6af81e5288be43137debf969d7f2c03482c8cc1', 
         status: 'A',
         pid: '11',
         category: 'Advance',
-        tokenId: 'ethereum',
+        tokenId: 'tether',
         symbol: 'daoSTO'
     }
 ]);
