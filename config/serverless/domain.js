@@ -152,6 +152,14 @@ const testContracts = {
       contractType: "elon",
       tokenId: ["tether", "usd-coin", "dai"],
     },
+    daoCUB: {
+      address: "0x5c304a6cb105e1bff9805ca5cf072f1d2c3beac5",
+      abi: abi.cubanApeVaultContract,
+      strategyAddress: "0x998372c8dc70833a7dc687020257302582fa5838",
+      strategyABI: abi.cubanApeStrategyContract,
+      contractType: "cuban",
+      tokenId: ["tether", "usd-coin", "dai"],
+    },
     daoSTO: {
       address: "0xd6af81e5288be43137debf969d7f2c03482c8cc1",
       abi: abi.daoFaangStonkVaultContract,
@@ -342,6 +350,14 @@ const mainContracts = {
       strategyAddress: "0x24d281dcc7d435500669459eaa393dc5200595b1", 
       strategyABI: abi.elonApeStrategyContract,
       contractType: "elon",
+      tokenId: ["tether", "usd-coin", "dai"],
+    },
+    daoCUB: {
+      address: "",  // TODO: Update that this to mainnet address
+      abi: abi.cubanApeVaultContract,
+      strategyAddress: "", // TODO: Update that this to mainnet address
+      strategyABI: abi.cubanApeStrategyContract,
+      contractType: "cuban",
       tokenId: ["tether", "usd-coin", "dai"],
     },
     daoSTO: {

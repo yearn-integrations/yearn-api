@@ -9,6 +9,7 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0x43C20638C3914Eca3c96e9cAc8ebE7d652Be45c6', symbol: 'cDAI', },
     { name: 'expert', contract_address: '0x8fe826cc1225b03aa06477ad5af745aed5fe7066', symbol: 'daoCDV', },
     { name: 'degen', contract_address: '0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8', symbol: 'daoELO', },
+    // { name: 'degen', contract_address: '', symbol: 'daoCUB', }, // TODO: Update to the mainnet address
     { name: 'advance', contract_address: '0x742a85daf742ca0213b06fdae449434e0448691e', symbol: 'daoSTO', },
     // TODO: add in mainnet contract addresss
     // { name: 'basic', contract_address: '', symbol: 'hfUSDT'},
@@ -136,7 +137,17 @@ db.stake_pool.insertMany([
         category: 'Basic',
         tokenId: 'ethereum',
         symbol: 'daoSTO'
-    }
+    },
+    {
+        name: 'daoCUB',
+        label: 'Cuban\'s APE LP',
+        contract_address: '', // TODO: Update to mainnet address
+        status: 'A',
+        pid: '12',
+        category: 'Degen',
+        tokenId: 'ethereum',
+        symbol: 'daoCUB'
+    },
 ]);
 
 // Testnet Contracts
@@ -150,6 +161,7 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d', symbol: 'cDAI', },
     { name: 'expert', contract_address: '0x626c25ca5b86277f395c0e40dbdf51f2a302ab43', symbol: 'daoCDV', },
     { name: 'degen', contract_address: '0xf03fa8553379d872b4e2bafbc679409fb82604c2', symbol: 'daoELO', },
+    { name: 'degen', contract_address: '0x5c304a6cb105e1bff9805ca5cf072f1d2c3beac5', symbol: 'daoCUB', },
     { name: 'advance', contract_address: '0xd6af81e5288be43137debf969d7f2c03482c8cc1', symbol: 'daoSTO', },
     { name: 'basic', contract_address: '0xb41a49de82e95dc1e028839c3440ac97f9a7832c', symbol: 'hfUSDT'},
     { name: 'basic', contract_address: '0x54783464848b35d6fb9bba37c1ddd23ac3b1a11a', symbol: 'hfUSDC'},
@@ -268,7 +280,7 @@ db.stake_pool.insertMany([
         contract_address: '0xf03fa8553379d872b4e2bafbc679409fb82604c2',
         status: 'A',
         pid: '10',
-        category: 'Basic',
+        category: 'Degen',
         tokenId: 'ethereum',
         symbol: 'daoELO'
     },
@@ -281,7 +293,17 @@ db.stake_pool.insertMany([
         category: 'Advance',
         tokenId: 'ethereum',
         symbol: 'daoSTO'
-    }
+    },
+    {
+        name: 'daoCUB',
+        label: 'Cuban\'s APE LP',
+        contract_address: '0x5c304a6cb105e1bff9805ca5cf072f1d2c3beac5',
+        status: 'A',
+        pid: '12',
+        category: 'Degen',
+        tokenId: 'ethereum',
+        symbol: 'daoCUB'
+    },
 ]);
 
 db.special_event.insertMany([

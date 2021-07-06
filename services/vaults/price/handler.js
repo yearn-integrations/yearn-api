@@ -57,6 +57,18 @@ const getElonPricePerFullShare = async (contract) => {
   return pricePerFullShare;
 }
 
+const getCubanPricePerFullShare = async (contract) => {
+  let pricePerFullShare = 0;
+  try {
+    const pool = await contract.methods.getAllPoolInUSD().call(); // All pool in USD (6 decimals)
+    const totalSupply = await contract.methods.totalSupply().call();
+    pricePerFullShare = (new BigNumber(pool)).shiftedBy(12).dividedBy(totalSupply).toNumber();
+  } catch (ex) {}
+
+  await delay(delayTime);
+  return pricePerFullShare;
+}
+
 const getFaangPricePerFullShare = async (contract) => {
   let pricePerFullShare = 0;
   try {
@@ -85,6 +97,7 @@ const getCurrentPrice = async () => {
           compoundExchangeRate: 0,
           citadelPrice: 0,
           elonPrice: 0,
+          cubanPrice: 0,
           harvestPrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'compound') {
@@ -101,6 +114,7 @@ const getCurrentPrice = async () => {
           compoundExchangeRate: exchangeRate,
           citadelPrice: 0,
           elonPrice: 0,
+          cubanPrice: 0,
           faangPrice: 0,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
@@ -113,6 +127,7 @@ const getCurrentPrice = async () => {
           compoundExchangeRate: 0,
           citadelPrice: pricePerFullShare,
           elonPrice: 0,
+          cubanPrice: 0,
           faangPrice: 0,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
@@ -125,6 +140,20 @@ const getCurrentPrice = async () => {
           compoundExchangeRate: 0,
           citadelPrice: 0,
           elonPrice: pricePerFullShare,
+          cubanPrice: 0,
+          faangPrice: 0,
+          harvestPrice: 0,
+        }).catch((err) => console.log('err', err));
+      } else if (contracts.farmer[key].contractType === 'cuban') {
+        const contract = getContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getCubanPricePerFullShare(contract);
+        await db.add(key + '_price', {
+          earnPrice: 0,
+          vaultPrice: 0,
+          compoundExchangeRate: 0,
+          citadelPrice: 0,
+          elonPrice: 0,
+          cubanPrice: pricePerFullShare,
           faangPrice: 0,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
@@ -137,6 +166,7 @@ const getCurrentPrice = async () => {
           compoundExchangeRate: 0,
           citadelPrice: 0,
           elonPrice: 0,
+          cubanPrice: 0,
           faangPrice: pricePerFullShare,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
@@ -160,6 +190,7 @@ const getCurrentPrice = async () => {
           compoundExchangeRate: 0,
           citadelPrice: 0,
           elonPrice: 0,
+          cubanPrice: 0,
           faangPrice: 0,
           harvestPrice: pricePerFullShare,
         })
@@ -171,6 +202,7 @@ const getCurrentPrice = async () => {
         compoundExchangeRate: 0,
         citadelPrice: 0,
         elonPrice: 0,
+        cubanPrice: 0,
         faangPrice: 0,
         harvestPrice: "0"
       }).catch((err) => console.log('err', err));
@@ -228,6 +260,9 @@ module.exports.handleHistoricialPrice = async (req, res) => {
         break;
       case db.daoELOFarmer:
         collection = db.daoELOFarmer;
+        break;
+      case db.daoCUBFarmer:
+        collection = db.daoCUBFarmer;
         break;
       case db.daoSTOFarmer: 
         collection = db.daoSTOFarmer;
