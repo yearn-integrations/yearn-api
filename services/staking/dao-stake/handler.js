@@ -12,6 +12,9 @@ const Web3 = require("web3");
 const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
 const archiveNodeWeb3 = new Web3(archiveNodeUrl);
 
+const infuraUrl = process.env.WEB3_ENDPOINT;
+const infuraWeb3 = new Web3(infuraUrl);
+
 const delayTime = 500;
 let contracts = [];
 
@@ -138,7 +141,8 @@ const getLPTokenBalanceOfDAOStake = async (contract, daoStakeAddress) => {
 // getMultiplier() from DAOstake contract
 const getMultiplier = async(start, current, daoStakeContract) => {
     try {
-        let multiplier = await daoStakeContract.methods.getMultiplier(start, current).call();
+        const currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
+        let multiplier = await daoStakeContract.methods.getMultiplier(start, currentBlockNbr).call();
         multiplier = multiplier / (10 ** 18);
         return multiplier;
     } catch (err) {
