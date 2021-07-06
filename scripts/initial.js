@@ -134,7 +134,7 @@ db.stake_pool.insertMany([
         status: 'A',
         pid: '11',
         category: 'Basic',
-        tokenId: 'ethereum',
+        tokenId: 'tether',
         symbol: 'daoSTO'
     }
 ]);
@@ -279,7 +279,7 @@ db.stake_pool.insertMany([
         status: 'A',
         pid: '11',
         category: 'Advance',
-        tokenId: 'ethereum',
+        tokenId: 'tether',
         symbol: 'daoSTO'
     }
 ]);
