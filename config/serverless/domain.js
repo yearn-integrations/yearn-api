@@ -199,7 +199,7 @@ const testContracts = {
   daoStake: {
     address: "0xd8f59a99acfc597feb84914fef3769def87e7553",
     abi: abi.daoStakeContract,
-    startBlock: 25711879,
+    startBlock: 25721857, // Start block from contract's START_BLOCK
     poolPercent: 0.51
   },
   uniswap: {
@@ -405,7 +405,7 @@ const mainContracts = {
   daoStake: {
     address: "0x8437a6bf9235fd003d50cd4024fa7ec6979208d5", 
     abi: abi.daoStakeContract,
-    startBlock: 12734615, 
+    startBlock: 12770000,  // Start block from contract's START_BLOCK
     poolPercent: 0.51
   },
   uniswap: {
