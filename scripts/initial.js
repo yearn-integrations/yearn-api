@@ -10,9 +10,9 @@ db.vault_categories.insertMany([
     { name: 'expert', contract_address: '0x8fe826cc1225b03aa06477ad5af745aed5fe7066', symbol: 'daoCDV', },
     { name: 'degen', contract_address: '0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8', symbol: 'daoELO', },
     { name: 'advance', contract_address: '0x742a85daf742ca0213b06fdae449434e0448691e', symbol: 'daoSTO', },
-    { name: 'basic', contract_address: '0x2Cc1507E6E3C844EEb77Db90d193489f1Ddfb299', symbol: 'hfUSDT'},
-    { name: 'basic', contract_address: '0xd0f0858578C7780f2D65f6d81BC7DdBe166367cC', symbol: 'hfUSDC'},
-    { name: 'basic', contract_address: '0xE4E6Ce7c1D9Ff44Db27f622aCcbB0753C2f48955', symbol: 'hfDAI'},
+    { name: 'advance', contract_address: '0x2Cc1507E6E3C844EEb77Db90d193489f1Ddfb299', symbol: 'hfUSDT'},
+    { name: 'advance', contract_address: '0xd0f0858578C7780f2D65f6d81BC7DdBe166367cC', symbol: 'hfUSDC'},
+    { name: 'advance', contract_address: '0xE4E6Ce7c1D9Ff44Db27f622aCcbB0753C2f48955', symbol: 'hfDAI'},
 ]);
 
 db.stake_pool.insertMany([
@@ -135,6 +135,36 @@ db.stake_pool.insertMany([
         category: 'Basic',
         tokenId: 'ethereum',
         symbol: 'daoSTO'
+    },
+    {
+        name: "hfUSDT",
+        label: "Harvest Fighter USDT LP",
+        contract_address: '0x2Cc1507E6E3C844EEb77Db90d193489f1Ddfb299',
+        status: 'A',
+        pid: '12',
+        category: 'Advance',
+        tokenId: 'USDT',
+        symbol: 'hfUSDT'
+    },
+    {
+        name: "hfUSDC",
+        label: "Harvest Fighter USDC LP",
+        contract_address: '0xd0f0858578C7780f2D65f6d81BC7DdBe166367cC',
+        status: 'A',
+        pid: '13',
+        category: 'Advance',
+        tokenId: 'USDC',
+        symbol: 'hfUSDC'
+    },
+    {
+        name: "hfDAI",
+        label: "Harvest Fighter DAI LP",
+        contract_address: '0xE4E6Ce7c1D9Ff44Db27f622aCcbB0753C2f48955',
+        status: 'A',
+        pid: '14',
+        category: 'Advance',
+        tokenId: 'DAI',
+        symbol: 'hfDAI'
     }
 ]);
 
@@ -150,9 +180,9 @@ db.vault_categories.insertMany([
     { name: 'expert', contract_address: '0x626c25ca5b86277f395c0e40dbdf51f2a302ab43', symbol: 'daoCDV', },
     { name: 'degen', contract_address: '0xf03fa8553379d872b4e2bafbc679409fb82604c2', symbol: 'daoELO', },
     { name: 'advance', contract_address: '0xd6af81e5288be43137debf969d7f2c03482c8cc1', symbol: 'daoSTO', },
-    { name: 'basic', contract_address: '0x35880615bb18DA592FF0fEb0940ADE2c02249715', symbol: 'hfUSDT'},
-    { name: 'basic', contract_address: '0x68b1C860300c4f7d577f08D8B3c3AEe23887b280', symbol: 'hfUSDC'},
-    { name: 'basic', contract_address: '0x6D7e8fA90C1ffdC019d691BAFC18D6362FdEeCd7', symbol: 'hfDAI'},
+    { name: 'advance', contract_address: '0x35880615bb18DA592FF0fEb0940ADE2c02249715', symbol: 'hfUSDT'},
+    { name: 'advance', contract_address: '0x68b1C860300c4f7d577f08D8B3c3AEe23887b280', symbol: 'hfUSDC'},
+    { name: 'advance', contract_address: '0x6D7e8fA90C1ffdC019d691BAFC18D6362FdEeCd7', symbol: 'hfDAI'},
 ]);
 
 db.xdvg_token.insert({
@@ -280,6 +310,36 @@ db.stake_pool.insertMany([
         category: 'Advance',
         tokenId: 'ethereum',
         symbol: 'daoSTO'
+    },
+    {
+        name: "hfUSDT",
+        label: "Harvest Fighter USDT LP",
+        contract_address: '0x35880615bb18DA592FF0fEb0940ADE2c02249715',
+        status: 'A',
+        pid: '12',
+        category: 'Advance',
+        tokenId: 'USDT',
+        symbol: 'hfUSDT'
+    },
+    {
+        name: "hfUSDC",
+        label: "Harvest Fighter USDC LP",
+        contract_address: '0x68b1C860300c4f7d577f08D8B3c3AEe23887b280',
+        status: 'A',
+        pid: '13',
+        category: 'Advance',
+        tokenId: 'USDC',
+        symbol: 'hfUSDC'
+    },
+    {
+        name: "hfDAI",
+        label: "Harvest Fighter DAI LP",
+        contract_address: '0x6D7e8fA90C1ffdC019d691BAFC18D6362FdEeCd7',
+        status: 'A',
+        pid: '14',
+        category: 'Advance',
+        tokenId: 'DAI',
+        symbol: 'hfDAI'
     }
 ]);
 
