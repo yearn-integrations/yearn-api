@@ -288,6 +288,15 @@ module.exports.tvlHandle = async (req, res) => {
     case db.daoSTOFarmer:
       collection = db.daoSTOFarmer;
       break;
+    case db.hfDaiFarmer:
+      collection = db.hfDaiFarmer;
+      break;
+    case db.hfUsdtFarmer:
+      collection = db.hfUsdtFarmer;
+      break;
+    case db.hfUsdcFarmer:
+      collection = db.hfUsdcFarmer;
+      break;
     default:
       res.status(200).json({
         message: "Invalid Farmer",
@@ -295,6 +304,7 @@ module.exports.tvlHandle = async (req, res) => {
       });
       return;
   }
+
 
   const result = await db.getTVL(collection, { limit: 1 });
   if (result) {

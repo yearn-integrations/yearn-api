@@ -368,30 +368,30 @@ const mainContracts = {
       contractType: "daoFaang",
       tokenId: ["tether", "usd-coin", "dai"],
     },
-    // hfDAI: {
-    //   address: '', // TODO: Update that this to mainnet address
-    //   abi: abi.hfVaultContract,
-    //   strategyAddress: '',
-    //   strategyABI:  abi.hfStrategyContract,
-    //   contractType: 'harvest',
-    //   tokenId: "dai",
-    // },
-    // hfUSDC: {
-    //   address: '', // TODO: Update that this to mainnet address
-    //   abi: abi.hfVaultContract,
-    //   strategyAddress: '',
-    //   strategyABI: abi.hfStrategyContract,
-    //   contractType: 'harvest',
-    //   tokenId: "usd-coin",
-    // },
-    // hfUSDT: {
-    //   address: '', // TODO: Update that this to mainnet address
-    //   abi: abi.hfVaultContract,
-    //   strategyAddress: '',
-    //   strategyABI: abi.hfStrategyContract,
-    //   contractType: 'harvest',
-    //   tokenId: "tether",
-    // },
+    hfDAI: {
+      address: '0x2cc1507e6e3c844eeb77db90d193489f1ddfb299', 
+      abi: abi.hfVaultContract,
+      strategyAddress: '0x89541e3b8e8b73c108744909ea11d506b4a8e6c7',
+      strategyABI:  abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "dai",
+    },
+    hfUSDC: {
+      address: '0xd0f0858578c7780f2d65f6d81bc7ddbe166367cc', 
+      abi: abi.hfVaultContract,
+      strategyAddress: '0x0af9547974e056fca221f679dbbb7f8651407d7f',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "usd-coin",
+    },
+    hfUSDT: {
+      address: '0xe4e6ce7c1d9ff44db27f622accbb0753c2f48955',
+      abi: abi.hfVaultContract,
+      strategyAddress: '0xef9a15025c2ed048a67c5c8019a1101172eeb51c',
+      strategyABI: abi.hfStrategyContract,
+      contractType: 'harvest',
+      tokenId: "tether",
+    },
   },
   compund: {
     cUSDT: {
