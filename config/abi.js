@@ -21396,5 +21396,7 @@ module.exports = {
   elonApeVaultContract,
   elonApeStrategyContract,
   daoFaangStonkVaultContract,
-  daoFaangStonkStrategyContract
+  daoFaangStonkStrategyContract,
+  moneyPrinterVaultContract,
+  moneyPrinterStrategyContract,
 };

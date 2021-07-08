@@ -1,12 +1,10 @@
-const _ = require("lodash");
 const BigNumber = require("bignumber.js");
 const db = require("../../../models/tvl.model");
 
-const Web3 = require("web3");
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
-const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
-const archiveNodeWeb3 = new Web3(archiveNodeUrl);
+
+const contractHelper = require('../../../utils/contract');
 
 const {
   testContracts,
@@ -56,16 +54,15 @@ const getTotalSupply = async (contract) => {
   }
 };
 
-const getContract = (contractAbi, contractAddress) => {
-  const contract = new archiveNodeWeb3.eth.Contract(contractAbi, contractAddress);
-  return contract;
-};
-
-const getTokenContract = async (vault) => {
-  const { abi, address } = vault;
-  const contract = new archiveNodeWeb3.eth.Contract(abi, address);
-  return contract;
-};
+const getContract = async (vault) => {
+  try {
+    const { abi, address, network } = vault;
+    const contract = await contractHelper.getContract(abi, address, network);
+    return contract
+  } catch(err) {
+    console.log("getContract", err);
+  }
+}
 
 /**
  * Get Token price from coingecko
@@ -96,8 +93,8 @@ const getxDVGPrice = async () => {
       ? mainContracts
       : testContracts;
 
-  const DVGcontract = await getTokenContract(contracts.DVG);
-  const xDVGcontract = await getTokenContract(contracts.vipDVG);
+  const DVGcontract = await getContract(contracts.DVG);
+  const xDVGcontract = await getContract(contracts.vipDVG);
   const amountDVG = await getBalance(
     DVGcontract,
     contracts.vipDVG.address
@@ -117,28 +114,34 @@ const getTVL = async (vault) => {
   const { 
     tokenId, 
     strategyABI, 
-    strategyAddress,
-    abi,
-    address
+    strategyAddress
   } = vault;
   let tvl;
+
   if (vault.contractType === 'citadel' || vault.contractType === 'elon') {
-    const contract = await getTokenContract(vault);
+    const contract = await getContract(vault);
     const usdPool = await contract.methods.getAllPoolInUSD().call();
     tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
   } else if(vault.contractType === 'daoFaang'){
-    const contract = await getTokenContract(vault);
+    const contract = await getContract(vault);
     const poolAmount = await contract.methods.getTotalValueInPool().call();
     const decimals = await contract.methods.decimals().call();
     tvl = poolAmount / 10 ** decimals;
+  } else if (vault.contractType === "moneyPrinter") {
+    const contract = await getContract(vault);
+    const poolAmount = await contract.methods.getValueInPool().call();
+    const decimals = await contract.methods.decimals().call();
+    tvl = poolAmount / 10 ** decimals;
   } else {
-    const strategyContract = getContract(strategyABI, strategyAddress);
+    const strategy = { abi: strategyABI, address: strategyAddress, network: vault.network}
+    const strategyContract = await getContract(strategy);
+
     const poolAmount = await getPoolAmount(strategyContract);
     const tokenPrice = await getTokenPrice(tokenId);
-    let decimals = 0;
 
+    let decimals = 0;
     if(vault.contractType === 'harvest') {
-      const vaultContract = getContract(abi, address);
+      const vaultContract = await getContract(vault);
       decimals =  await getDecimals(vaultContract);
     } else {
       decimals = await getDecimals(strategyContract);
@@ -156,7 +159,7 @@ const getTVL = async (vault) => {
 const getTVLxDVG = async (vault) => {
   const { tokenId } = vault;
   let tvl;
-  const contract = await getTokenContract(vault);
+  const contract = await getContract(vault);
   const totalSupply = await getTotalSupply(contract);
   const decimals = await getDecimals(contract);
   const tokenPrice = await getxDVGPrice(tokenId); // Not implemented yet
@@ -284,6 +287,9 @@ module.exports.tvlHandle = async (req, res) => {
       break;
     case db.daoSTOFarmer:
       collection = db.daoSTOFarmer;
+      break;
+    case db.daoMPTFarmer: 
+      collection = db.daoMPTFarmer;
       break;
     default:
       res.status(200).json({
