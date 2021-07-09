@@ -1,9 +1,11 @@
+// Function same as handler.js, this is for Polygon network
 const vaults = require("./polygon-vault");
 const { delayTime } = require("./config");
 const delay = require("delay");
 const moment = require("moment");
 const contractHelper = require("../../../../utils/contract");
-const historicalDb = require('../../../../models/historical-apy.model');
+const apyDb = require('../../../../models/apy.model');
+const { getMoneyPrinterPricePerFullShare } = require("./historical-handle-polygon");
 const { 
     testContracts, 
     mainContracts
@@ -12,34 +14,11 @@ const {
 let polygonBlockNumber = {
     current: 0,
     oneDay: 0,
-    threeDay: 0,
-    oneWeek: 0,
-    oneMonth: 0,
 }
 
-const getMoneyPrinterPricePerFullShare = async (contract, blockNumber, inceptionBlockNumber) => {
-    if(blockNumber === inceptionBlockNumber) {
-        return 1e18;
-    }
-    if(blockNumber < inceptionBlockNumber) {
-        return 0;
-    }
-
-    let pricePerFullShare = 0;
-    try {
-        const pool = await contract.methods.getValueInPool().call(undefined, blockNumber);
-        const totalSupply = await contract.methods.totalSupply().call(undefined, blockNumber);
-        pricePerFullShare = pool / totalSupply;
-    } catch (err) {
-        console.log(`Error in getMoneyPrinterPricePerFullShare()`,err);
-    }
-    
-    await delay(delayTime);
-    return pricePerFullShare;
-}
 
 const getApyForVault = async (vault) => {
-    const { lastMeasurement: inceptionBlockNumber } = vault
+    const { lastMeasurement: inceptionBlockNumber } = vault;
 
     // Money Printer vault
     if(vault.isMoneyPrinter) {
@@ -50,7 +29,6 @@ const getApyForVault = async (vault) => {
 
         let pricePerFullShareCurrent = await getMoneyPrinterPricePerFullShare(contract, polygonBlockNumber.current, inceptionBlockNumber);
         let pricePerFullShareOneDayAgo = await getMoneyPrinterPricePerFullShare(contract, polygonBlockNumber.oneDay, inceptionBlockNumber);
-        
         pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
         pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
 
@@ -82,40 +60,35 @@ const saveAndReadVault = async (vault) => {
 
     const apy = await getApyForVault(vault);
     const data = {
-        ...apy,
-        aprs: 0,
+        address: vault.vaultContractAddress,
+        name: vault.name,
         symbol: vault.symbol,
-    }
-    await saveHistoricalAPY(data, vault.vaultSymbol + '_historical-apy');
+        description: vault.description,
+        vaultSymbol: vault.vaultSymbol,
+        tokenAddress: vault.erc20address,
+        timestamp: Date.now(),
+        ...apy,
+    };
+    await saveVaultWithApy(data);
     return data;
 }
 
-// DB
-const saveHistoricalAPY = async (data, collection) => {
-    await historicalDb.add(data, collection).catch((err) => console.log('err', err));
-}
+const saveVaultWithApy = async (data) => {
+    await apyDb.add(data).catch((err) => console.log('err', err));
+    console.log(`Saved ${data.name}`);
+};
 
-// Cronjob handler
-const saveHandler = async() => {
+module.exports.saveHandler = async() => {
     try {
         const oneDayAgo = moment().subtract(1, "days").valueOf();
-        const threeDaysAgo = moment().subtract(3, "days").valueOf();
-        const oneWeekAgo = moment().subtract(1, "weeks").valueOf();
-        const oneMonthAgo = moment().subtract(1, "months").valueOf();
-
+       
         console.log("Fetching Polygon historical blocks");
         current = await contractHelper.getPolygonCurrentBlockNumber();
         console.log(`(Polygon) Current Block Number: ${current}`);
         oneDay = await contractHelper.getPolygonBlockNumberByTimeline(oneDayAgo); 
         console.log(`(Polygon) 1d ago Block Number: ${oneDay}`);
-        threeDay = await contractHelper.getPolygonBlockNumberByTimeline(threeDaysAgo);
-        console.log(`(Polygon) 3d ago Block Number: ${threeDay}`);
-        oneWeek = await contractHelper.getPolygonBlockNumberByTimeline(oneWeekAgo);
-        console.log(`(Polygon) 1w ago Block Number: ${oneWeek}`);
-        oneMonth = await contractHelper.getPolygonBlockNumberByTimeline(oneMonthAgo);
-        console.log(`(Polygon) 1m ago Block Number: ${oneMonth}`);
-        polygonBlockNumber = {current, oneDay, threeDay, oneWeek, oneMonth };
-
+    
+        polygonBlockNumber = {current, oneDay};
         console.log("Done fetching Polygon historical blocks");
     } catch (err){
         console.log("Error in fetching polygon historical block", err);
@@ -134,8 +107,3 @@ const saveHandler = async() => {
         }
     }
 }
-
-module.exports = {
-    getMoneyPrinterPricePerFullShare,
-    saveHandler
-};
