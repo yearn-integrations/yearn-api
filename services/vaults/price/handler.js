@@ -17,6 +17,8 @@ const Web3 = require("web3");
 const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
 const archiveNodeWeb3 = new Web3(archiveNodeUrl);
 
+const contractHelper = require("../../../utils/contract");
+
 const getPriceFromChainLink = async () => {
   let contract, price = 0;
   if (process.env.PRODUCTION != '') {
@@ -68,6 +70,17 @@ const getFaangPricePerFullShare = async (contract) => {
   return pricePerFullShare;
 }
 
+const getMoneyPrinterPricePerFullShare = async (contract) => {
+  let pricePerFullShare = 0;
+  try {
+    const pool = await contract.methods.getValueInPool().call();
+    const totalSupply = await contract.methods.totalSupply().call();
+    pricePerFullShare = pool / totalSupply;
+  } catch (ex) {}
+  await delay(delayTime);
+  return pricePerFullShare;
+}
+
 const getCurrentPrice = async () => {
   let contracts = process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? mainContracts : testContracts;
   
@@ -85,6 +98,8 @@ const getCurrentPrice = async () => {
           compoundExchangeRate: 0,
           citadelPrice: 0,
           elonPrice: 0,
+          faangPrice: 0,
+          moneyPrinterPrice: 0,
           harvestPrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'compound') {
@@ -102,6 +117,7 @@ const getCurrentPrice = async () => {
           citadelPrice: 0,
           elonPrice: 0,
           faangPrice: 0,
+          moneyPrinterPrice: 0,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'citadel') {
@@ -114,6 +130,7 @@ const getCurrentPrice = async () => {
           citadelPrice: pricePerFullShare,
           elonPrice: 0,
           faangPrice: 0,
+          moneyPrinterPrice: 0,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'elon') {
@@ -126,6 +143,7 @@ const getCurrentPrice = async () => {
           citadelPrice: 0,
           elonPrice: pricePerFullShare,
           faangPrice: 0,
+          moneyPrinterPrice: 0,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
       } else if(contracts.farmer[key].contractType === 'daoFaang') {
@@ -138,6 +156,20 @@ const getCurrentPrice = async () => {
           citadelPrice: 0,
           elonPrice: 0,
           faangPrice: pricePerFullShare,
+          moneyPrinterPrice: 0,
+          harvestPrice: 0,
+        }).catch((err) => console.log('err', err));
+      } else if(contracts.farmer[key].contractType === 'moneyPrinter') {
+        const contract = contractHelper.getPolygonContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getMoneyPrinterPricePerFullShare(contract);
+        await db.add(key + '_price', {
+          earnPrice: 0,
+          vaultPrice: 0,
+          compoundExchangeRate: 0,
+          citadelPrice: 0,
+          elonPrice: 0,
+          faangPrice: 0,
+          moneyPrinterPrice: pricePerFullShare,
           harvestPrice: 0,
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'harvest') {
@@ -161,6 +193,7 @@ const getCurrentPrice = async () => {
           citadelPrice: 0,
           elonPrice: 0,
           faangPrice: 0,
+          moneyPrinterPrice: 0,
           harvestPrice: pricePerFullShare,
         })
       }
@@ -172,6 +205,7 @@ const getCurrentPrice = async () => {
         citadelPrice: 0,
         elonPrice: 0,
         faangPrice: 0,
+        moneyPrinterPrice:0,
         harvestPrice: "0"
       }).catch((err) => console.log('err', err));
     }
@@ -231,6 +265,9 @@ module.exports.handleHistoricialPrice = async (req, res) => {
         break;
       case db.daoSTOFarmer: 
         collection = db.daoSTOFarmer;
+        break;
+      case db.daoMPTFarmer: 
+        collection = db.daoMPTFarmer;
         break;
       case db.hfDaiFarmer: 
         collection = db.hfDaiFarmer;
