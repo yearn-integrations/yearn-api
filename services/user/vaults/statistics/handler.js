@@ -25,6 +25,8 @@ const {
   getVaultAddressesForUser,
 } = require("../transactions/handler");
 const _ = require("lodash");
+const contractHelper = require("../../../../utils/contract");
+const constant = require("../../../../utils/constant");
 
 const getVaultContract = (vaultAddress) => {
   const abi = getMinimalVaultABI();
@@ -84,19 +86,20 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   // Get User Deposit Amount
   let strategyContract;
   let vaultContract;
-  let type = '';
 
-  if (process.env.PRODUCTION != null && process.env.PRODUCTION != '') {
-    const symbol = Object.keys(mainContracts.farmer).find(key => mainContracts.farmer[key].address.toLowerCase() === contractAddress.toLowerCase());
-    strategyContract = getContract(mainContracts.farmer[symbol].strategyABI, mainContracts.farmer[symbol].strategyAddress);
-    vaultContract = getContract(mainContracts.farmer[symbol].abi, mainContracts.farmer[symbol].address);
-    type = mainContracts.farmer[symbol].contractType;
-  } else {
-    const symbol = Object.keys(testContracts.farmer).find(key => testContracts.farmer[key].address.toLowerCase() === contractAddress.toLowerCase());
-    
-    strategyContract = getContract(testContracts.farmer[symbol].strategyABI, testContracts.farmer[symbol].strategyAddress);
-    vaultContract = getContract(testContracts.farmer[symbol].abi, testContracts.farmer[symbol].address);
-    type = testContracts.farmer[symbol].contractType;
+  const contracts = (process.env.PRODUCTION != null && process.env.PRODUCTION != '') 
+    ? mainContracts
+    : testContracts;
+
+  const vault = Object.values(contracts.farmer).find(contract => contract.address.toLowerCase() === contractAddress.toLowerCase());
+  const type = vault.contractType;
+
+  if(vault.network === constant.ETHEREUM) {
+    vaultContract = await contractHelper.getEthereumContract(vault.abi, vault.address);
+    strategyContract = await contractHelper.getEthereumContract(vault.strategyABI, vault.strategyAddress);
+  } else if (vault.network === constant.POLYGON) {
+    vaultContract = await contractHelper.getPolygonContract(vault.abi, vault.address);
+    strategyContract = await contractHelper.getPolygonContract(vault.strategyABI, vault.strategyAddress);
   }
 
   const depositedShares = await getDepositedShares(vaultContract, userAddress);
@@ -113,7 +116,6 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   } else if (type === 'citadel') {
     const pool = await vaultContract.methods.getAllPoolInUSD().call();
     const totalSupply = await vaultContract.methods.totalSupply().call(); 
-
     // depositedAmount = await vaultContract.methods._balanceOfDeposit(userAddress).call();
     depositedAmount = (depositedShares * pool) / totalSupply;
     depositedAmount = new BigNumber(depositedAmount);
@@ -126,17 +128,26 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
     depositedAmount = new BigNumber(depositedAmount);
   } else if (type === 'daoFaang') {
-
     let usdtToUsdPriceFeedContract;
-    if (process.env.PRODUCTION != '') {
-      usdtToUsdPriceFeedContract = new archiveNodeWeb3.eth.Contract(mainContracts.chainLink.USDT_USD.abi, mainContracts.chainLink.USDT_USD.address);
-    } else {
-      usdtToUsdPriceFeedContract = new archiveNodeWeb3.eth.Contract(testContracts.chainLink.USDT_USD.abi, testContracts.chainLink.USDT_USD.address);
-    }
+    const contractInfo = (process.env.PRODUCTION != '') ? mainContracts.chainLink.USDT_USD : testContracts.chainLink.USDT_USD;
+    usdtToUsdPriceFeedContract = new archiveNodeWeb3.eth.Contract(contractInfo.abi, contractInfo.address);
 
     const usdtToUsdPrice = await getPriceFromChainLink(usdtToUsdPriceFeedContract);
     const pool = await vaultContract.methods.getTotalValueInPool().call(); 
     const totalSupply = await vaultContract.methods.totalSupply().call(); 
+    const poolInUSD = (pool * usdtToUsdPrice) / (10 ** 20); // The reason to divide 20: pool in 18 , price feed in 8 , ( 18 + 8 ) / 20 =  6 decimals
+  
+    depositedAmount = (depositedShares * poolInUSD) / totalSupply;
+    depositedAmount = new BigNumber(depositedAmount);
+  } else if (type === 'moneyPrinter') {
+    let usdtToUsdPriceFeedContract;
+    const contractInfo = (process.env.PRODUCTION != '') ? mainContracts.polygonChainLink.USDT_USD : testContracts.polygonChainLink.USDT_USD;
+    usdtToUsdPriceFeedContract = await contractHelper.getPolygonContract(contractInfo.abi, contractInfo.address);
+
+    const usdtToUsdPrice = await getPriceFromChainLink(usdtToUsdPriceFeedContract);
+    const pool = await vaultContract.methods.getValueInPool().call(); 
+    const totalSupply = await vaultContract.methods.totalSupply().call();
+
     const poolInUSD = (pool * usdtToUsdPrice) / (10 ** 20); // The reason to divide 20: pool in 18 , price feed in 8 , ( 18 + 8 ) / 20 =  6 decimals
   
     depositedAmount = (depositedShares * poolInUSD) / totalSupply;
@@ -185,7 +196,7 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   let totalTransferredInUSD = 0;
   let totalTransferredOutInUSD = 0;
 
-  if(type === "citadel" || type === "elon" || type === "daoFaang") {
+  if(type === "citadel" || type === "elon" || type === "daoFaang" || type === "moneyPrinter") {
     totalDepositsInUSD = getSumForUSD(deposits);
     totalWithdrawalsInUSD = getSumForUSD(withdrawals);
     totalTransferredInUSD = getSumForUSD(transfersIn);

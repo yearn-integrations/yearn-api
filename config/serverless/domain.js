@@ -260,6 +260,12 @@ const testContracts = {
       abi: abi.eacAggregatoorProxyContract,
       network: constant.ETHEREUM,
     }
+  },
+  polygonChainLink: {
+    USDT_USD: {
+      address:"0x92c09849638959196e976289418e5973cc96d645",
+      abi: abi.polygonEacAggregatoorProxyContract,
+    }
   }
 };
 
@@ -484,6 +490,12 @@ const mainContracts = {
     USDT_USD: {
       address: "0x3E7d1eAB13ad0104d2750B8863b489D65364e32D",
       abi: abi.eacAggregatoorProxyContract,
+    }
+  },
+  polygonChainLink: {
+    USDT_USD: {
+      address:"0x0a6513e40db6eb1b165753ad52e80663aea50545",
+      abi: abi.polygonEacAggregatoorProxyContract,
     }
   }
 };

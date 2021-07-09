@@ -167,10 +167,20 @@ const getVaultAddressesForUserWithGraphTransactions = (
 const getVaultAddressesForUser = async (userAddress) => {
   const ethereumTransactions = await getGraphTransactions(userAddress.toLowerCase(), constant.ETHEREUM);
   const polygonTransactions = await getGraphTransactions(userAddress.toLowerCase(), constant.POLYGON);
-  const vaultAddressesForUser = getVaultAddressesForUserWithGraphTransactions(
+
+  let vaultAddressesForUser = [];
+  const ethereumAddresses = getVaultAddressesForUserWithGraphTransactions(
     userAddress,
-    graphTransactions
+    ethereumTransactions
   );
+  vaultAddressesForUser = vaultAddressesForUser.concat(ethereumAddresses);
+
+  const polygonAddresses = getVaultAddressesForUserWithGraphTransactions(
+    userAddress,
+    polygonTransactions
+  );
+  vaultAddressesForUser = vaultAddressesForUser.concat(polygonAddresses);
+
   return vaultAddressesForUser;
 };
 
