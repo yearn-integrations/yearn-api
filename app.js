@@ -33,6 +33,7 @@ async function init() {
     jobs.saveVaultAPY();
     jobs.savePricePerFullShare();
     jobs.saveHistoricalAPY();
+    jobs.savePolygonHistoricalAPY();
     jobs.saveHistoricalTVL();
     jobs.saveHistoricalPools();
     jobs.saveABIPools();

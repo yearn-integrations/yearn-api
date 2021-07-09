@@ -1,5 +1,6 @@
 const cron = require("node-cron");
 const vaultApySave = require("../services/vaults/apy/save/historical-handle");
+const vaultPolygonApySave = require("../services/vaults/apy/save/historical-handle-polygon");
 const vaultHandlerSave = require("../services/vaults/apy/save/handler");
 const vaultSave = require("../services/vaults/save/handler");
 const priceSave = require("../services/vaults/price/handler");
@@ -70,6 +71,21 @@ const saveHistoricalAPY = async () => {
   );
 };
 
+/** Store Historical APY For Polygon */
+const savePolygonHistoricalAPY = async () => {
+  await vaultPolygonApySave.saveHandler();
+  cron.schedule(
+    "*/5 * * * *",
+    async () => {
+      console.log("[savePolygonAPY]", new Date().getTime());
+      await vaultPolygonApySave.saveHandler();
+    },
+    {
+      scheduled: true,
+    }
+  );
+}
+
 /** Store Historical TVL */
 const saveHistoricalTVL = async () => {
   await tvlSave.saveAllTVLhandler();
@@ -136,6 +152,7 @@ module.exports = {
   saveVault,
   savePricePerFullShare,
   saveHistoricalAPY,
+  savePolygonHistoricalAPY,
   saveHistoricalPools,
   saveABIPools,
   saveVipApr,
