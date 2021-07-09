@@ -4,6 +4,8 @@ require("dotenv").config();
 const fetch = require("node-fetch");
 const { pluck, uniq } = require("ramda/dist/ramda");
 const subgraphUrl = process.env.SUBGRAPH_ENDPOINT;
+const polygonSubgraphUrl = process.env.POLYGON_SUBGRAPH_ENDPOINT;
+const constant = require("../../../../utils/constant");
 const _ = require("lodash");
 const {
   testContracts,
@@ -44,7 +46,7 @@ module.exports.handler = async (req, res) => {
   }
 };
 
-const getGraphTransactions = async (userAddress) => {
+const getGraphTransactions = async (userAddress, network) => {
   const query = `
   { 
       deposits: deposits (where: {account: "${userAddress}"}) {
@@ -104,7 +106,18 @@ const getGraphTransactions = async (userAddress) => {
     }
   `;
 
-  const response = await fetch(subgraphUrl, {
+  let url = "";
+  switch(network){
+    case constant.ETHEREUM: 
+      url = subgraphUrl;
+      break;
+    case constant.POLYGON:
+      url = polygonSubgraphUrl;
+      break;
+    default:
+      break;
+  }
+  const response = await fetch(url , {
     method: "POST",
     body: JSON.stringify({ query }),
   });
@@ -152,7 +165,8 @@ const getVaultAddressesForUserWithGraphTransactions = (
 };
 
 const getVaultAddressesForUser = async (userAddress) => {
-  const graphTransactions = await getGraphTransactions(userAddress.toLowerCase());
+  const ethereumTransactions = await getGraphTransactions(userAddress.toLowerCase(), constant.ETHEREUM);
+  const polygonTransactions = await getGraphTransactions(userAddress.toLowerCase(), constant.POLYGON);
   const vaultAddressesForUser = getVaultAddressesForUserWithGraphTransactions(
     userAddress,
     graphTransactions
@@ -161,9 +175,28 @@ const getVaultAddressesForUser = async (userAddress) => {
 };
 
 const getTransactions = async (userAddress) => {
-  const graphTransactions = await getGraphTransactions(userAddress);
-  let { deposits, withdrawals, transfersIn, transfersOut } = graphTransactions;
+  let deposits = [];
+  let withdrawals = [];
+  let transfersIn = [];
+  let transfersOut = [];
 
+  const ethereumTransactions = await getGraphTransactions(userAddress, constant.ETHEREUM);
+  if(ethereumTransactions) {
+    deposits = deposits.concat(ethereumTransactions.deposits);
+    withdrawals = withdrawals.concat(ethereumTransactions.withdrawals);
+    transfersIn = transfersIn.concat(ethereumTransactions.transfersIn);
+    transfersOut = transfersOut.concat(ethereumTransactions.transfersOut);
+  }
+
+  const polygonTransactions = await getGraphTransactions(userAddress, constant.POLYGON);
+  if(polygonTransactions) {
+    deposits = deposits.concat(polygonTransactions.deposits);
+    withdrawals = withdrawals.concat(polygonTransactions.withdrawals);
+    transfersIn = transfersIn.concat(polygonTransactions.transfersIn);
+    transfersOut = transfersOut.concat(polygonTransactions.transfersOut);
+  }
+
+  // let { deposits, withdrawals, transfersIn, transfersOut } = graphTransactions;
   // const injectAmountIntoTransfer = (transfer) => {
   //   const amount = (transfer.balance * transfer.shares) / transfer.totalSupply;
   //   const newTransfer = {
@@ -172,16 +205,22 @@ const getTransactions = async (userAddress) => {
   //   };
   //   return newTransfer;
   // };
-
   // transfersIn = transfersIn.map(injectAmountIntoTransfer);
   // transfersOut = transfersOut.map(injectAmountIntoTransfer);
 
   // Get all the vaults the address has interacted with.
-  const vaultAddresses = getVaultAddressesForUserWithGraphTransactions(
+  let vaultAddresses = [];
+  const ethereumAddresses = getVaultAddressesForUserWithGraphTransactions(
     userAddress,
-    graphTransactions
+    ethereumTransactions
   );
-  
+  vaultAddresses = vaultAddresses.concat(ethereumAddresses);
+  const polygonAddresses = getVaultAddressesForUserWithGraphTransactions(
+    userAddress,
+    polygonTransactions
+  )
+  vaultAddresses = vaultAddresses.concat(polygonAddresses);
+ 
   const farmers = process.env.PRODUCTION == '' ? Object.values(testContracts.farmer) : Object.values(mainContracts.farmer);
 
   const removeVaultAddressField = (deposit) => _.omit(deposit, "vaultAddress");
