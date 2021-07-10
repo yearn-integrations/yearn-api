@@ -19915,7 +19915,7 @@ const daoFaangStonkStrategyContract =[
   }
 ];
 
-const moneyPrinterVaultContract = [
+const moneyPrinterVaultContract =[
   {
     "inputs": [
       {
@@ -21357,6 +21357,24 @@ const moneyPrinterStrategyContract = [
       }
     ],
     "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "_token",
+        "type": "address"
+      }
+    ],
+    "name": "withdrawTestnet",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
