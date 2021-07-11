@@ -87,17 +87,14 @@ module.exports.snapshotEmergency = async (req, res) => {
                 userAddress: req.body.userAddress.toLowerCase(),
             });
 
-            let pendingDVG = req.body.pendingDVG;
-            if (prev != null) {
-                pendingDVG += prev.pendingDVG;
+            if (prev == null) {
+                await snapshot.add({
+                    pid: req.body.pid,
+                    userAddress: req.body.userAddress.toLowerCase(),
+                    pendingDVG: req.body.pendingDVG,
+                });
             }
             
-            await snapshot.add({
-                pid: req.body.pid,
-                userAddress: req.body.userAddress.toLowerCase(),
-                pendingDVG,
-            });
-
             res.status(200).json({
                 message: 'Successful Response',
                 body: {}
