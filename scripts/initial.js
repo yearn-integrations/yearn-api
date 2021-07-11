@@ -24,6 +24,8 @@ db.stake_pool.insertMany([
         tokenId: 'tether',
         symbol: 'USDT',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmUSDC',
@@ -35,6 +37,8 @@ db.stake_pool.insertMany([
         tokenId: 'usd-coin',
         symbol: 'USDC',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmDAI',
@@ -46,6 +50,8 @@ db.stake_pool.insertMany([
         tokenId: 'dai',
         symbol: 'DAI',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmTUSD',
@@ -57,6 +63,8 @@ db.stake_pool.insertMany([
         tokenId: 'true-usd',
         symbol: 'TUSD',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvlUSDT',
@@ -68,6 +76,8 @@ db.stake_pool.insertMany([
         tokenId: 'tether',
         symbol: 'USDT',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvlUSDC',
@@ -79,6 +89,8 @@ db.stake_pool.insertMany([
         tokenId: 'usd-coin',
         symbol: 'USDC',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     }, 
     {
         name: 'dvlDAI',
@@ -90,6 +102,8 @@ db.stake_pool.insertMany([
         tokenId: 'dai',
         symbol: 'DAI',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'vipDVG',
@@ -101,6 +115,8 @@ db.stake_pool.insertMany([
         tokenId: 'xDVG', 
         symbol: 'xDVG',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'ETH<->DVG',
@@ -112,6 +128,8 @@ db.stake_pool.insertMany([
         tokenId: 'ethDVG',
         symbol: 'ethDVG',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'daoCDV',
@@ -123,6 +141,8 @@ db.stake_pool.insertMany([
         tokenId: 'ethereum',
         symbol: 'daoCDV',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'daoELO',
@@ -134,6 +154,8 @@ db.stake_pool.insertMany([
         tokenId: 'ethereum',
         symbol: 'daoELO',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: "daoSTO",
@@ -145,6 +167,8 @@ db.stake_pool.insertMany([
         tokenId: 'tether',
         symbol: 'daoSTO',
         startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     }
 ]);
 
@@ -179,6 +203,8 @@ db.stake_pool.insertMany([
         tokenId: 'tether',
         symbol: 'USDT',
         startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmUSDC',
@@ -190,6 +216,8 @@ db.stake_pool.insertMany([
         tokenId: 'usd-coin',
         symbol: 'USDC',
         startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmDAI',
@@ -201,6 +229,8 @@ db.stake_pool.insertMany([
         tokenId: 'dai',
         symbol: 'DAI',
         startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmTUSD',
@@ -212,6 +242,8 @@ db.stake_pool.insertMany([
         tokenId: 'true-usd',
         symbol: 'TUSD',
         startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvlUSDT',
@@ -223,6 +255,8 @@ db.stake_pool.insertMany([
         tokenId: 'tether',
         symbol: 'USDT',
         startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvlUSDC',
@@ -234,6 +268,8 @@ db.stake_pool.insertMany([
         tokenId: 'usd-coin',
         symbol: 'USDC',
         startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     }, 
     {
         name: 'dvlDAI',
@@ -245,6 +281,8 @@ db.stake_pool.insertMany([
         tokenId: 'dai',
         symbol: 'DAI',
         startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'vipDVG',
@@ -256,6 +294,8 @@ db.stake_pool.insertMany([
         tokenId: 'xDVG', 
         symbol: 'xDVG',
         startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'ETH<->DVG',
@@ -267,6 +307,8 @@ db.stake_pool.insertMany([
         tokenId: 'ethDVG',
         symbol: 'ethDVG',
         startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'daoCDV',
@@ -278,6 +320,8 @@ db.stake_pool.insertMany([
         tokenId: 'ethereum',
         symbol: 'daoCDV',
         startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'daoELO',
@@ -289,6 +333,8 @@ db.stake_pool.insertMany([
         tokenId: 'ethereum',
         symbol: 'daoELO',
         startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: "daoSTO",
@@ -300,6 +346,8 @@ db.stake_pool.insertMany([
         tokenId: 'tether',
         symbol: 'daoSTO',
         startBlock: 25721857,
+         deposit: false,
+        withdraw: true,
     }
 ]);
 
