@@ -125,7 +125,7 @@ const getCurrentPrice = async () => {
           earnPrice: 0,
           vaultPrice: 0,
           compoundExchangeRate: 0,
-          citadelPrice: pricePerFullShare,
+          citadelPrice: isNaN(pricePerFullShare) ? 0 : pricePerFullShare,
           elonPrice: 0,
           cubanPrice: 0,
           faangPrice: 0,

@@ -281,39 +281,39 @@ const mainContracts = {
   },
   farmer: {
     yUSDT: {
-      address: "0x4F0C1c9bA6B9CCd0BEd6166e86b672ac8EE621F7",
+      address: "0x4f0c1c9ba6b9ccd0bed6166e86b672ac8ee621f7",
       abi: abi.vaultUSDTABIContract,
-      strategyAddress: "0x3DB93e95c9881BC7D9f2C845ce12e97130Ebf5f2",
+      strategyAddress: "0x3db93e95c9881bc7d9f2c845ce12e97130ebf5f2",
       strategyABI: abi.yearnUSDTABIContract,
       contractType: "yearn",
       tokenId: "tether",
     },
     yUSDC: {
-      address: "0x9f0230FbDC0379E5FefAcca89bE03A42Fec5fb6E",
+      address: "0x9f0230fbdc0379e5fefacca89be03a42fec5fb6e",
       abi: abi.vaultUSDCABIContract,
-      strategyAddress: "0x4A9dE4dA5eC67E1dbc8e18F26E178B40D690A11D",
+      strategyAddress: "0x4a9de4da5ec67e1dbc8e18f26e178b40d690a11d",
       strategyABI: abi.yearnUSDCABIContract,
       contractType: "yearn",
       tokenId: "usd-coin",
     },
     yDAI: {
-      address: "0x2bFc2Da293C911e5FfeC4D2A2946A599Bc4Ae770",
+      address: "0x2bfc2da293c911e5ffec4d2a2946a599bc4ae770",
       abi: abi.vaultDAIABIContract,
-      strategyAddress: "0x3685fB7CA1C555Cb5BD5A246422ee1f2c53DdB71",
+      strategyAddress: "0x3685fb7ca1c555cb5bd5a246422ee1f2c53ddb71",
       strategyABI: abi.yearnDAIABIContract,
       contractType: "yearn",
       tokenId: "dai",
     },
     yTUSD: {
-      address: "0x2C8de02aD4312069355B94Fb936EFE6CFE0C8FF6",
+      address: "0x2c8de02ad4312069355b94fb936efe6cfe0c8ff6",
       abi: abi.vaultTUSDABIContract,
-      strategyAddress: "0xA6F1409a259B21a84c8346ED1B0826D656959a54",
+      strategyAddress: "0xa6f1409a259b21a84c8346ed1b0826d656959a54",
       strategyABI: abi.yearnTUSDABIContract,
       contractType: "yearn",
       tokenId: "true-usd",
     },
     cUSDT: {
-      address: "0xEeCe6AD323a93d4B021BDAaC587DCC04b5cf0a78",
+      address: "0xeece6ad323a93d4b021bdaac587dcc04b5cf0a78",
       abi: abi.compoundVaultContract,
       strategyAddress: "0x11af10648ed5094f41753ccb69a2f74135697631",
       strategyABI: abi.compoundStrategyContract,
@@ -321,7 +321,7 @@ const mainContracts = {
       tokenId: "tether",
     },
     cUSDC: {
-      address: "0xd1D7f950899C0269a7F2aad5E854cdc3a1350ba9",
+      address: "0xd1d7f950899c0269a7f2aad5e854cdc3a1350ba9",
       abi: abi.compoundVaultContract,
       strategyAddress: "0x89be389b0529ca3187b6e81e689496cb3bad8557",
       strategyABI: abi.compoundStrategyContract,
@@ -329,7 +329,7 @@ const mainContracts = {
       tokenId: "usd-coin",
     },
     cDAI: {
-      address: "0x43C20638C3914Eca3c96e9cAc8ebE7d652Be45c6",
+      address: "0x43c20638c3914eca3c96e9cac8ebe7d652be45c6",
       abi: abi.compoundVaultContract,
       strategyAddress: "0x0c5cff1c9ec7ce8e28998503471b19c848c5a581",
       strategyABI: abi.compoundStrategyContract,
@@ -408,13 +408,13 @@ const mainContracts = {
     },
   },
   vipDVG: {
-    address: "", // TODO: Update mainnet address
+    address: "0xD6Ce913C3e81b5e67a6b94d705d9E7cDdf073A7e",
     abi: abi.xDVGABIContract,
     tokenId: "xDVG",
     lastMeasurement: 0, // TODO Update lastMeasurement
   },
   DVG: {
-    address: "", // TODO: Update mainnet address
+    address: "0x51e00a95748DBd2a3F47bC5c3b3E7B3F0fea666c", 
     abi: abi.xDVGABIContract,
     tokenId: "daoventures",
   },
@@ -426,22 +426,8 @@ const mainContracts = {
   },
   uniswap: {
     ethDVG: {
-      address: "", // TODO Update mainnet address
+      address: "0xd11aD84D720A5e7fA11c8412Af6C1cAA815a436d",
       abi: abi.uniswapPairABIContract,
-    }
-  },
-  harvest: {
-    'hfDAI': {
-      address: '', // TODO Update mainnet address
-      abi: abi.hfVault,
-    },
-    'hfUSDC': {
-      address: '', // TODO Update mainnet address
-      abi: abi.hfVault,
-    },
-    'hfUSDT': {
-      address: '', // TODO Update mainnet address
-      abi: abi.hfVault,
     }
   },
   chainLink: {

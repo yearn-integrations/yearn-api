@@ -18,8 +18,9 @@ const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 8080;
 const jobs = require("./jobs/task");
-const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require("./swagger.json");
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+const bodyParser = require('body-parser');
 
 async function init() {
   // Improve debugging
@@ -42,6 +43,10 @@ async function init() {
   });
 
   app.use(cors());
+  app.use(bodyParser.urlencoded({
+    extended: true,
+  }));
+  app.use(bodyParser.json());
 
   app.get("/vaults/apy", (req, res) => vaultsApy.handler(res));
   app.get("/user/:userAddress/vaults/statistics", (req, res) =>
@@ -79,7 +84,9 @@ async function init() {
     vaultPerformance.performanceHandle(req, res)
   );
 
-  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  app.post('/staking/emergency-withdraw-snapshot', (req, res) => stakePool.snapshotEmergency(req, res));
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   app.listen(port, () => console.log(`Listening on ${port}`));
 }

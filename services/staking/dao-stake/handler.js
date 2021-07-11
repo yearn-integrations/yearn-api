@@ -91,7 +91,7 @@ const getTokenPrice = async () => {
         /** Uniswap ETH<->DVG LP **/
         const ethDVGPoolInfo = getContractInfo("uniswap").ethDVG;
         const ethDVGPoolContract = await getContract(ethDVGPoolInfo);
-        const ethDVGPoolPrice = await getUniswapLPTokenPrice(ethDVGPoolContract, ethDVGPoolInfo.address, tokens, 'ethereum', 'daoventures');
+        const ethDVGPoolPrice = await getUniswapLPTokenPrice(ethDVGPoolContract, ethDVGPoolInfo.address, tokens, 'daoventures', 'ethereum');
         tokens.push({
             tokenId: 'ethDVG',
             price: ethDVGPoolPrice,
