@@ -23,6 +23,7 @@ const dater = new EthDater(
 
 let days;
 let contracts;
+let vault;
 let BTC_AGGREGATOR_ADDR;
 let ETH_AGGREGATOR_ADDR;
 let INCEPTION_BLOCK;
@@ -39,8 +40,6 @@ if (process.env.PRODUCTION != "") {
   INCEPTION_BLOCK = 25336169;
 }
 
-const citadelAddress = contracts.farmer.daoCDV.address;
-const citadelABI = contracts.farmer.daoCDV.abi;
 const aggregatorV3InterfaceABI = require("./AggregatorABI.json");
 
 const BTCpriceFeed = new ethers.Contract(
@@ -54,15 +53,33 @@ const ETHpriceFeed = new ethers.Contract(
   provider
 ); // 8 DEcimals
 
-const citadelVault = new ethers.Contract(citadelAddress, citadelABI, provider);
+function getInceptionBlock(farmer) {
+  if (process.env.PRODUCTION != "") {
+    const farmers = {
+      daoCDV: 12586420,
+      daoSTO: 12766399,
+      daoELO: 12722655,
+      daoCUB: 12799447,
+    };
+    return farmers[farmers];
+  } else {
+    const farmers = {
+      daoCDV: 25336169,
+      daoSTO: 25867824,
+      daoELO: 25413059,
+      daoCUB: 25536976,
+    };
+    return farmers[farmers];
+  }
+}
 
 async function getTotalSupply(block) {
-  const totalSupply = await citadelVault.totalSupply({ blockTag: block });
+  const totalSupply = await vault.totalSupply({ blockTag: block });
   return totalSupply;
 }
 
 async function getTotalPool(block) {
-  const totalPool = await citadelVault.getAllPoolInUSD({ blockTag: block });
+  const totalPool = await vault.getAllPoolInUSD({ blockTag: block });
   return totalPool;
 }
 
@@ -124,84 +141,93 @@ async function getUnixTime(block) {
 async function syncHistoricalPerformance() {
   // let results = [];
 
-  // Get latest entry in database, // TODO: remove hardcode for other vaults in the future
-  const latestEntry = await historicalDb.findLatest("daoCDV");
-  let startBlock;
-  let totalSupply;
-  let totalPool;
-  let btcPrice;
-  let ethPrice;
-  let lpTokenPriceUSD;
-  let lpPerformance;
-  let ethPerformance;
-  let btcPerformance;
-  let data;
-  let basePrice = 0;
-  let ethBasePrice = 0;
-  let btcBasePrice = 0;
-  let lpPriceInception = 0;
-  let ethPriceInception = 0;
-  let btcPriceInception = 0;
+  const ETF_STRATEGIES = ["daoCDV", "daoSTO", "daoELO"];
 
-  if (latestEntry.length != 0) {
-    startBlock = latestEntry[0].block;
-    basePrice = latestEntry[0]["lp_inception_price"];
-    btcBasePrice = latestEntry[0]["btc_inception_price"];
-    ethBasePrice = latestEntry[0]["eth_inception_price"];
-  } else {
-    startBlock = INCEPTION_BLOCK;
-  }
+  // Get latest entry in database
 
-  const latestBlock = await provider.getBlockNumber();
+  ETF_STRATEGIES.forEach(async (etf) => {
+    console.log("🚀 | syncHistoricalPerformance | etf", etf);
+    let vaultAddress = contracts["farmer"][etf]["address"];
+    let vaultABI = contracts["farmer"][etf]["abi"];
+    vault = new ethers.Contract(vaultAddress, vaultABI, provider);
+    const latestEntry = await historicalDb.findLatest(etf);
+    let startBlock;
+    let totalSupply;
+    let totalPool;
+    let btcPrice;
+    let ethPrice;
+    let lpTokenPriceUSD;
+    let lpPerformance;
+    let ethPerformance;
+    let btcPerformance;
+    let data;
+    let basePrice = 0;
+    let ethBasePrice = 0;
+    let btcBasePrice = 0;
+    let lpPriceInception = 0;
+    let ethPriceInception = 0;
+    let btcPriceInception = 0;
 
-  const dates = await getSearchRange(startBlock, latestBlock);
-
-  for (const date of dates) {
-    try {
-      totalSupply = await getTotalSupply(date.block);
-      totalPool = await getTotalPool(date.block);
-      btcPrice = await getBTCPrice(date.block);
-      ethPrice = await getETHPrice(date.block);
-      lpTokenPriceUSD = calcLPTokenPriceUSD(totalPool, totalSupply);
-      if (lpTokenPriceUSD > 0 && basePrice == 0) {
-        basePrice = lpTokenPriceUSD;
-        lpPriceInception = basePrice;
-      }
-      if (btcPrice > 0 && btcBasePrice == 0) {
-        btcBasePrice = btcPrice;
-        btcPriceInception = btcBasePrice;
-      }
-      if (ethPrice > 0 && ethBasePrice == 0) {
-        ethBasePrice = ethPrice;
-        ethPriceInception = ethBasePrice;
-      }
-      lpPerformance = calculatePerformance(basePrice, lpTokenPriceUSD);
-      btcPerformance = calculatePerformance(btcBasePrice, btcPrice);
-      ethPerformance = calculatePerformance(ethBasePrice, ethPrice);
-
-      data = {
-        date: date.date,
-        time_stamp: date.timestamp,
-        block: date.block,
-        total_supply: totalSupply.toString(),
-        total_pool_usd: totalPool.toString(),
-        btc_price: btcPrice.toString(),
-        eth_price: ethPrice.toString(),
-        lp_token_price_usd: lpTokenPriceUSD.toString(),
-        lp_performance: lpPerformance,
-        btc_performance: btcPerformance,
-        eth_performance: ethPerformance,
-        lp_inception_price: lpPriceInception.toString(),
-        btc_inception_price: btcPriceInception.toString(),
-        eth_inception_price: ethPriceInception.toString(),
-      };
-
-      // console.log(data);
-      historicalDb.add("daoCDV", data);
-    } catch (e) {
-      console.log(e);
+    if (latestEntry.length != 0) {
+      startBlock = latestEntry[0].block;
+      basePrice = latestEntry[0]["lp_inception_price"];
+      btcBasePrice = latestEntry[0]["btc_inception_price"];
+      ethBasePrice = latestEntry[0]["eth_inception_price"];
+    } else {
+      startBlock = getInceptionBlock(etf);
     }
-  }
+
+    const latestBlock = await provider.getBlockNumber();
+
+    const dates = await getSearchRange(startBlock, latestBlock);
+
+    for (const date of dates) {
+      try {
+        totalSupply = await getTotalSupply(date.block);
+        totalPool = await getTotalPool(date.block);
+        btcPrice = await getBTCPrice(date.block);
+        ethPrice = await getETHPrice(date.block);
+        lpTokenPriceUSD = calcLPTokenPriceUSD(totalPool, totalSupply);
+        if (lpTokenPriceUSD > 0 && basePrice == 0) {
+          basePrice = lpTokenPriceUSD;
+          lpPriceInception = basePrice;
+        }
+        if (btcPrice > 0 && btcBasePrice == 0) {
+          btcBasePrice = btcPrice;
+          btcPriceInception = btcBasePrice;
+        }
+        if (ethPrice > 0 && ethBasePrice == 0) {
+          ethBasePrice = ethPrice;
+          ethPriceInception = ethBasePrice;
+        }
+        lpPerformance = calculatePerformance(basePrice, lpTokenPriceUSD);
+        btcPerformance = calculatePerformance(btcBasePrice, btcPrice);
+        ethPerformance = calculatePerformance(ethBasePrice, ethPrice);
+
+        data = {
+          date: date.date,
+          time_stamp: date.timestamp,
+          block: date.block,
+          total_supply: totalSupply.toString(),
+          total_pool_usd: totalPool.toString(),
+          btc_price: btcPrice.toString(),
+          eth_price: ethPrice.toString(),
+          lp_token_price_usd: lpTokenPriceUSD.toString(),
+          lp_performance: lpPerformance,
+          btc_performance: btcPerformance,
+          eth_performance: ethPerformance,
+          lp_inception_price: lpPriceInception.toString(),
+          btc_inception_price: btcPriceInception.toString(),
+          eth_inception_price: ethPriceInception.toString(),
+        };
+
+        // console.log(data);
+        historicalDb.add(etf, data);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  });
 }
 
 module.exports.savePerformance = async (event) => {
@@ -245,6 +271,12 @@ module.exports.performanceHandle = async (req, res) => {
   switch (req.params.farmer) {
     case historicalDb.daoCDVFarmer:
       collection = historicalDb.daoCDVFarmer;
+      break;
+    case historicalDb.daoELOFarmer:
+      collection = historicalDb.daoELOFarmer;
+      break;
+    case historicalDb.daoSTOFarmer:
+      collection = historicalDb.daoSTOFarmer;
       break;
     default:
       res.status(200).json({
