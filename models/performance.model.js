@@ -49,4 +49,6 @@ module.exports = {
   findPerformanceWithTimePeriods,
   add,
   daoCDVFarmer: "daoCDV",
+  daoELOFarmer: "daoELO",
+  daoSTOFarmer: "daoSTO",
 };
