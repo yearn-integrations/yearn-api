@@ -25,7 +25,10 @@ db.stake_pool.insertMany([
         pid: '0',
         category: 'Advance',
         tokenId: 'tether',
-        symbol: 'USDT'
+        symbol: 'USDT',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmUSDC',
@@ -35,7 +38,10 @@ db.stake_pool.insertMany([
         pid: '1',
         category: 'Advance',
         tokenId: 'usd-coin',
-        symbol: 'USDC'
+        symbol: 'USDC',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmDAI',
@@ -45,7 +51,10 @@ db.stake_pool.insertMany([
         pid: '2',
         category: 'Advance',
         tokenId: 'dai',
-        symbol: 'DAI'
+        symbol: 'DAI',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmTUSD',
@@ -55,7 +64,10 @@ db.stake_pool.insertMany([
         pid: '3',
         category: 'Advance',
         tokenId: 'true-usd',
-        symbol: 'TUSD'
+        symbol: 'TUSD',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvlUSDT',
@@ -65,7 +77,10 @@ db.stake_pool.insertMany([
         pid: '4',
         category: 'Basic',
         tokenId: 'tether',
-        symbol: 'USDT'
+        symbol: 'USDT',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvlUSDC',
@@ -75,7 +90,10 @@ db.stake_pool.insertMany([
         pid: '5',
         category: 'Basic',
         tokenId: 'usd-coin',
-        symbol: 'USDC'
+        symbol: 'USDC',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     }, 
     {
         name: 'dvlDAI',
@@ -85,7 +103,10 @@ db.stake_pool.insertMany([
         pid: '6',
         category: 'Basic',
         tokenId: 'dai',
-        symbol: 'DAI'
+        symbol: 'DAI',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'vipDVG',
@@ -95,7 +116,10 @@ db.stake_pool.insertMany([
         pid: '7',
         category: 'Basic',
         tokenId: 'xDVG', 
-        symbol: 'xDVG'
+        symbol: 'xDVG',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'ETH<->DVG',
@@ -105,7 +129,10 @@ db.stake_pool.insertMany([
         pid: '8',
         category: 'Basic',
         tokenId: 'ethDVG',
-        symbol: 'ethDVG'
+        symbol: 'ethDVG',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'daoCDV',
@@ -115,7 +142,10 @@ db.stake_pool.insertMany([
         pid: '9',
         category: 'Expert',
         tokenId: 'ethereum',
-        symbol: 'daoCDV'
+        symbol: 'daoCDV',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'daoELO',
@@ -125,7 +155,10 @@ db.stake_pool.insertMany([
         pid: '10',
         category: 'Degen',
         tokenId: 'ethereum',
-        symbol: 'daoELO'
+        symbol: 'daoELO',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: "daoSTO",
@@ -176,6 +209,19 @@ db.stake_pool.insertMany([
         category: 'Advance',
         tokenId: 'DAI',
         symbol: 'hfDAI'
+    },
+    {
+        name: "daoSTO",
+        label: "DAO FAANG Stonk",
+        contract_address: '0x742a85daf742ca0213b06fdae449434e0448691e',
+        status: 'A',
+        pid: '3',
+        category: 'Advance',
+        tokenId: 'tether',
+        symbol: 'daoSTO',
+        startBlock: 12770000,
+        deposit: false,
+        withdraw: true,
     }
 ]);
 
@@ -211,7 +257,10 @@ db.stake_pool.insertMany([
         pid: '0',
         category: 'Advance',
         tokenId: 'tether',
-        symbol: 'USDT'
+        symbol: 'USDT',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmUSDC',
@@ -221,7 +270,10 @@ db.stake_pool.insertMany([
         pid: '1',
         category: 'Advance',
         tokenId: 'usd-coin',
-        symbol: 'USDC'
+        symbol: 'USDC',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmDAI',
@@ -231,7 +283,10 @@ db.stake_pool.insertMany([
         pid: '2',
         category: 'Advance',
         tokenId: 'dai',
-        symbol: 'DAI'
+        symbol: 'DAI',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvmTUSD',
@@ -241,7 +296,10 @@ db.stake_pool.insertMany([
         pid: '3',
         category: 'Advance',
         tokenId: 'true-usd',
-        symbol: 'TUSD'
+        symbol: 'TUSD',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvlUSDT',
@@ -251,7 +309,10 @@ db.stake_pool.insertMany([
         pid: '4',
         category: 'Basic',
         tokenId: 'tether',
-        symbol: 'USDT'
+        symbol: 'USDT',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'dvlUSDC',
@@ -261,7 +322,10 @@ db.stake_pool.insertMany([
         pid: '5',
         category: 'Basic',
         tokenId: 'usd-coin',
-        symbol: 'USDC'
+        symbol: 'USDC',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     }, 
     {
         name: 'dvlDAI',
@@ -271,7 +335,10 @@ db.stake_pool.insertMany([
         pid: '6',
         category: 'Basic',
         tokenId: 'dai',
-        symbol: 'DAI'
+        symbol: 'DAI',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'vipDVG',
@@ -281,7 +348,10 @@ db.stake_pool.insertMany([
         pid: '7',
         category: 'Basic',
         tokenId: 'xDVG', 
-        symbol: 'xDVG'
+        symbol: 'xDVG',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'ETH<->DVG',
@@ -291,7 +361,10 @@ db.stake_pool.insertMany([
         pid: '8',
         category: 'Basic',
         tokenId: 'ethDVG',
-        symbol: 'ethDVG'
+        symbol: 'ethDVG',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'daoCDV',
@@ -301,7 +374,10 @@ db.stake_pool.insertMany([
         pid: '9',
         category: 'Expert',
         tokenId: 'ethereum',
-        symbol: 'daoCDV'
+        symbol: 'daoCDV',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'daoELO',
@@ -309,19 +385,25 @@ db.stake_pool.insertMany([
         contract_address: '0xf03fa8553379d872b4e2bafbc679409fb82604c2',
         status: 'A',
         pid: '10',
-        category: 'Degen',
+        category: 'Basic',
         tokenId: 'ethereum',
-        symbol: 'daoELO'
+        symbol: 'daoELO',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: "daoSTO",
-        label: "DAO Vault Stonks LP",
+        label: "DAO FAANG Stonk LP",
         contract_address: '0xd6af81e5288be43137debf969d7f2c03482c8cc1', 
         status: 'A',
         pid: '11',
         category: 'Advance',
         tokenId: 'ethereum',
-        symbol: 'daoSTO'
+        symbol: 'daoSTO',
+        startBlock: 25721857,
+        deposit: false,
+        withdraw: true,
     },
     {
         name: 'daoCUB',
@@ -364,6 +446,7 @@ db.stake_pool.insertMany([
         symbol: 'hfDAI'
     }
 ]);
+
 
 db.special_event.insertMany([
     { startTime: 1622390400000, endTime: 1622444400000, threshold: 3000 },
