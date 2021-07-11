@@ -28,6 +28,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'dvmUSDC',
@@ -41,6 +42,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'dvmDAI',
@@ -54,6 +56,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'dvmTUSD',
@@ -67,6 +70,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'dvlUSDT',
@@ -80,6 +84,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'dvlUSDC',
@@ -93,6 +98,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     }, 
     {
         name: 'dvlDAI',
@@ -106,6 +112,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'vipDVG',
@@ -119,6 +126,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'ETH<->DVG',
@@ -132,6 +140,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'daoCDV',
@@ -145,6 +154,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'daoELO',
@@ -158,6 +168,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: "daoSTO",
@@ -171,6 +182,7 @@ db.stake_pool.insertMany([
         startBlock: 12770000,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     }
 ]);
 

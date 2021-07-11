@@ -236,6 +236,45 @@
                 ],
                 "responses": {}
             }
+        },
+        "/staking/emergency-withdraw-snapshot": {
+            "post": {
+                "tags": [
+                    "Stake"
+                ],
+                "description": "Stake Pools Emergency Withdrawal Snapshot",
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "Snap Shot",
+                        "description": "Emergency Withdrawal SnapShot",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "pid": {
+                                    "type": "string",
+                                    "description": "Pool ID"
+                                },
+                                "userAddress": {
+                                    "type": "string",
+                                    "description": "User Wallet Address"
+                                },
+                                "pendingDVG": {
+                                    "type": "integer",
+                                    "description": "Pending DVG Amount"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {}
+            }
         }
     } 
 }
