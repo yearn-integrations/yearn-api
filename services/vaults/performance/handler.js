@@ -40,6 +40,9 @@ if (process.env.PRODUCTION != "") {
   INCEPTION_BLOCK = 25336169;
 }
 
+// const ETF_STRATEGIES = ["daoCDV", "daoSTO", "daoELO"];
+const ETF_STRATEGIES = ["daoCDV"];
+
 const aggregatorV3InterfaceABI = require("./AggregatorABI.json");
 
 const BTCpriceFeed = new ethers.Contract(
@@ -61,7 +64,7 @@ function getInceptionBlock(farmer) {
       daoELO: 12722655,
       daoCUB: 12799447,
     };
-    return farmers[farmers];
+    return farmers[farmer];
   } else {
     const farmers = {
       daoCDV: 25336169,
@@ -69,7 +72,7 @@ function getInceptionBlock(farmer) {
       daoELO: 25413059,
       daoCUB: 25536976,
     };
-    return farmers[farmers];
+    return farmers[farmer];
   }
 }
 
@@ -141,16 +144,14 @@ async function getUnixTime(block) {
 async function syncHistoricalPerformance() {
   // let results = [];
 
-  const ETF_STRATEGIES = ["daoCDV", "daoSTO", "daoELO"];
-
   // Get latest entry in database
 
-  ETF_STRATEGIES.forEach(async (etf) => {
-    console.log("🚀 | syncHistoricalPerformance | etf", etf);
+  for (const etf of ETF_STRATEGIES) {
+    console.log(">", etf);
     let vaultAddress = contracts["farmer"][etf]["address"];
     let vaultABI = contracts["farmer"][etf]["abi"];
     vault = new ethers.Contract(vaultAddress, vaultABI, provider);
-    const latestEntry = await historicalDb.findLatest(etf);
+    let latestEntry = await historicalDb.findLatest(etf);
     let startBlock;
     let totalSupply;
     let totalPool;
@@ -177,9 +178,9 @@ async function syncHistoricalPerformance() {
       startBlock = getInceptionBlock(etf);
     }
 
-    const latestBlock = await provider.getBlockNumber();
+    let latestBlock = await provider.getBlockNumber();
 
-    const dates = await getSearchRange(startBlock, latestBlock);
+    let dates = await getSearchRange(startBlock, latestBlock);
 
     for (const date of dates) {
       try {
@@ -227,25 +228,25 @@ async function syncHistoricalPerformance() {
         console.log(e);
       }
     }
-  });
+  }
 }
 
 module.exports.savePerformance = async (event) => {
   await syncHistoricalPerformance();
 };
 
-module.exports.handler = async (event) => {
-  const performanceData = await syncHistoricalPerformance();
+// module.exports.handler = async (event) => {
+//   const performanceData = await syncHistoricalPerformance();
 
-  return {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true,
-    },
-    body: JSON.stringify(performanceData),
-  };
-};
+//   return {
+//     statusCode: 200,
+//     headers: {
+//       "Access-Control-Allow-Origin": "*",
+//       "Access-Control-Allow-Credentials": true,
+//     },
+//     body: JSON.stringify(performanceData),
+//   };
+// };
 
 module.exports.performanceHandle = async (req, res) => {
   if (req.params.days == null || req.params.days == "") {
@@ -272,12 +273,12 @@ module.exports.performanceHandle = async (req, res) => {
     case historicalDb.daoCDVFarmer:
       collection = historicalDb.daoCDVFarmer;
       break;
-    case historicalDb.daoELOFarmer:
-      collection = historicalDb.daoELOFarmer;
-      break;
-    case historicalDb.daoSTOFarmer:
-      collection = historicalDb.daoSTOFarmer;
-      break;
+    // case historicalDb.daoELOFarmer:
+    //   collection = historicalDb.daoELOFarmer;
+    //   break;
+    // case historicalDb.daoSTOFarmer:
+    //   collection = historicalDb.daoSTOFarmer;
+    //   break;
     default:
       res.status(200).json({
         message: "Invalid Farmer",
@@ -324,11 +325,11 @@ module.exports.performanceHandle = async (req, res) => {
       );
     });
   }
+
   if (result) {
     res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
       body: result,
     });
   }
-  return;
 };
