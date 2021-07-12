@@ -9,10 +9,11 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0x43C20638C3914Eca3c96e9cAc8ebE7d652Be45c6', symbol: 'cDAI', },
     { name: 'expert', contract_address: '0x8fe826cc1225b03aa06477ad5af745aed5fe7066', symbol: 'daoCDV', },
     { name: 'degen', contract_address: '0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8', symbol: 'daoELO', },
-    { name: 'basic', contract_address: '0xe4e6ce7c1d9ff44db27f622accbb0753c2f48955', symbol: 'hfUSDT'},
-    { name: 'basic', contract_address: '0xd0f0858578c7780f2d65f6d81bc7ddbe166367cc', symbol: 'hfUSDC'},
-    { name: 'basic', contract_address: '0x2cc1507e6e3c844eeb77db90d193489f1ddfb299', symbol: 'hfDAI'},
+    { name: 'degen', contract_address: '0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd', symbol: 'daoCUB', }, 
     { name: 'advance', contract_address: '0x742a85daf742ca0213b06fdae449434e0448691e', symbol: 'daoSTO', },
+    { name: 'advance', contract_address: '0x2Cc1507E6E3C844EEb77Db90d193489f1Ddfb299', symbol: 'hfUSDT'},
+    { name: 'advance', contract_address: '0xd0f0858578C7780f2D65f6d81BC7DdBe166367cC', symbol: 'hfUSDC'},
+    { name: 'advance', contract_address: '0xE4E6Ce7c1D9Ff44Db27f622aCcbB0753C2f48955', symbol: 'hfDAI'},
 ]);
 
 db.stake_pool.insertMany([
@@ -197,10 +198,11 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d', symbol: 'cDAI', },
     { name: 'expert', contract_address: '0x626c25ca5b86277f395c0e40dbdf51f2a302ab43', symbol: 'daoCDV', },
     { name: 'degen', contract_address: '0xf03fa8553379d872b4e2bafbc679409fb82604c2', symbol: 'daoELO', },
+    { name: 'degen', contract_address: '0x5c304a6cb105e1bff9805ca5cf072f1d2c3beac5', symbol: 'daoCUB', },
     { name: 'advance', contract_address: '0xd6af81e5288be43137debf969d7f2c03482c8cc1', symbol: 'daoSTO', },
-    { name: 'basic', contract_address: '0xb41a49de82e95dc1e028839c3440ac97f9a7832c', symbol: 'hfUSDT'},
-    { name: 'basic', contract_address: '0x54783464848b35d6fb9bba37c1ddd23ac3b1a11a', symbol: 'hfUSDC'},
-    { name: 'basic', contract_address: '0x0f89ee5b95d1d5cfb10f29775d816fc6d8adb9fc', symbol: 'hfDAI'},
+    { name: 'advance', contract_address: '0x35880615bb18DA592FF0fEb0940ADE2c02249715', symbol: 'hfUSDT'},
+    { name: 'advance', contract_address: '0x68b1C860300c4f7d577f08D8B3c3AEe23887b280', symbol: 'hfUSDC'},
+    { name: 'advance', contract_address: '0x6D7e8fA90C1ffdC019d691BAFC18D6362FdEeCd7', symbol: 'hfDAI'},
 ]);
 
 db.xdvg_token.insert({
@@ -221,6 +223,7 @@ db.stake_pool.insertMany([
         startBlock: 25721857,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'dvmUSDC',
@@ -234,6 +237,7 @@ db.stake_pool.insertMany([
         startBlock: 25721857,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'dvmDAI',
@@ -247,6 +251,7 @@ db.stake_pool.insertMany([
         startBlock: 25721857,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'dvmTUSD',
@@ -260,6 +265,7 @@ db.stake_pool.insertMany([
         startBlock: 25721857,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'dvlUSDT',
@@ -273,6 +279,7 @@ db.stake_pool.insertMany([
         startBlock: 25721857,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'dvlUSDC',
@@ -286,6 +293,7 @@ db.stake_pool.insertMany([
         startBlock: 25721857,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     }, 
     {
         name: 'dvlDAI',
@@ -299,6 +307,7 @@ db.stake_pool.insertMany([
         startBlock: 25721857,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'vipDVG',
@@ -312,6 +321,7 @@ db.stake_pool.insertMany([
         startBlock: 25721857,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'ETH<->DVG',
@@ -325,6 +335,7 @@ db.stake_pool.insertMany([
         startBlock: 25721857,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'daoCDV',
@@ -338,6 +349,7 @@ db.stake_pool.insertMany([
         startBlock: 25721857,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: 'daoELO',
@@ -345,12 +357,13 @@ db.stake_pool.insertMany([
         contract_address: '0xf03fa8553379d872b4e2bafbc679409fb82604c2',
         status: 'A',
         pid: '10',
-        category: 'Basic',
+        category: 'Degen',
         tokenId: 'ethereum',
         symbol: 'daoELO',
         startBlock: 25721857,
         deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     },
     {
         name: "daoSTO",
@@ -362,8 +375,9 @@ db.stake_pool.insertMany([
         tokenId: 'tether',
         symbol: 'daoSTO',
         startBlock: 25721857,
-         deposit: false,
+        deposit: false,
         withdraw: true,
+        emergencyWithdraw: true,
     }
 ]);
 
