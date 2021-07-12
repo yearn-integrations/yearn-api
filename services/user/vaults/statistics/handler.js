@@ -110,14 +110,7 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   } else if (type === 'compound') {
     depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
     depositedAmount = new BigNumber(depositedAmount);
-  } else if (type === 'citadel') {
-    const pool = await vaultContract.methods.getAllPoolInUSD().call();
-    const totalSupply = await vaultContract.methods.totalSupply().call(); 
-
-    // depositedAmount = await vaultContract.methods._balanceOfDeposit(userAddress).call();
-    depositedAmount = (depositedShares * pool) / totalSupply;
-    depositedAmount = new BigNumber(depositedAmount);
-  } else if (type === 'elon') {
+  } else if (type === 'citadel' || type === 'elon' || type === 'cuban') {
     const pool = await vaultContract.methods.getAllPoolInUSD().call();
     const totalSupply = await vaultContract.methods.totalSupply().call(); 
     depositedAmount = (depositedShares * pool) / totalSupply;
@@ -185,7 +178,7 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   let totalTransferredInUSD = 0;
   let totalTransferredOutInUSD = 0;
 
-  if(type === "citadel" || type === "elon" || type === "daoFaang") {
+  if(type === "citadel" || type === "elon" || type === "cuban" || type === "daoFaang") {
     totalDepositsInUSD = getSumForUSD(deposits);
     totalWithdrawalsInUSD = getSumForUSD(withdrawals);
     totalTransferredInUSD = getSumForUSD(transfersIn);

@@ -91,7 +91,7 @@ const getTokenPrice = async () => {
         /** Uniswap ETH<->DVG LP **/
         const ethDVGPoolInfo = getContractInfo("uniswap").ethDVG;
         const ethDVGPoolContract = await getContract(ethDVGPoolInfo);
-        const ethDVGPoolPrice = await getUniswapLPTokenPrice(ethDVGPoolContract, ethDVGPoolInfo.address, tokens, 'ethereum', 'daoventures');
+        const ethDVGPoolPrice = await getUniswapLPTokenPrice(ethDVGPoolContract, ethDVGPoolInfo.address, tokens, 'daoventures', 'ethereum');
         tokens.push({
             tokenId: 'ethDVG',
             price: ethDVGPoolPrice,
@@ -139,12 +139,10 @@ const getLPTokenBalanceOfDAOStake = async (contract, daoStakeAddress) => {
 }
 
 // getMultiplier() from DAOstake contract
-const getMultiplier = async(start, current, daoStakeContract) => {
+const getMultiplier = async(startBlock, endBlock, daoStakeContract) => {
     try {
-        //const currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
-        // let multiplier = await daoStakeContract.methods.getMultiplier(start, currentBlockNbr).call();
-        const endBlockNumber = start + (4 * 60 * 24 * 365); // Temporaly fix
-        let multiplier = await daoStakeContract.methods.getMultiplier(start, endBlockNumber).call();
+        console.log(`Start block ${startBlock}, End Block ${endBlock}`);
+        let multiplier = await daoStakeContract.methods.getMultiplier(startBlock, endBlock).call();
         multiplier = multiplier / (10 ** 18);
         return multiplier;
     } catch (err) {
@@ -218,7 +216,7 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
     let apr = 0;
 
     // Extract data from daoStake param
-    const { startBlock, poolPercent, totalPoolWeight , daoStakeContract } = daoStake;
+    const { poolPercent, totalPoolWeight , daoStakeContract } = daoStake;
 
     // Extract data from poolInfo param
     const { poolContract, pool }  = poolInfo;
@@ -228,13 +226,13 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
    
     // Pass in DAOstake contract, pool's pid to invoke pool() in DAOstake contract
     const getPool = await getPoolFromDaoStake(pool.pid, daoStakeContract);
-    const { lastRewardBlock, poolWeight } = getPool;
+    const { poolWeight } = getPool;
 
     // Pass in pool's contract, DAOstake address get balanceOf() in pool's contract
     const tokenBalOfDAOStake = await getLPTokenBalanceOfDAOStake(poolContract, daoStakeContract._address);
     
     // Pass in start block, last reward block to invoke getMultiplier() in DAOstake contract
-    const multiplier = await getMultiplier(startBlock, lastRewardBlock, daoStakeContract);
+    const multiplier = await getMultiplier(pool.startBlock, pool.endBlock, daoStakeContract);
    
     // Find pool token price
     const poolTokenPrice = tokens.find(t => t.tokenId === pool.tokenId).price;
@@ -250,7 +248,7 @@ const poolCalculation = async(daoStake, poolInfo, tokensPrice) => {
     const decimal = await getDecimal(poolContract);
 
     Object.assign(pool, { apr: apr === Infinity ? 0 : apr, tvl , multiplier, decimal});
-
+   
     return pool;
 }
 
@@ -289,8 +287,11 @@ module.exports.saveStakedPools = async () => {
         // Uniswap ETH <-> DVG Pool 
         poolAbiContractMap.set(contracts.uniswap.ethDVG.address.toLowerCase(), contracts.uniswap.ethDVG.abi);
 
-        // daoCDV
-        poolAbiContractMap.set(contracts.uniswap.ethDVG.address.toLowerCase(), contracts.uniswap.ethDVG.abi);
+        // Current Block Number
+        const currentBlockNumber = await infuraWeb3.eth.getBlockNumber();
+
+        // Block number generated per year, 4 block per minute
+        const blockNumberPerYear = (4 * 60 * 24 * 365); 
        
         for (index = 0 ; index < poolSize; index ++) {
             const contractAddressToLowerCase = pools[index].contract_address.toLowerCase();
@@ -302,6 +303,23 @@ module.exports.saveStakedPools = async () => {
                     abi: poolAbiContractMap.get(contractAddressToLowerCase)
                 };
 
+                // Checking on pool's start block number
+                if(pools[index].startBlock) {
+                    let startBlock = pools[index].startBlock;
+                    let endBlock = startBlock + blockNumberPerYear;
+
+                    // Update new start block and end block
+                    if(currentBlockNumber >= endBlock) {
+                        startBlock = endBlock;
+                        endBlock = startBlock + blockNumberPerYear;
+                    }
+
+                    pools[index].startBlock = startBlock;
+                    pools[index].endBlock = endBlock;
+                } else {
+                    console.log(`Pool ${pools[index].label} is missing its startBlock.`);
+                }
+                
                 // Get pool contract
                 const poolContract = await getContract(poolContractInfo);
                 let poolInfo = {

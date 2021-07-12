@@ -162,6 +162,28 @@ const getElonPricePerFullShare = async (contract, block, inceptionBlockNbr) => {
   return pricePerFullShare;
 };
 
+const getCubanPricePerFullShare = async (contract, block, inceptionBlockNbr) => {
+  const contractDidntExist = block < inceptionBlockNbr;
+  const inceptionBlock = block === inceptionBlockNbr;
+
+  if (inceptionBlock) {
+    return 1e18;
+  }
+  if (contractDidntExist) {
+    return 0;
+  }
+
+  let pricePerFullShare = 0;
+  try {
+    const pool = await contract.methods.getAllPoolInUSD().call(undefined, block); // All pool in USD (6 decimals)
+    const totalSupply = await contract.methods.totalSupply().call(undefined, block);
+    pricePerFullShare = (new BigNumber(pool)).shiftedBy(12).dividedBy(totalSupply).toNumber();
+  } catch (ex) {}
+
+  await delay(delayTime);
+  return pricePerFullShare;
+};
+
 const getFaangPricePerFullShare = async (contract, block, inceptionBlockNbr) => {
   const contractDidntExist = block < inceptionBlockNbr;
   const inceptionBlock = block === inceptionBlockNbr;
@@ -214,6 +236,7 @@ const getApyForVault = async (vault) => {
       compoundApy,
       citadelApy: 0,
       elonApy: 0,
+      cubanApy: 0,
       faangApy: 0,
     };
   } else if (vault.isCitadel) {
@@ -241,8 +264,9 @@ const getApyForVault = async (vault) => {
       apyOneMonthSample: 0,
       apyLoanscan: 0,
       compoundApy: 0,
-      citadelApy: apy,
+      citadelApy: isNaN(apy) ? 0 : apy,
       elonApy: 0,
+      cubanApy: 0,
       faangApy: 0,
     }
   } else if (vault.isElon) {
@@ -254,14 +278,12 @@ const getApyForVault = async (vault) => {
       contract = new archiveNodeWeb3.eth.Contract(testContracts.farmer['daoELO'].abi, testContracts.farmer['daoELO'].address);
     }
 
-    let pricePerFullShareCurrent = await getElonPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    let pricePerFullShareOneDayAgo = await getElonPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
-    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1; // 0 can't be used as a reference for apy.
-    pricePerFullShareOneDayAgo = (0 < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1; // 0 can't be used as a reference for apy.
+    const pricePerFullShareCurrent = await getElonPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    const pricePerFullShareOneDayAgo = await getElonPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
 
     // APY Calculation
     const n = 365 / 2; // Assume 2 days to trigger invest function
-    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+    const apr = (0 < pricePerFullShareCurrent && 0 < pricePerFullShareOneDayAgo) ? (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n : 0;
     const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
 
     return {
@@ -274,6 +296,37 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: 0,
       elonApy: apy,
+      cubanApy: 0,
+      faangApy: 0,
+    }
+  } else if (vault.isCuban) {
+    // Cuban's APE Vault
+    let contract;
+    if (process.env.PRODUCTION != '') {
+      contract = new archiveNodeWeb3.eth.Contract(mainContracts.farmer['daoCUB'].abi, mainContracts.farmer['daoCUB'].address);
+    } else {
+      contract = new archiveNodeWeb3.eth.Contract(testContracts.farmer['daoCUB'].abi, testContracts.farmer['daoCUB'].address);
+    }
+
+    const pricePerFullShareCurrent = await getCubanPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    const pricePerFullShareOneDayAgo = await getCubanPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+
+    // APY Calculation
+    const n = 365 / 2; // Assume 2 days to trigger invest function
+    const apr = (0 < pricePerFullShareCurrent && 0 < pricePerFullShareOneDayAgo) ? (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n : 0;
+    const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+    return {
+      apyInceptionSample: 0,
+      apyOneDaySample: 0,
+      apyThreeDaySample: 0,
+      apyOneWeekSample: 0,
+      apyOneMonthSample: 0,
+      apyLoanscan: 0,
+      compoundApy: 0,
+      citadelApy: 0,
+      elonApy: 0,
+      cubanApy: apy,
       faangApy: 0,
     }
   } else if (vault.isFaang) {
@@ -305,6 +358,7 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: 0,
       elonApy: 0,
+      cubanApy: 0,
       faangApy: apy
     }
   } else if (vault.isHarvest) {
@@ -369,6 +423,7 @@ const getApyForVault = async (vault) => {
        compoundApy: 0,
        citadelApy: 0,
        elonApy: 0,
+       cubanApy: 0,
        faangApy: 0,
      };
   } else {
@@ -489,6 +544,7 @@ const getApyForVault = async (vault) => {
       compoundApy: 0,
       citadelApy: 0,
       elonApy: 0,
+      cubanApy: 0,
       faangApy: 0,
     };
   }
@@ -548,6 +604,10 @@ const getHistoricalAPY = async (startTime, contractAddress) => {
     case testContracts.farmer['daoELO'].address:
     case mainContracts.farmer['daoELO'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoELOFarmer);
+      break;
+    case testContracts.farmer['daoCUB'].address:
+    case mainContracts.farmer['daoCUB'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoCUBFarmer);
       break;
     case testContracts.farmer['daoSTO'].address:
     case mainContracts.farmer['daoSTO'].address:

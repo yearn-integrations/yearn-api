@@ -1,4 +1,5 @@
 const db = require("../../models/stake-pool.model");
+const snapshot = require("../../models/emergency-withdraw.model");
 const fetch = require("node-fetch");
 const delay = require("delay");
 const _ = require("lodash");
@@ -64,6 +65,46 @@ module.exports.getPools = async (req, res) => {
             message: err.message,
             body: null
         });
+    }
+
+    return;
+}
+
+module.exports.snapshotEmergency = async (req, res) => {
+    try {
+        const pools = await db.findAll();
+        const poolSize = _.size(pools);
+        let exist = false;
+        for (idx = 0; idx < poolSize; idx++) {
+            if (pools[idx].pid === req.body.pid) {
+                exist = true;
+            }
+        }
+
+        if (exist) {
+            const prev = await snapshot.findOne({
+                pid: req.body.pid,
+                userAddress: req.body.userAddress.toLowerCase(),
+            });
+
+            if (prev == null && req.body.pendingDVG > 0) {
+                await snapshot.add({
+                    pid: req.body.pid,
+                    userAddress: req.body.userAddress.toLowerCase(),
+                    pendingDVG: req.body.pendingDVG,
+                });
+            }
+            
+            res.status(200).json({
+                message: 'Successful Response',
+                body: {}
+            });
+        }
+    } catch (err) {
+        res.status(200).json({
+            message: err.message,
+            body: null
+        })
     }
 
     return;
