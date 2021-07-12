@@ -249,9 +249,14 @@ module.exports.savePerformance = async (event) => {
 // };
 
 module.exports.performanceHandle = async (req, res) => {
-  if (req.params.days == null || req.params.days == "") {
+  if (
+    req.params.days !== "30d" &&
+    req.params.days !== "7d" &&
+    req.params.days !== "1d" &&
+    req.params.days !== undefined
+  ) {
     res.status(200).json({
-      message: "Days is empty.",
+      message: "Days should be 30d, 7d, 1d or empty (all).",
       body: null,
     });
     return;
