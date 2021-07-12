@@ -87,7 +87,7 @@ module.exports.snapshotEmergency = async (req, res) => {
                 userAddress: req.body.userAddress.toLowerCase(),
             });
 
-            if (prev == null) {
+            if (prev == null && req.body.pendingDVG > 0) {
                 await snapshot.add({
                     pid: req.body.pid,
                     userAddress: req.body.userAddress.toLowerCase(),
