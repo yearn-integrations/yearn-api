@@ -12,6 +12,9 @@ const {
   mainContracts,
 } = require("../../../config/serverless/domain");
 
+const CoinGecko = require("coingecko-api");
+const CoinGeckoClient = new CoinGecko();
+
 const url = process.env.ARCHIVENODE_ENDPOINT;
 
 // Using ethers.js
@@ -56,6 +59,24 @@ const ETHpriceFeed = new ethers.Contract(
   provider
 ); // 8 DEcimals
 
+async function getTokenPrice(coingecko_token_id, date) {
+  // console.log(coingecko_token_id);
+  let data;
+  try {
+    data = await CoinGeckoClient.coins.fetchHistory(coingecko_token_id, {
+      date: date,
+    });
+    if (Object.keys(data.data).length != 0) {
+      return data.data["market_data"]["current_price"]["usd"];
+    } else {
+      return 1;
+    }
+  } catch (err) {
+    // Catch error, Default Value = 1
+    console.log(err);
+  }
+}
+
 function getInceptionBlock(farmer) {
   if (process.env.PRODUCTION != "") {
     const farmers = {
@@ -86,15 +107,40 @@ async function getTotalPool(block) {
   return totalPool;
 }
 
-async function getBTCPrice(block) {
-  const price = (await BTCpriceFeed.latestRoundData({ blockTag: block }))
-    .answer;
+// async function getBTCPriceChainlink(block) {
+//   const price = (await BTCpriceFeed.latestRoundData({ blockTag: block }))
+//     .answer;
+//   return price;
+// }
+
+async function getBTCPriceCoinGecko(date) {
+  date = new Date(date);
+
+  let dd = String(date.getDate()).padStart(2, "0");
+  let mm = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
+  let yyyy = date.getFullYear();
+
+  let _date = dd + "-" + mm + "-" + yyyy;
+  const price = await getTokenPrice("bitcoin", _date);
+
   return price;
 }
 
-async function getETHPrice(block) {
-  const price = (await ETHpriceFeed.latestRoundData({ blockTag: block }))
-    .answer;
+// async function getETHPrice(block) {
+//   const price = (await ETHpriceFeed.latestRoundData({ blockTag: block }))
+//     .answer;
+//   return price;
+// }
+
+async function getETHPriceCoinGecko(date) {
+  date = new Date(date);
+  let dd = String(date.getDate()).padStart(2, "0");
+  let mm = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
+  let yyyy = date.getFullYear();
+  let _date = dd + "-" + mm + "-" + yyyy;
+
+  const price = await getTokenPrice("ethereum", _date);
+
   return price;
 }
 
@@ -147,7 +193,7 @@ async function syncHistoricalPerformance() {
   // Get latest entry in database
 
   for (const etf of ETF_STRATEGIES) {
-    console.log(">", etf);
+    // console.log(">", etf);
     let vaultAddress = contracts["farmer"][etf]["address"];
     let vaultABI = contracts["farmer"][etf]["abi"];
     vault = new ethers.Contract(vaultAddress, vaultABI, provider);
@@ -186,8 +232,8 @@ async function syncHistoricalPerformance() {
       try {
         totalSupply = await getTotalSupply(date.block);
         totalPool = await getTotalPool(date.block);
-        btcPrice = await getBTCPrice(date.block);
-        ethPrice = await getETHPrice(date.block);
+        btcPrice = await getBTCPriceCoinGecko(date.date);
+        ethPrice = await getETHPriceCoinGecko(date.date);
         lpTokenPriceUSD = calcLPTokenPriceUSD(totalPool, totalSupply);
         if (lpTokenPriceUSD > 0 && basePrice == 0) {
           basePrice = lpTokenPriceUSD;
