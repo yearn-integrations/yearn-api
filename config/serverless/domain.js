@@ -199,9 +199,9 @@ const testContracts = {
       network: constant.ETHEREUM
     },
     daoMPT: {
-      address: '0xdc2f0e17702f9083adc057893b2b1e273c11e09a',
+      address: '0x4f0bc6bd6beb231087781336bacd5613527ac63c',
       abi: abi.moneyPrinterVaultContract,
-      strategyAddress: '0x9fbbfc353772672b58a9ee1ad55265a5a09640a1',
+      strategyAddress: '0x8894da48bb8b7f7751ac4e2c37ed31b68d0c587f',
       strategyABI: abi.moneyPrinterStrategyContract,
       contractType: 'moneyPrinter',
       tokenId: ["tether", "usd-coin", "dai"],
@@ -398,9 +398,9 @@ const mainContracts = {
       network: constant.ETHEREUM,
     },
     daoMPT: {
-      address: '0xdc2f0e17702f9083adc057893b2b1e273c11e09a',
+      address: '', // Update to mainnet
       abi: abi.moneyPrinterVaultContract,
-      strategyAddress: '0x9fbbfc353772672b58a9ee1ad55265a5a09640a1',
+      strategyAddress: '', // Update to mainnet
       strategyABI: abi.moneyPrinterStrategyContract,
       contractType: 'moneyPrinter',
       tokenId: ["tether", "usd-coin", "dai"],
