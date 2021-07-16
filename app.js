@@ -14,6 +14,7 @@ const stakePool = require("./services/staking/handler");
 const stakeXDvg = require("./services/staking/vipdvg/handler");
 const stakeDaoStakes = require("./services/staking/dao-stake/handler");
 const specialEvent = require("./services/user/special-event/handler");
+const reimburse = require("./services/user/reimburse/handler");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 8080;
@@ -91,6 +92,10 @@ async function init() {
 
   app.post("/staking/emergency-withdraw-snapshot", (req, res) =>
     stakePool.snapshotEmergency(req, res)
+  );
+
+  app.get('/user/reimburse-address/:address', (req, res) => 
+    reimburse.getReimburseAddress(req, res)
   );
 
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));

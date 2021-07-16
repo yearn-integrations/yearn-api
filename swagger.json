@@ -275,6 +275,27 @@
                 ],
                 "responses": {}
             }
+        },
+        "/user/reimburse-address/{address}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "User Reimburse Info",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "address",
+                        "in": "path",
+                        "description": "User Wallet Address (Lower Case)",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {}
+            }
         }
     } 
 }
