@@ -89,6 +89,13 @@ async function init() {
     vaultPerformance.performanceHandle(req, res)
   );
 
+  app.get("/vaults/pnl/:farmer/:days", (req, res) =>
+    vaultPerformance.pnlHandle(req, res)
+  );
+  app.get("/vaults/pnl/:farmer", (req, res) =>
+    vaultPerformance.pnlHandle(req, res)
+  );
+
   app.post("/staking/emergency-withdraw-snapshot", (req, res) =>
     stakePool.snapshotEmergency(req, res)
   );
