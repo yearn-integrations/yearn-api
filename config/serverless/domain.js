@@ -414,7 +414,7 @@ const mainContracts = {
     lastMeasurement: 0, // TODO Update lastMeasurement
   },
   DVG: {
-    address: "0x51e00a95748dbd2a3f47bc5c3b3e7b3f0fea666c",  
+    address: "0x77dce26c03a9b833fc2d7c31c22da4f42e9d9582",  
     abi: abi.DVDABIContract,
     tokenId: "daoventures", // Previously known as DVG
   },
