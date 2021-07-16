@@ -95,10 +95,6 @@ async function init() {
     reimbursementAddresses.handler(req, res)
   );
 
-  app.get("/reimbursement-addresses/save", (req, res) =>
-    reimbursementAddresses.saveAddresses(req, res)
-  );
-
   app.get("/reimbursement-addresses/dvg/:address", (req, res) =>
     reimbursementAddresses.handler(req, res)
   );
