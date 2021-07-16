@@ -9,11 +9,7 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0x43C20638C3914Eca3c96e9cAc8ebE7d652Be45c6', symbol: 'cDAI', },
     { name: 'expert', contract_address: '0x8fe826cc1225b03aa06477ad5af745aed5fe7066', symbol: 'daoCDV', },
     { name: 'degen', contract_address: '0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8', symbol: 'daoELO', },
-<<<<<<< HEAD
     { name: 'degen', contract_address: '0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd', symbol: 'daoCUB', }, 
-=======
-    // { name: 'degen', contract_address: '', symbol: 'daoCUB', }, // TODO: Update to the mainnet address
->>>>>>> upgrade-token
     { name: 'advance', contract_address: '0x742a85daf742ca0213b06fdae449434e0448691e', symbol: 'daoSTO', },
     { name: 'advance', contract_address: '0x2Cc1507E6E3C844EEb77Db90d193489f1Ddfb299', symbol: 'hfUSDT'},
     { name: 'advance', contract_address: '0xd0f0858578C7780f2D65f6d81BC7DdBe166367cC', symbol: 'hfUSDC'},
@@ -104,107 +100,6 @@ db.xdvg_token.insert({
 
 db.stake_pool.insertMany([
     {
-<<<<<<< HEAD
-        name: 'dvmUSDT',
-        label: 'Yearn Fighter USDT LP',
-        contract_address: '0x6b150e9bd70e216775c8b73270e64e870a3110c1',
-        status: 'A',
-        pid: '0',
-        category: 'Advance',
-        tokenId: 'tether',
-        symbol: 'USDT',
-        startBlock: 25721857,
-        deposit: false,
-        withdraw: true,
-        emergencyWithdraw: true,
-    },
-    {
-        name: 'dvmUSDC',
-        label: 'Yearn Fighter USDC LP',
-        contract_address: '0x6e15e283dc430eca010ade8b11b5b377902d6e56',
-        status: 'A',
-        pid: '1',
-        category: 'Advance',
-        tokenId: 'usd-coin',
-        symbol: 'USDC',
-        startBlock: 25721857,
-        deposit: false,
-        withdraw: true,
-        emergencyWithdraw: true,
-    },
-    {
-        name: 'dvmDAI',
-        label: 'Yearn Fighter DAI LP',
-        contract_address: '0x2428bfd238a3632552b343297c504f60283009ed',
-        status: 'A',
-        pid: '2',
-        category: 'Advance',
-        tokenId: 'dai',
-        symbol: 'DAI',
-        startBlock: 25721857,
-        deposit: false,
-        withdraw: true,
-        emergencyWithdraw: true,
-    },
-    {
-        name: 'dvmTUSD',
-        label: 'Yearn Fighter TUSD LP',
-        contract_address: '0xeccb98c36bfc8c49c6065d1cd90bcf1c6f02d4ad',
-        status: 'A',
-        pid: '3',
-        category: 'Advance',
-        tokenId: 'true-usd',
-        symbol: 'TUSD',
-        startBlock: 25721857,
-        deposit: false,
-        withdraw: true,
-        emergencyWithdraw: true,
-    },
-    {
-        name: 'dvlUSDT',
-        label: 'Compound Fighter USDT LP',
-        contract_address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52',
-        status: 'A',
-        pid: '4',
-        category: 'Basic',
-        tokenId: 'tether',
-        symbol: 'USDT',
-        startBlock: 25721857,
-        deposit: false,
-        withdraw: true,
-        emergencyWithdraw: true,
-    },
-    {
-        name: 'dvlUSDC',
-        label: 'Compound Fighter USDC LP',
-        contract_address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e',
-        status: 'A',
-        pid: '5',
-        category: 'Basic',
-        tokenId: 'usd-coin',
-        symbol: 'USDC',
-        startBlock: 25721857,
-        deposit: false,
-        withdraw: true,
-        emergencyWithdraw: true,
-    }, 
-    {
-        name: 'dvlDAI',
-        label: 'Compound Fighter DAI LP',
-        contract_address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d',
-        status: 'A',
-        pid: '6',
-        category: 'Basic',
-        tokenId: 'dai',
-        symbol: 'DAI',
-        startBlock: 25721857,
-        deposit: false,
-        withdraw: true,
-        emergencyWithdraw: true,
-    },
-    {
-=======
->>>>>>> upgrade-token
         name: 'vipDVG',
         label: 'vipDVG LP',
         contract_address: '0x3aa8e8b6d3562a1e7acb0dddd02b27896c00c424',
@@ -245,23 +140,6 @@ db.stake_pool.insertMany([
         deposit: false,
         withdraw: true,
         emergencyWithdraw: true,
-<<<<<<< HEAD
-    },
-    {
-        name: 'daoELO',
-        label: 'Elon\'s APE LP',
-        contract_address: '0xf03fa8553379d872b4e2bafbc679409fb82604c2',
-        status: 'A',
-        pid: '10',
-        category: 'Degen',
-        tokenId: 'ethereum',
-        symbol: 'daoELO',
-        startBlock: 25721857,
-        deposit: false,
-        withdraw: true,
-        emergencyWithdraw: true,
-=======
->>>>>>> upgrade-token
     },
     {
         name: "daoSTO",
@@ -276,11 +154,7 @@ db.stake_pool.insertMany([
         deposit: false,
         withdraw: true,
         emergencyWithdraw: true,
-<<<<<<< HEAD
-    }
-=======
     },
->>>>>>> upgrade-token
 ]);
 
 

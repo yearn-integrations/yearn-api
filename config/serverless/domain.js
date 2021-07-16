@@ -194,15 +194,15 @@ const testContracts = {
     },
   },
   vipDVG: {
-    address: "0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424",
+    address: "0x4bb18f377a9d2dd62a6af7d78f6e7673e0e0f648",
     abi: abi.xDVGABIContract,
-    tokenId: "xDVG",
-    lastMeasurement: 24819747,
+    tokenId: "xDVD",
+    lastMeasurement: 26158560, // Previously known as vipDVG or xDVG
   },
   DVG: {
-    address: "0xea9726eFc9831EF0499fD4Db4Ab143F15a797673",
-    abi: abi.DVGABIContract,
-    tokenId: "daoventures",
+    address: "0x6639c554a299d58284e36663f609a7d94526fec0",
+    abi: abi.DVDABIContract,
+    tokenId: "daoventures", // Previously known as DVD
   },
   daoStake: {
     address: "0xd8f59a99acfc597feb84914fef3769def87e7553",
@@ -408,15 +408,15 @@ const mainContracts = {
     },
   },
   vipDVG: {
-    address: "0xD6Ce913C3e81b5e67a6b94d705d9E7cDdf073A7e",
+    address: "0x1193c036833b0010ff80a3617bbc94400a284338",
     abi: abi.xDVGABIContract,
-    tokenId: "xDVG",
-    lastMeasurement: 12670237, 
+    tokenId: "xDVD",
+    lastMeasurement: 12838468, // TODO Update lastMeasurement
   },
   DVG: {
-    address: "0x51e00a95748DBd2a3F47bC5c3b3E7B3F0fea666c", 
-    abi: abi.xDVGABIContract,
-    tokenId: "daoventures",
+    address: "0x77dce26c03a9b833fc2d7c31c22da4f42e9d9582",  
+    abi: abi.DVDABIContract,
+    tokenId: "daoventures", // Previously known as DVG
   },
   daoStake: {
     address: "0x8437a6bf9235fd003d50cd4024fa7ec6979208d5", 
