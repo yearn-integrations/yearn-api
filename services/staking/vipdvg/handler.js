@@ -141,7 +141,8 @@ const getxDVGInfo = async (dvgContract, xDVGContract, xDVGContractInfo) => {
     const xDVGTotalSupply = await getTotalSupply(xDVGContract);
     const dvgBalOfxDVG = await getDVGBalanceOfxDVG(dvgContract, xDVGContract._address);
 
-    const dvgPrice = await getTokenPrice("daoventures");
+    // const dvgPrice = await getTokenPrice("daoventures");
+    const dvgPrice = 0.225;
     const xDVGPrice = await getxDVGPrice(xDVGTotalSupply, dvgBalOfxDVG, dvgPrice);
     const tvl = await getTVLxDVG(xDVGContractInfo, xDVGTotalSupply, xDVGPrice);
     const apr = await getAPR();
