@@ -7,6 +7,7 @@ const tvlSave = require("../services/vaults/tvl/handler");
 const stakeSave = require("../services/staking/dao-stake/handler");
 const poolSave = require("../services/staking/handler");
 const vipDVG = require("../services/staking/vipdvg/handler");
+const performanceSave = require("../services/vaults/performance/handler");
 
 /** Save Vault **/
 const saveVault = async () => {
@@ -130,6 +131,22 @@ const saveVipApr = async () => {
   );
 };
 
+/** Store DAOVIP APR */
+const savePerformance = async () => {
+  await performanceSave.savePerformance();
+  cron.schedule(
+    "0 0 * * *",
+    async () => {
+      console.log("[savePerformance]", new Date().getTime());
+      await performanceSave.savePerformance();
+    },
+    {
+      scheduled: true,
+      timezone: "Etc/UTC", // UTC +0
+    }
+  );
+};
+
 module.exports = {
   saveHistoricalTVL,
   saveVaultAPY,
@@ -139,4 +156,5 @@ module.exports = {
   saveHistoricalPools,
   saveABIPools,
   saveVipApr,
+  savePerformance,
 };
