@@ -12,6 +12,7 @@ const vaultPerformance = require("./services/vaults/performance/handler");
 const stakeVIP = require("./services/staking/xdvg/handler");
 const stakePool = require("./services/staking/handler");
 const stakeXDvg = require("./services/staking/vipdvg/handler");
+const reimbursementAddresses = require("./services/reimbursement/handler")
 const stakeDaoStakes = require("./services/staking/dao-stake/handler");
 const specialEvent = require("./services/user/special-event/handler");
 const reimburse = require("./services/user/reimburse/handler");
@@ -88,6 +89,18 @@ async function init() {
   );
   app.get("/vaults/performance/:farmer", (req, res) =>
     vaultPerformance.performanceHandle(req, res)
+  );
+
+  app.get("/reimbursement-addresses/dvg", (req, res) =>
+    reimbursementAddresses.handler(req, res)
+  );
+
+  app.get("/reimbursement-addresses/save", (req, res) =>
+    reimbursementAddresses.saveAddresses(req, res)
+  );
+
+  app.get("/reimbursement-addresses/dvg/:address", (req, res) =>
+    reimbursementAddresses.handler(req, res)
   );
 
   app.post("/staking/emergency-withdraw-snapshot", (req, res) =>
