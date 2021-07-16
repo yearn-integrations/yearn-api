@@ -408,10 +408,10 @@ const mainContracts = {
     },
   },
   vipDVG: {
-    address: "0xD6Ce913C3e81b5e67a6b94d705d9E7cDdf073A7e",
+    address: "0x1193c036833b0010ff80a3617bbc94400a284338",
     abi: abi.xDVGABIContract,
-    tokenId: "xDVG",
-    lastMeasurement: 0, // TODO Update lastMeasurement
+    tokenId: "xDVD",
+    lastMeasurement: 12838468, // TODO Update lastMeasurement
   },
   DVG: {
     address: "0x77dce26c03a9b833fc2d7c31c22da4f42e9d9582",  
