@@ -75,6 +75,9 @@ async function init() {
   app.get("/staking/get-xdvg-stake", (req, res) =>
     stakeXDvg.getxDVGStake(req, res)
   );
+  app.get("/staking/get-xdvd-stake", (req, res) => {
+    stakeXDvg.getxDVDStake(req, res)
+  });
   app.get("/event/verify", (req, res) =>
     specialEvent.handleVerifyEvent(req, res)
   );
