@@ -193,16 +193,31 @@ const testContracts = {
       tokenId: "tether",
     },
   },
-  vipDVG: {
-    address: "0x4bb18f377a9d2dd62a6af7d78f6e7673e0e0f648",
-    abi: abi.xDVGABIContract,
-    tokenId: "xDVD",
-    lastMeasurement: 26158560, // Previously known as vipDVG or xDVG
-  },
-  DVG: {
+  DVD: {
     address: "0x6639c554a299d58284e36663f609a7d94526fec0",
     abi: abi.DVDABIContract,
-    tokenId: "daoventures", // Previously known as DVD
+    tokenId: "",
+  },
+  vipDVD: {
+    name: "vipDVD",
+    address: "0x4bb18f377a9d2dd62a6af7d78f6e7673e0e0f648",
+    abi: abi.xDVDABIContract,
+    tokenId: "xDVD",
+    decimals: 18,
+    lastMeasurement: 26158560,
+  },
+  DVG: {
+    address: "0xea9726efc9831ef0499fd4db4ab143f15a797673",
+    abi: abi.DVGABIContract,
+    tokenId: "daoventures",
+  },
+  vipDVG: {
+    name: "vipDVG",
+    address: "0x3aa8e8B6D3562a1E7aCB0dddD02b27896C00c424",
+    abi: abi.xDVGABIContract,
+    tokenId: "xDVG",
+    decimals: 18,
+    lastMeasurement: 24819747, 
   },
   daoStake: {
     address: "0xd8f59a99acfc597feb84914fef3769def87e7553",
@@ -407,16 +422,29 @@ const mainContracts = {
       abi: abi.cDAIContract,
     },
   },
-  vipDVG: {
-    address: "0x1193c036833b0010ff80a3617bbc94400a284338",
-    abi: abi.xDVGABIContract,
+  DVD: {
+    address: "0x77dcE26c03a9B833fc2D7C31C22Da4f42e9d9582",
+    abi: abi.DVDABIContract,
+    tokenId: "",
+  },
+  vipDVD: {
+    name: "vipDVD",
+    address: "0x1193c036833B0010fF80a3617BBC94400A284338",
+    abi: abi.xDVDABIContract,
     tokenId: "xDVD",
-    lastMeasurement: 12838468, // TODO Update lastMeasurement
+    lastMeasurement: 12838468, 
   },
   DVG: {
-    address: "0x77dce26c03a9b833fc2d7c31c22da4f42e9d9582",  
-    abi: abi.DVDABIContract,
-    tokenId: "daoventures", // Previously known as DVG
+    address: "0x51e00a95748dbd2a3f47bc5c3b3e7b3f0fea666c",
+    abi: abi.DVGABIContract,
+    tokenId: "daoventures", 
+  },
+  vipDVG: {
+    name: "vipDVG",
+    address: "0xD6Ce913C3e81b5e67a6b94d705d9E7cDdf073A7e",
+    abi: abi.xDVGABIContract,
+    tokenId: "xDVG",
+    lastMeasurement: 12670237, 
   },
   daoStake: {
     address: "", // TODO Update mainnet address
