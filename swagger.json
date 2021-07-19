@@ -204,6 +204,18 @@
                 "responses": {}
             }
         },
+        "/staking/get-xdvd-stake" :{
+            "get": {
+                "tags": [
+                    "Stake"
+                ],
+                "description": "Get xDVD stake",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {}
+            }
+        },
         "/event/verify" : {
             "get": {
                 "tags": [
@@ -292,6 +304,41 @@
                         "description": "User Wallet Address (Lower Case)",
                         "required": true,
                         "type": "string"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/reimburse-address/update": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Update user's claimed amount",
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "User claimed amount",
+                        "description": "Update user claimed amount",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userAddress": {
+                                    "type": "string",
+                                    "description": "User account address"
+                                },
+                                "amount": {
+                                    "type": "string",
+                                    "description": "Claimed amount"
+                                }
+                            }
+                        }
                     }
                 ],
                 "responses": {}
