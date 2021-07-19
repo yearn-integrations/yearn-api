@@ -98,6 +98,10 @@ async function init() {
     reimburse.getReimburseAddress(req, res)
   );
 
+  app.post('/user/reimburse-address/update', (req, res) => {
+    reimburse.updateReimburseAddressClaimAmount(req, res)
+  });
+
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   app.listen(port, () => console.log(`Listening on ${port}`));
