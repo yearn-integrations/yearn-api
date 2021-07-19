@@ -217,6 +217,7 @@ const getApyForVault = async (vault) => {
     vaultContractAddress: address,
     symbol,
   } = vault;
+  console.log(symbol);
   // Compound Vault
   if (vault.isCompound) {
     let cToken;
@@ -419,6 +420,8 @@ const getApyForVault = async (vault) => {
       aprOneWeekSample,
       aprOneMonthSample
     }
+
+    console.log(aprData);
 
     return {
       ...aprData,
