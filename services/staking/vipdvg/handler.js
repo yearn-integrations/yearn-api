@@ -16,12 +16,11 @@ const infuraWeb3 = new Web3(infuraUrl);
 const blocks = new EthDater(archiveNodeWeb3, delayTime);
 const DB_CONSTANT = 'daoVip';
 
-// Get VIP DVG contract info from domain based on enviroment
-const getContractInfo = (name) => {
-    const contracts =  process.env.PRODUCTION != null && process.env.PRODUCTION != "" 
-                        ? mainContracts : testContracts;
-    return contracts[name];
-} 
+const getContracts = () => {
+    return (process.env.PRODUCTION != null && process.env.PRODUCTION != "") 
+        ? mainContracts
+        : testContracts;
+}
 
 // Get contract
 const getContract = async (contractInfo) => {
@@ -45,29 +44,17 @@ const getTokenPrice = async (coingecko_token_id) => {
     return;
 }
 
-const getDecimals = async (contract) => {
+const getTokenBalanceOfVipToken = async(tokenContract, vipTokenAddress) => {
     try {
-      let decimals = await contract.methods.decimals().call();
-      return decimals;
+        const tokenBalanceOfVipToken = await tokenContract.methods.balanceOf(vipTokenAddress).call();
+        return tokenBalanceOfVipToken;
     } catch (err) {
-      // Catch error
-      console.log(err);
-    }
-};
-
-// DVG's balance of vipDVG contract
-const getDVGBalanceOfxDVG = async(dvgContract, xDVGAddress) => {
-    try {
-        const dvgBalanceOfVipDVG = await dvgContract.methods.balanceOf(xDVGAddress).call();
-        return dvgBalanceOfVipDVG;
-    } catch (err) {
-        console.log("Error in getDVGBalanceOfxDVG(): ", err)
+        console.log("Error in getTokenBalanceOfVipToken(): ", err)
     }
 }
 
-// xDVGPrice Formula :  xDVG price = ( DVG amount of xDVG SC * DVG price) / xDVG totalSupply
-const getxDVGPrice = async (xDVGTotalSupply, dvgBalanceOfxDVG, dvgPrice) => {
-    return (dvgBalanceOfxDVG * dvgPrice) / xDVGTotalSupply;
+const getVipTokenPrice = async (vipTotalSupply, tokenBalOfVipToken, tokenPrice) => {
+    return (tokenBalOfVipToken * tokenPrice) / vipTotalSupply;
 }
 
 const getTotalSupply = async (contract) => {
@@ -80,26 +67,11 @@ const getTotalSupply = async (contract) => {
     }
 };
 
-/**
- * Get TVL of xDVG.
- * TVL = totalSupply * xDVG Price
- */
- const getTVLxDVG = async (vault, totalSupply, tokenPrice) => {
-    let tvl;
-    const contract = await getContract(vault);
-    const decimals = await getDecimals(contract);
-  
-    tvl = (totalSupply / 10 ** decimals) * tokenPrice;
-    return tvl;
+const getVipTokenTVL = async (vipTokenDecimals, vipTotalSupply, vipTokenPrice) => {
+    return (vipTotalSupply / (10 ** vipTokenDecimals)) * vipTokenPrice;
 };
 
-const calculateAPR = async (apr, lastMeasurement) => {
-    const oneDayAgo = moment().subtract(1, "days").valueOf();
-    await delay(delayTime);
-    const oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;
-    const currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
-    const nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
-    const days = (currentBlockNbr - lastMeasurement) / nbrBlocksInDay;
+const calculateAPR = async (apr, days) => {
     const aprPerDay = apr / days;
     return {
         aprOneDay: aprPerDay,
@@ -109,9 +81,9 @@ const calculateAPR = async (apr, lastMeasurement) => {
     }
 }
 
-const getAPR = async () => {
+const getAPR = async (vipName) => {
     const apr = await db.findOne({
-        name: DB_CONSTANT,
+        name: vipName,
     });
 
     if (apr != null) {
@@ -121,68 +93,104 @@ const getAPR = async () => {
     return apr;
 }
 
-// APR calculation Formula : (xDVG's total supply * xDVG price) / (DVG.balanceOf(xDVG) * DVG price)
-const getxDVGAPR = async (dvgContract, xDVGContract, xDVGContractInfo) => {
-    const xDVGTotalSupply = await getTotalSupply(xDVGContract);
-    const dvgBalOfxDVG = await getDVGBalanceOfxDVG(dvgContract, xDVGContract._address);
+const getVipTokenAPR = async (tokenContract, vipTokenContract, days, tokenPriceId) => {
+    const tokenBalOfVipToken = await getTokenBalanceOfVipToken(tokenContract, vipTokenContract._address);
+    const vipTotalSupply = await getTotalSupply(vipTokenContract);
 
-    const dvgPrice = await getTokenPrice("daoventures");
-    const xDVGPrice = await getxDVGPrice(xDVGTotalSupply, dvgBalOfxDVG, dvgPrice);
-    let apr = (xDVGTotalSupply * xDVGPrice) / (dvgBalOfxDVG * dvgPrice);
+    // const tokenPrice = await getTokenPrice(tokenPriceId);
+    // Get token usd price from Coingecko
+    const tokenPrice = (tokenPriceId === "daoventures") 
+        ? await getTokenPrice(tokenPriceId)
+        : 0.225 ; 
+
+    const vipTokenPrice = await getVipTokenPrice(vipTotalSupply, tokenBalOfVipToken, tokenPrice);
+
+    let apr = (vipTotalSupply * vipTokenPrice) / (tokenBalOfVipToken * tokenPrice);
+    console.log(`APR: (${vipTotalSupply} * ${vipTokenPrice}) / (${tokenBalOfVipToken} * ${tokenPrice})`);
 
     if (isNaN(apr)) {
         apr = 0;
     }
-    const aprInfo = await calculateAPR(apr, xDVGContractInfo.lastMeasurement);
+
+    const aprInfo = await calculateAPR(apr, days);
     return { ...aprInfo, apr };
 }
 
-const getxDVGInfo = async (dvgContract, xDVGContract, xDVGContractInfo) => {
-    const xDVGTotalSupply = await getTotalSupply(xDVGContract);
-    const dvgBalOfxDVG = await getDVGBalanceOfxDVG(dvgContract, xDVGContract._address);
+const getVipTokenInfo = async (tokenContract, vipTokenContract, vipContractInfo, tokenPriceId) => {
+    const vipTotalSupply = await getTotalSupply(vipTokenContract);
+    const tokenBalOfVipToken = await getTokenBalanceOfVipToken(tokenContract, vipTokenContract._address);
 
-    const dvgPrice = await getTokenPrice("daoventures");
-    const xDVGPrice = await getxDVGPrice(xDVGTotalSupply, dvgBalOfxDVG, dvgPrice);
-    const tvl = await getTVLxDVG(xDVGContractInfo, xDVGTotalSupply, xDVGPrice);
-    const apr = await getAPR();
-    return { ...apr, dvgPrice, tvl, xDVGPrice: xDVGPrice/dvgPrice };
+    // const tokenPrice = await getTokenPrice(tokenPriceId);
+    // Get token usd price from Coingecko
+    const tokenPrice = (tokenPriceId === "daoventures") 
+        ? await getTokenPrice(tokenPriceId)
+        : 0.225 ;
+
+    let vipTokenPrice = await getVipTokenPrice(vipTotalSupply, tokenBalOfVipToken, tokenPrice);
+
+    const tvl = await getVipTokenTVL(vipContractInfo.decimals, vipTotalSupply, vipTokenPrice);
+    const apr = await getAPR(vipContractInfo.name);
+    return { ...apr, tokenPrice, tvl, vipTokenPrice: vipTokenPrice / tokenPrice};
 }
 
 module.exports.getVipAPY = async () => {
     try {
-        // Get vipDVG contract
-        const xDVGContractInfo = getContractInfo("vipDVG");
-        const xDVGContract = await getContract(xDVGContractInfo);
+        const contracts = getContracts();
+        
+        const tokenPairs = [
+            { token: "DVG", vipToken: "vipDVG" }, 
+            { token: "DVD", vipToken: "vipDVD" },
+        ];
 
-        // Get DVG contract
-        const dvgContractInfo = getContractInfo("DVG");
-        const dvgContract = await getContract(dvgContractInfo);
+        const oneDayAgo = moment().subtract(1, "days").valueOf();
+        await delay(delayTime);
+        const oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;
+        const currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
+        const nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
+       
+        for(let i = 0 ; i < tokenPairs.length; i++) {
+            const tokenInfo = contracts[tokenPairs[i].token];
+            const vipTokenInfo = contracts[tokenPairs[i].vipToken];
 
-        let result = await getxDVGAPR(dvgContract, xDVGContract, xDVGContractInfo);
-        await db.add({
-            ...result,
-            name: DB_CONSTANT,
-        })
+            const tokenContract = await getContract(tokenInfo);
+            const vipTokenContract = await getContract(vipTokenInfo); 
+
+            const days = (currentBlockNbr - vipTokenInfo.lastMeasurement) / nbrBlocksInDay;
+            let result = await getVipTokenAPR(tokenContract, vipTokenContract, days, tokenInfo.tokenId);
+            await db.add({
+                ...result,
+                name: tokenPairs[i].vipToken,
+            });
+        }
     } catch (err) {}
 }
 
 module.exports.getxDVGStake = async(req, res) => {
     try {
-        // Get vipDVG contract
-        const xDVGContractInfo = getContractInfo("vipDVG");
-        const xDVGContract = await getContract(xDVGContractInfo);
+        const contracts = getContracts(); 
 
-        // Get DVG contract
-        const dvgContractInfo = getContractInfo("DVG");
-        const dvgContract = await getContract(dvgContractInfo);
+        const xDVGInfo = contracts["vipDVG"];
+        const dvgInfo = contracts["DVG"];
+
+        // Create contract object
+        const xDVGContract = await getContract(xDVGInfo);
+        const dvgContract = await getContract(dvgInfo);
          
-        let result = await getxDVGInfo(dvgContract, xDVGContract, xDVGContractInfo);
+        const result = await getVipTokenInfo(dvgContract, xDVGContract, xDVGInfo, dvgInfo.tokenId);
+        const finalResult = {
+            aprOneDay: result.aprOneDay,
+            aprOneWeek: result.aprOneWeek,
+            aprOneMonth: result.aprOneMonth,
+            aprOneYear: result.aprOneYear,
+            apr: result.apr,
+            dvgPrice: result.tokenPrice,
+            xDVGPrice: result.vipTokenPrice,
+            tvl: result.tvl,
+        };
 
         res.status(200).json({
             message: 'Successful Response',
-            body: { 
-                xdvg: result
-            }
+            body: finalResult
         });
 
     } catch (err) {
@@ -193,3 +201,40 @@ module.exports.getxDVGStake = async(req, res) => {
     }
     return;
 };
+
+module.exports.getxDVDStake = async (req, res) => {
+    try {
+        const contracts = getContracts(); 
+
+        const xDVDInfo = contracts["vipDVD"];
+        const dvdInfo = contracts["DVD"];
+
+        // Create contract object
+        const xDVDContract = await getContract(xDVDInfo);
+        const dvdContract = await getContract(dvdInfo);
+         
+        const result = await getVipTokenInfo(dvdContract, xDVDContract, xDVDInfo, dvdInfo.tokenId);
+        const finalResult = {
+            aprOneDay: result.aprOneDay,
+            aprOneWeek: result.aprOneWeek,
+            aprOneMonth: result.aprOneMonth,
+            aprOneYear: result.aprOneYear,
+            apr: result.apr,
+            dvdPrice: result.tokenPrice,
+            xDVDPrice: result.vipTokenPrice,
+            tvl: result.tvl,
+        };
+
+        res.status(200).json({
+            message: 'Successful Response',
+            body: finalResult
+        });
+
+    } catch (err) {
+        res.status(200).json({
+            message: err.message,
+            body: null
+        });
+    }
+    return;
+}
