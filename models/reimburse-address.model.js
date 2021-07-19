@@ -19,12 +19,15 @@ const updateClaimAmount = async(params) => {
       address: params.address
     });
     if (result != null) {
+      const previousAmount = (result.claimAmount ? parseFloat(result.claimAmount) : 0);
+      const claimedAmount =  previousAmount + parseFloat(params.amount);
+
       return await db.collection(collection).updateOne({
         address: params.address
       },
       {
         $set: {
-          "claimAmount": params.amount,
+          "claimAmount": claimedAmount,
         }
       });
     }
