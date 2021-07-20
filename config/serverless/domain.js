@@ -368,9 +368,9 @@ const mainContracts = {
       tokenId: ["tether", "usd-coin", "dai"],
     },
     daoCUB: {
-      address: "",  // TODO: Update that this to mainnet address
+      address: "0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd", 
       abi: abi.cubanApeVaultContract,
-      strategyAddress: "", // TODO: Update that this to mainnet address
+      strategyAddress: "0x7c0f84e9dc6f721de21d51a490de6e370fa01cd6",
       strategyABI: abi.cubanApeStrategyContract,
       contractType: "cuban",
       tokenId: ["tether", "usd-coin", "dai"],
@@ -432,6 +432,7 @@ const mainContracts = {
     address: "0x1193c036833B0010fF80a3617BBC94400A284338",
     abi: abi.xDVDABIContract,
     tokenId: "xDVD",
+    decimals: 18,
     lastMeasurement: 12838468, 
   },
   DVG: {
@@ -444,10 +445,11 @@ const mainContracts = {
     address: "0xD6Ce913C3e81b5e67a6b94d705d9E7cDdf073A7e",
     abi: abi.xDVGABIContract,
     tokenId: "xDVG",
+    decimals: 18,
     lastMeasurement: 12670237, 
   },
   daoStake: {
-    address: "", // TODO Update mainnet address
+    address: "0x8437a6bf9235fd003d50cd4024fa7ec6979208d5", 
     abi: abi.daoStakeContract,
     startBlock: 12770000,  // Start block from contract's START_BLOCK
     poolPercent: 0.51

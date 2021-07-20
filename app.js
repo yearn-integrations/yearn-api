@@ -101,6 +101,13 @@ async function init() {
   app.get("/reimbursement-addresses/dvg/:address", (req, res) =>
     reimbursementAddresses.handler(req, res)
   );
+  
+  app.get("/vaults/pnl/:farmer/:days", (req, res) =>
+    vaultPerformance.pnlHandle(req, res)
+  );
+  app.get("/vaults/pnl/:farmer", (req, res) =>
+    vaultPerformance.pnlHandle(req, res)
+  );
 
   app.post("/staking/emergency-withdraw-snapshot", (req, res) =>
     stakePool.snapshotEmergency(req, res)

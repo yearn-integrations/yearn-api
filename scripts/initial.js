@@ -9,7 +9,7 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0x43C20638C3914Eca3c96e9cAc8ebE7d652Be45c6', symbol: 'cDAI', },
     { name: 'expert', contract_address: '0x8fe826cc1225b03aa06477ad5af745aed5fe7066', symbol: 'daoCDV', },
     { name: 'degen', contract_address: '0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8', symbol: 'daoELO', },
-    // { name: 'degen', contract_address: '', symbol: 'daoCUB', }, // TODO: Update to the mainnet address
+    { name: 'degen', contract_address: '0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd', symbol: 'daoCUB', }, 
     { name: 'advance', contract_address: '0x742a85daf742ca0213b06fdae449434e0448691e', symbol: 'daoSTO', },
     { name: 'advance', contract_address: '0x2Cc1507E6E3C844EEb77Db90d193489f1Ddfb299', symbol: 'hfUSDT'},
     { name: 'advance', contract_address: '0xd0f0858578C7780f2D65f6d81BC7DdBe166367cC', symbol: 'hfUSDC'},

@@ -501,7 +501,7 @@ const mainVaults = [
     description: "DAO Vault Cuban for 3 stablecoins",
     vaultSymbol: "daoCUB",
     erc20address: ["0xdAC17F958D2ee523a2206206994597C13D831ec7", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0x6b175474e89094c44da98b954eedeac495271d0f"],
-    vaultContractAddress: "", // TODO: Update to the mainnet address
+    vaultContractAddress: "0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd", 
     vaultContractABI: abi.cubanApeVaultContract,
     balance: 0,
     vaultBalance: 0,
@@ -510,7 +510,7 @@ const mainVaults = [
     depositAll: true,
     withdraw: true,
     withdrawAll: true,
-    lastMeasurement: 12722655, // TODO: Update to the mainnet block number
+    lastMeasurement: 12799447,
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isCuban: true,
