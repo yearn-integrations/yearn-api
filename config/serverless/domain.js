@@ -432,6 +432,7 @@ const mainContracts = {
     address: "0x1193c036833B0010fF80a3617BBC94400A284338",
     abi: abi.xDVDABIContract,
     tokenId: "xDVD",
+    decimals: 18,
     lastMeasurement: 12838468, 
   },
   DVG: {
@@ -444,6 +445,7 @@ const mainContracts = {
     address: "0xD6Ce913C3e81b5e67a6b94d705d9E7cDdf073A7e",
     abi: abi.xDVGABIContract,
     tokenId: "xDVG",
+    decimals: 18,
     lastMeasurement: 12670237, 
   },
   daoStake: {
