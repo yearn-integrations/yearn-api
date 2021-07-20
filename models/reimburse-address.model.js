@@ -1,5 +1,6 @@
 const mongo = require('../config/db');
 const collection = 'reimburse-address';
+const BigNumber = require("bignumber.js");
 
 const findAll = async () => {
   const db = mongo.getDB();
@@ -19,8 +20,8 @@ const updateClaimAmount = async(params) => {
       address: params.address
     });
     if (result != null) {
-      const previousAmount = (result.claimAmount ? parseFloat(result.claimAmount) : 0);
-      const claimedAmount =  previousAmount + parseFloat(params.amount);
+      const previousAmount = (result.claimAmount ? new BigNumber(result.claimAmount) : new BigNumber(0));
+      const claimedAmount =  previousAmount.plus(params.amount).toFixed();
 
       return await db.collection(collection).updateOne({
         address: params.address
