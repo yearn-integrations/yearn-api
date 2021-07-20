@@ -29,22 +29,19 @@ let contracts;
 let vault;
 let BTC_AGGREGATOR_ADDR;
 let ETH_AGGREGATOR_ADDR;
-let INCEPTION_BLOCK;
 
 if (process.env.PRODUCTION != "") {
   contracts = mainContracts;
   BTC_AGGREGATOR_ADDR = "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c";
   ETH_AGGREGATOR_ADDR = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419";
-  INCEPTION_BLOCK = 12586420;
 } else {
   contracts = testContracts;
   BTC_AGGREGATOR_ADDR = "0x6135b13325bfc4b00278b4abc5e20bbce2d6580e";
   ETH_AGGREGATOR_ADDR = "0x9326bfa02add2366b30bacb125260af641031331";
-  INCEPTION_BLOCK = 25336169;
 }
 
 // const ETF_STRATEGIES = ["daoCDV", "daoSTO", "daoELO"];
-const ETF_STRATEGIES = ["daoCDV"];
+const ETF_STRATEGIES = ["daoCDV", "daoSTO"];
 
 const aggregatorV3InterfaceABI = require("./AggregatorABI.json");
 
@@ -97,14 +94,21 @@ function getInceptionBlock(farmer) {
   }
 }
 
-async function getTotalSupply(block) {
-  const totalSupply = await vault.totalSupply({ blockTag: block });
-  return totalSupply;
+async function getTotalSupply(etf, vault, block) {
+  if (etf === "daoCDV" || etf === "daoSTO") {
+    const totalSupply = await vault.totalSupply({ blockTag: block });
+    return totalSupply;
+  }
 }
 
-async function getTotalPool(block) {
-  const totalPool = await vault.getAllPoolInUSD({ blockTag: block });
-  return totalPool;
+async function getTotalPool(etf, vault, block) {
+  if (etf === "daoCDV") {
+    const totalPool = await vault.getAllPoolInUSD({ blockTag: block });
+    return totalPool;
+  } else if (etf === "daoSTO") {
+    const totalPool = await vault.getTotalValueInPool({ blockTag: block });
+    return totalPool;
+  }
 }
 
 // async function getBTCPriceChainlink(block) {
@@ -144,13 +148,27 @@ async function getETHPriceCoinGecko(date) {
   return price;
 }
 
-function calcLPTokenPriceUSD(totalPoolUSD, totalSupply) {
-  if (totalSupply != 0) {
-    return totalPoolUSD
-      .mul(ethers.BigNumber.from("1000000000000"))
-      .div(totalSupply);
-  } else {
-    return 0;
+function calcLPTokenPriceUSD(etf, totalSupply, totalPool) {
+  if (etf === "daoCDV") {
+    // totalSupply = await getTotalSupply(vault, date.block);
+    // totalPool = await getTotalPool(vault, date.block);
+    if (totalSupply != 0) {
+      return totalPool
+        .mul(ethers.BigNumber.from("1000000000000"))
+        .div(totalSupply);
+    } else {
+      return 0;
+    }
+  } else if (etf === "daoSTO") {
+    // totalSupply = await getTotalSupply(vault, date.block);
+    // totalPool = await getTotalPool(vault, date.block);
+    if (totalSupply != 0) {
+      return totalPool
+        .mul(ethers.BigNumber.from("1000000000000"))
+        .div(totalSupply);
+    } else {
+      return 0;
+    }
   }
 }
 
@@ -230,11 +248,15 @@ async function syncHistoricalPerformance() {
 
     for (const date of dates) {
       try {
-        totalSupply = await getTotalSupply(date.block);
-        totalPool = await getTotalPool(date.block);
+        totalSupply = await getTotalSupply(etf, vault, date.block);
+        totalPool = await getTotalPool(etf, vault, date.block);
         btcPrice = await getBTCPriceCoinGecko(date.date);
         ethPrice = await getETHPriceCoinGecko(date.date);
-        lpTokenPriceUSD = calcLPTokenPriceUSD(totalPool, totalSupply);
+        lpTokenPriceUSD = calcLPTokenPriceUSD(etf, totalSupply, totalPool);
+        console.log(
+          "🚀 | syncHistoricalPerformance | lpTokenPriceUSD",
+          lpTokenPriceUSD
+        );
         if (lpTokenPriceUSD > 0 && basePrice == 0) {
           basePrice = lpTokenPriceUSD;
           lpPriceInception = basePrice;
@@ -329,9 +351,9 @@ module.exports.pnlHandle = async (req, res) => {
     // case historicalDb.daoELOFarmer:
     //   collection = historicalDb.daoELOFarmer;
     //   break;
-    // case historicalDb.daoSTOFarmer:
-    //   collection = historicalDb.daoSTOFarmer;
-    //   break;
+    case historicalDb.daoSTOFarmer:
+      collection = historicalDb.daoSTOFarmer;
+      break;
     default:
       res.status(200).json({
         message: "Invalid Farmer",
@@ -409,9 +431,9 @@ module.exports.performanceHandle = async (req, res) => {
     // case historicalDb.daoELOFarmer:
     //   collection = historicalDb.daoELOFarmer;
     //   break;
-    // case historicalDb.daoSTOFarmer:
-    //   collection = historicalDb.daoSTOFarmer;
-    //   break;
+    case historicalDb.daoSTOFarmer:
+      collection = historicalDb.daoSTOFarmer;
+      break;
     default:
       res.status(200).json({
         message: "Invalid Farmer",
