@@ -86,25 +86,9 @@ const getTokenPrice = async (coingecko_token_id) => {
   }
 };
 
-const getxDVGPrice = async () => {
-  // xDVG price = DVG amount of xDVG SC * DVG price / xDVG amount
-  const contracts =
-    process.env.PRODUCTION != null && process.env.PRODUCTION != ""
-      ? mainContracts
-      : testContracts;
-
-  const DVGcontract = await getContract(contracts.DVG);
-  const xDVGcontract = await getContract(contracts.vipDVG);
-  const amountDVG = await getBalance(
-    DVGcontract,
-    contracts.vipDVG.address
-  );
-  const amountxDVG = await getTotalSupply(xDVGcontract);
-  const priceDVG = await getTokenPrice(contracts.DVG.tokenId);
-
-  const pricexDVG = amountxDVG == 0 ? 1 : (amountDVG * priceDVG) / amountxDVG;
-  return pricexDVG;
-};
+const getVipTokenPrice = async (vipTotalSupply, tokenBalOfVipToken, tokenPrice) => {
+  return (tokenBalOfVipToken * tokenPrice) / vipTotalSupply;
+}
 
 /**
  * Get TVL of specified vault.
@@ -152,19 +136,25 @@ const getTVL = async (vault) => {
   return tvl;
 };
 
-/**
- * Get TVL of xDVG.
- * TVL = totalSupply * xDVG Price
- */
-const getTVLxDVG = async (vault) => {
-  const { tokenId } = vault;
-  let tvl;
-  const contract = await getContract(vault);
-  const totalSupply = await getTotalSupply(contract);
-  const decimals = await getDecimals(contract);
-  const tokenPrice = await getxDVGPrice(tokenId); // Not implemented yet
 
-  tvl = (totalSupply / 10 ** decimals) * tokenPrice;
+const getVipTokenTVL = async (vipTokenVault, tokenVault) => {
+  const { decimals } = vipTokenVault;
+  const { tokenId } = tokenVault;
+  let tvl;
+  
+  const vipTokenContract = await getTokenContract(vipTokenVault);
+  const tokenContract = await getTokenContract(tokenVault);
+
+  const vipTotalSupply = await getTotalSupply(vipTokenContract);
+  const tokenBalOfVipToken = await getBalance(tokenContract, vipTokenContract._address);
+
+  const tokenPrice = (tokenId === "daoventures") 
+        ? await getTokenPrice(tokenId)
+        : 0.225 ;
+
+  const vipTokenPrice = await getVipTokenPrice(vipTotalSupply, tokenBalOfVipToken, tokenPrice);
+  tvl = (vipTotalSupply / 10 ** decimals) * vipTokenPrice;
+
   return tvl;
 };
 
@@ -188,10 +178,13 @@ const getAllTVL = async () => {
   }
 
   try {
-    let _vault = vaults.vipDVG;
-    let tvl = await getTVLxDVG(_vault);
+    let tvl = await getVipTokenTVL(vaults.vipDVG, vaults.DVG);
     tvls.push(tvl);
     await saveTVL("xDVG", tvl);
+
+    const vipDVDTVL = await getVipTokenTVL(vaults.vipDVD, vaults.DVD);
+    tvls.push(vipDVDTVL);
+    await saveTVL("xDVD", vipDVDTVL);
   } catch (err) {
     console.error(err);
   }
