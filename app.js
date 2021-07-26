@@ -64,6 +64,9 @@ async function init() {
   app.get("/vaults/price/:farmer/:days", (req, res) =>
     vaultsPrice.handleHistoricialPrice(req, res)
   );
+  app.get("/vaults/price/all/:network/:days", (req, res) => {
+    vaultsPrice.handleAllHistoricialPrice(req, res)
+  });
   app.get("/vaults/historical-apy/:contractAddress/:days", (req, res) =>
     vaultHistoricalAPYSave.handleHistoricialAPY(req, res)
   );
