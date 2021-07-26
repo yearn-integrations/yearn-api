@@ -142,8 +142,8 @@ const getVipTokenTVL = async (vipTokenVault, tokenVault) => {
   const { tokenId } = tokenVault;
   let tvl;
   
-  const vipTokenContract = await getTokenContract(vipTokenVault);
-  const tokenContract = await getTokenContract(tokenVault);
+  const vipTokenContract = await getContract(vipTokenVault);
+  const tokenContract = await getContract(tokenVault);
 
   const vipTotalSupply = await getTotalSupply(vipTokenContract);
   const tokenBalOfVipToken = await getBalance(tokenContract, vipTokenContract._address);
@@ -314,6 +314,27 @@ module.exports.tvlHandle = async (req, res) => {
   }
   return;
 };
+
+module.exports.getAllTVLHandler = async(req, res) => {
+  let vaults =
+    process.env.PRODUCTION != null && process.env.PRODUCTION != ""
+      ? mainContracts
+      : testContracts;
+    
+    let finalResult = {};
+    for (vault in vaults.farmer) {
+      const collection = vault + "_tvl";
+      const dbResult = await db.getTVL(collection, { limit: 1 });
+      finalResult[vault] = (dbResult && dbResult.length > 0) ? dbResult[0] : null;
+    }
+    
+    res.status(200).json({
+      message: `Successful response`,
+      body: finalResult,
+    });
+
+    return;
+}
 
 module.exports.totalHandle = async (req, res) => {
   // Get and save all TVL

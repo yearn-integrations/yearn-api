@@ -11,6 +11,8 @@ const EthDater = require("../services/vaults/apy/save/ethereum-block-by-date");
 const ethereumBlocks = new EthDater(web3, 1000);
 const polygonBlocks = new EthDater(polygonWeb3, 1000);
 
+const { testContracts, mainContracts } = require("../config/serverless/domain");
+
 // Create Ethereum network contract
 module.exports.getEthereumContract =  async (abi, address) => {
     try {
@@ -83,4 +85,12 @@ module.exports.getPolygonBlockNumberByTimeline = async(timeline) => {
         console.log('Error in getPolygonBlockNumberByTimeline()', err);
     }
 }
+
+// Get contracts from domain.js based on environment
+module.exports.getContractsFromDomain = () => {
+    return (process.env.PRODUCTION !== null && process.env.PRODUCTION != "")
+      ? mainContracts
+      : testContracts;
+}
+
 

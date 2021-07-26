@@ -69,6 +69,7 @@ async function init() {
   );
   app.get("/vaults/tvl/total", (req, res) => vaultsTvl.totalHandle(req, res));
   app.get("/vaults/tvl/:farmer", (req, res) => vaultsTvl.tvlHandle(req, res));
+  app.get("/vaults/tvl/find/all", (req, res) => vaultsTvl.getAllTVLHandler(req, res));
   app.get("/vaults/category", (req, res) =>
     vaultCategory.getVaultCategory(req, res)
   );
