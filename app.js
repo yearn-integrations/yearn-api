@@ -67,6 +67,9 @@ async function init() {
   app.get("/vaults/historical-apy/:contractAddress/:days", (req, res) =>
     vaultHistoricalAPYSave.handleHistoricialAPY(req, res)
   );
+  app.get("/vaults/historical-apy/all/:network/:days", (req, res) => {
+    vaultHistoricalAPYSave.handleAllHistoricalAPY(req, res)
+  });
   app.get("/vaults/tvl/total", (req, res) => vaultsTvl.totalHandle(req, res));
   app.get("/vaults/tvl/:farmer", (req, res) => vaultsTvl.tvlHandle(req, res));
   app.get("/vaults/tvl/find/all", (req, res) => vaultsTvl.getAllTVLHandler(req, res));
