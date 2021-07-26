@@ -41,7 +41,8 @@ if (process.env.PRODUCTION != "") {
 }
 
 // const ETF_STRATEGIES = ["daoCDV", "daoSTO", "daoELO"];
-const ETF_STRATEGIES = ["daoCDV", "daoSTO"];
+// const ETF_STRATEGIES = ["daoCDV", "daoSTO"];
+const ETF_STRATEGIES = ["daoCDV"];
 
 const aggregatorV3InterfaceABI = require("./AggregatorABI.json");
 
