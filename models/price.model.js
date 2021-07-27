@@ -38,6 +38,7 @@ module.exports = {
   daoELOFarmer: 'daoELO_price',
   daoCUBFarmer: 'daoCUB_price',
   daoSTOFarmer: 'daoSTO_price',
+  daoMPTFarmer: 'daoMPT_price',
   hfDaiFarmer: 'hfDAI_price',
   hfUsdcFarmer: 'hfUSDC_price',
   hfUsdtFarmer: 'hfUSDT_price',  

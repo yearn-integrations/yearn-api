@@ -38,6 +38,7 @@ module.exports = {
   daoELOFarmer: 'daoELO_historical-apy',
   daoCUBFarmer: 'daoCUB_historical-apy',
   daoSTOFarmer: 'daoSTO_historical-apy',
+  daoMPTFarmer: 'daoMPT_historical-apy',
   hfDaiFarmer: 'hfDAI_historical-apy',
   hfUsdcFarmer: 'hfUSDC_historical-apy',
   hfUsdtFarmer: 'hfUSDT_historical-apy',  
