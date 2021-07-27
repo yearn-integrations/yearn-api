@@ -15,7 +15,7 @@ const {
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
-const url = process.env.ARCHIVENODE_ENDPOINT;
+let url = process.env.ARCHIVENODE_ENDPOINT;
 
 // Using ethers.js
 const provider = new ethers.providers.JsonRpcProvider(url);
@@ -344,6 +344,7 @@ module.exports.pnlHandle = async (req, res) => {
   let collection = "";
   let result;
   let pnl;
+  let lastDataIndex;
 
   switch (req.params.farmer) {
     case historicalDb.daoCDVFarmer:
@@ -377,6 +378,12 @@ module.exports.pnlHandle = async (req, res) => {
 
   if (startTime == -1) {
     result = await historicalDb.findAll(collection);
+    lastDataIndex = result.length - 1;
+
+    return res.status(200).json({
+      message: `Performance Data for ${req.params.farmer}`,
+      body: result[lastDataIndex]["lp_performance"],
+    });
   } else {
     result = await historicalDb.findPerformanceWithTimePeriods(
       collection,
@@ -386,13 +393,13 @@ module.exports.pnlHandle = async (req, res) => {
 
   if (result) {
     const basePrice = result[0]["lp_token_price_usd"];
-    const lastDataIndex = result.length - 1;
+    lastDataIndex = result.length - 1;
     pnl = calculatePerformance(
       basePrice,
       result[lastDataIndex]["lp_token_price_usd"]
     );
     console.log("🚀 | module.exports.pnlHandle= | pnl", pnl);
-    res.status(200).json({
+    return res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
       body: pnl,
     });
