@@ -443,33 +443,6 @@ const mainContracts = {
       network: constant.POLYGON
     },
     hfDAI: {
-      address: '', // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: '',
-      strategyABI:  abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "dai",
-      network: constant.ETHEREUM
-    },
-    hfUSDC: {
-      address: '', // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: '',
-      strategyABI: abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "usd-coin",
-      network: constant.ETHEREUM
-    },
-    hfUSDT: {
-      address: '', // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: '',
-      strategyABI: abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "tether",
-      network: constant.ETHEREUM
-    },
-    hfDAI: {
       address: '0x2cc1507e6e3c844eeb77db90d193489f1ddfb299', 
       abi: abi.hfVaultContract,
       strategyAddress: '0x89541e3b8e8b73c108744909ea11d506b4a8e6c7',
