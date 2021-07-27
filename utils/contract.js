@@ -39,7 +39,7 @@ module.exports.getContract = async (abi, address, network) => {
             case constant.POLYGON: 
                 return this.getPolygonContract(abi, address);
             default:
-                break;
+                return this.getEthereumContract(abi, address);
         }
     } catch (err) {
         console.log(err);

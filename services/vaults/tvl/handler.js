@@ -101,8 +101,9 @@ const getTVL = async (vault) => {
     strategyAddress
   } = vault;
   let tvl;
+
   if (vault.contractType === 'citadel' || vault.contractType === 'elon' || vault.contractType === 'cuban') {
-    const contract = await getTokenContract(vault);
+    const contract = await getContract(vault);
     const usdPool = await contract.methods.getAllPoolInUSD().call();
     tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
   } else if(vault.contractType === 'daoFaang'){
@@ -141,8 +142,8 @@ const getVipTokenTVL = async (vipTokenVault, tokenVault) => {
   const { tokenId } = tokenVault;
   let tvl;
   
-  const vipTokenContract = await getTokenContract(vipTokenVault);
-  const tokenContract = await getTokenContract(tokenVault);
+  const vipTokenContract = await getContract(vipTokenVault);
+  const tokenContract = await getContract(tokenVault);
 
   const vipTotalSupply = await getTotalSupply(vipTokenContract);
   const tokenBalOfVipToken = await getBalance(tokenContract, vipTokenContract._address);
