@@ -496,6 +496,29 @@ const resultMapping = (apy) => {
   return apy;
 };
 
+module.exports.findAllHistoricalAPY = async(startTime, network) => {
+  try {
+    const results = {};
+    const contracts = contractHelper.getContractsFromDomain();
+
+    for(const symbol of Object.keys(contracts.farmer)) {
+      const vault = contracts.farmer[symbol];
+    
+      if(network !== "" && vault.network === network) {
+        const collectionName = symbol + "_historical-apy";
+        console.log(`Reading collection in handleAllHistoricalAPY(): ${collectionName}`);
+        const historicalApys = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), collectionName);
+        
+        results[symbol] =  historicalApys.map(resultMapping);
+      }
+    }
+    return results;
+  } catch (err) {
+    console.error("Error in findAllHistoricalAPY(): ", err);
+  }
+}
+
+// Cronjob
 module.exports.saveHandler = async () => {
   try {
     const oneDayAgo = moment().subtract(1, "days").valueOf();
@@ -539,6 +562,7 @@ module.exports.saveHandler = async () => {
   }
 }
 
+// API Handler
 module.exports.handleAllHistoricalAPY = async(req, res) => {
   if (req.params.days === null || req.params.days === "") {
     res.status(200).json({
@@ -554,24 +578,10 @@ module.exports.handleAllHistoricalAPY = async(req, res) => {
   }
 
   const startTime = getStartTime(req.params.days);
-
   const network = req.params.network;
-  let contracts = contractHelper.getContractsFromDomain();
-
+ 
   if (startTime !== -1) {
-    const results = {};
-
-    for(const symbol of Object.keys(contracts.farmer)) {
-      const vault = contracts.farmer[symbol];
-    
-      if(network !== "" && vault.network === network) {
-        const collectionName = symbol + "_historical-apy";
-        console.log(`Reading collection in handleAllHistoricalAPY(): ${collectionName}`);
-        const historicalApys = await historicalDb.findWithTimePeriods(startTime.unix(), new Date().getTime(), collectionName);
-        
-        results[symbol] =  historicalApys.map(resultMapping);
-      }
-    }
+    const results = await this.findAllHistoricalAPY(startTime.unix(), network);
     
     res.status(200).json({
       message: '',
@@ -586,6 +596,7 @@ module.exports.handleAllHistoricalAPY = async(req, res) => {
 
 }
 
+// API Handler
 module.exports.handleHistoricialAPY = async (req, res) => {
   if (req.params.days == null || req.params.days == '') {
     res.status(200).json({
