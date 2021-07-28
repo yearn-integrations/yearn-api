@@ -56,23 +56,17 @@ async function init() {
   app.use(bodyParser.json());
 
   app.get("/vaults/apy", (req, res) => vaultsApy.handler(res));
-  app.get("/vaults/:network/all/:days", (req,res) => allFarmers.handler(req, res));
-  app.get("/user/:userAddress/vaults/statistics", (req, res) =>
-    userStatistics.handler(req, res)
-  );
-  app.get("/user/:userAddress/vaults/transactions", (req, res) =>
-    userTransactions.handler(req, res)
-  );
+  app.get("/vaults/:network/all/:days", (req, res) => allFarmers.handler(req, res));
   app.get("/vaults/price/:farmer/:days", (req, res) =>
     vaultsPrice.handleHistoricialPrice(req, res)
   );
-  app.get("/vaults/price/all/:network/:days", (req, res) => {
+  app.get("/vaults/price/:network/all/:days", (req, res) => {
     vaultsPrice.handleAllHistoricialPrice(req, res)
   });
   app.get("/vaults/historical-apy/:contractAddress/:days", (req, res) =>
     vaultHistoricalAPYSave.handleHistoricialAPY(req, res)
   );
-  app.get("/vaults/historical-apy/all/:network/:days", (req, res) => {
+  app.get("/vaults/historical-apy/:network/all/:days", (req, res) => {
     vaultHistoricalAPYSave.handleAllHistoricalAPY(req, res)
   });
   app.get("/vaults/tvl/total", (req, res) => vaultsTvl.totalHandle(req, res));
@@ -80,6 +74,12 @@ async function init() {
   app.get("/vaults/tvl/find/all", (req, res) => vaultsTvl.getAllTVLHandler(req, res));
   app.get("/vaults/category", (req, res) =>
     vaultCategory.getVaultCategory(req, res)
+  );
+  app.get("/user/:userAddress/vaults/statistics", (req, res) =>
+    userStatistics.handler(req, res)
+  );
+  app.get("/user/:userAddress/vaults/transactions", (req, res) =>
+    userTransactions.handler(req, res)
   );
   app.get("/staking/get-vip-tokens", (req, res) =>
     stakeVIP.getVipDVGToken(req, res)
@@ -112,7 +112,7 @@ async function init() {
   app.get("/reimbursement-addresses/dvg/:address", (req, res) =>
     reimbursementAddresses.handler(req, res)
   );
-  
+
   app.get("/vaults/pnl/:farmer/:days", (req, res) =>
     vaultPerformance.pnlHandle(req, res)
   );
@@ -124,7 +124,7 @@ async function init() {
     stakePool.snapshotEmergency(req, res)
   );
 
-  app.get('/user/reimburse-address/:address', (req, res) => 
+  app.get('/user/reimburse-address/:address', (req, res) =>
     reimburse.getReimburseAddress(req, res)
   );
 
