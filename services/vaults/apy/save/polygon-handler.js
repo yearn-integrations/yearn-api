@@ -19,12 +19,12 @@ let polygonBlockNumber = {
 
 const getApyForVault = async (vault) => {
     const { lastMeasurement: inceptionBlockNumber } = vault;
+    
+    const contracts = await contractHelper.getContractsFromDomain();
 
     // Money Printer vault
     if(vault.isMoneyPrinter) {
-        const contractInfo = (process.env.PRODUCTION != '') 
-            ? mainContracts.farmer['daoMPT'] 
-            : testContracts.farmer['daoMPT'];
+        const contractInfo = contracts.farmer["daoMPT"];
         const contract = await contractHelper.getPolygonContract(contractInfo.abi, contractInfo.address);
 
         let pricePerFullShareCurrent = await getMoneyPrinterPricePerFullShare(contract, polygonBlockNumber.current, inceptionBlockNumber);
