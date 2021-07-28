@@ -1,9 +1,12 @@
 const { findAllTVL } = require("../tvl/handler");
 const { findAllHistoricalAPY } = require("../apy/save/historical-handle");
 const { getVaultsApy: findVaultsApy } = require("../apy/handler");
+const { findAllPool } = require("../../staking/handler");
+const { findAllVaultCategory: findAllVaults } = require("../category/handler");
 const constant = require("../../../utils/constant");
 const contractHelper = require("../../../utils/contract");
 const moment = require("moment");
+const { zipObjectDeep } = require("lodash");
 
 let contracts;
 
@@ -26,28 +29,46 @@ const getStartTime = (days) => {
 
 const getVaultApy = (apys, vaultKey) => {
     const vaultApy = apys.find(a => a.vaultSymbol === vaultKey);
-    console.log(`Vault Key ${vaultKey}`);
-    console.log(vaultApy);
     return vaultApy ? vaultApy : null;
+}
+
+const getVaultDAOmineAPY = (pools, vaultAddress) => {
+    const pool = pools.find(p => p.status === 'A' && p.contract_address.toLowerCase() === vaultAddress.toLowerCase());
+    return pool ? pool.apr : null;
+}
+
+const getVaultInfo = (vaultContracts, vaultAddress, vaultObject) => {
+    const vault = vaultContracts.find(v => v.contract_address.toLowerCase() === vaultAddress.toLowerCase());
+    vaultObject["deposit"] = (!vault) ? true : vault.deposit;
+    vaultObject["depositMessage"] = (!vault) ? "" : vault.depositMessage;
+    vaultObject["withdraw"] = (!vault) ? true : vault.withdraw;
+    vaultObject["withdrawMessage"] = (!vault) ? "" : vault.withdrawMessage;
+    return vaultObject;
 }
 
 const proccessingVault = async (obj) => {
    const { vaults, network, startTime } = obj;
 
-   const [tvls, historicalAPYS, apys] = await Promise.all([
+   const [tvls, historicalAPYS, apys, daominePools, vaultContracts] = await Promise.all([
         findAllTVL(contracts),
         findAllHistoricalAPY(startTime.unix(), network),
         findVaultsApy(),
+        findAllPool(),
+        findAllVaults()
    ]);
 
    const results = {};
 
    vaults.map(key  =>  {
-       const obj = {};
-       obj["tvl"] = tvls[key] ? tvls[key] : null;
-       // obj["historicalAPY"] = historicalAPYS[key] ? historicalAPYS[key] : null;
-       obj["apy"] = getVaultApy(apys, key);
+       const vaultAddress = contracts.farmer[key].address;
 
+       let obj = {};
+       obj = getVaultInfo(vaultContracts, vaultAddress, obj);
+       obj["apy"] = getVaultApy(apys, key);
+       obj["daomineApy"] = getVaultDAOmineAPY(daominePools , vaultAddress);
+       obj["tvl"] = tvls[key] ? tvls[key] : null;
+       obj["historicalAPY"] = historicalAPYS[key] ? historicalAPYS[key] : null;
+      
        results[key] = obj;
    });
 
