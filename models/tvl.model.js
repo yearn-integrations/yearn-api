@@ -10,15 +10,6 @@ const findAll = async () => {
 // yUSDT, yUSDC, yDAI, yTUSD, cUSDT, cUSDC, yDAI
 const getTVL = async (collection, params) => {
   const db = mongo.getDB();
-  console.log(
-    await db
-      .collection(collection)
-      .find()
-      .project({ _id: 0 })
-      .sort({ $natural: -1 })
-      .limit(params.limit)
-      .toArray()
-  );
   return await db
     .collection(collection)
     .find()
