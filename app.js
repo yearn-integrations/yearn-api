@@ -16,6 +16,7 @@ const reimbursementAddresses = require("./services/reimbursement/handler")
 const stakeDaoStakes = require("./services/staking/dao-stake/handler");
 const specialEvent = require("./services/user/special-event/handler");
 const reimburse = require("./services/user/reimburse/handler");
+const allFarmers = require("./services/vaults/all/handler");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 8080;
@@ -55,6 +56,7 @@ async function init() {
   app.use(bodyParser.json());
 
   app.get("/vaults/apy", (req, res) => vaultsApy.handler(res));
+  app.get("/vaults/:network/all/:days", (req,res) => allFarmers.handler(req, res));
   app.get("/user/:userAddress/vaults/statistics", (req, res) =>
     userStatistics.handler(req, res)
   );

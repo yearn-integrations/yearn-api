@@ -230,6 +230,16 @@ const saveTVL = async (name, tvl) => {
     .catch((err) => console.log("err", err));
 };
 
+const findAllTVL = async (vaults) => {
+  let finalResult = {};
+  for (vault in vaults.farmer) {
+    const collection = vault + "_tvl";
+    const dbResult = await db.getTVL(collection, { limit: 1 });
+    finalResult[vault] = (dbResult && dbResult.length > 0) ? dbResult[0] : null;
+  }
+  return finalResult;
+}
+
 // Save All TVLs to database
 module.exports.saveAllTVLhandler = async () => {
   const tvls = await getAllTVL();
@@ -321,12 +331,7 @@ module.exports.getAllTVLHandler = async(req, res) => {
       ? mainContracts
       : testContracts;
     
-    let finalResult = {};
-    for (vault in vaults.farmer) {
-      const collection = vault + "_tvl";
-      const dbResult = await db.getTVL(collection, { limit: 1 });
-      finalResult[vault] = (dbResult && dbResult.length > 0) ? dbResult[0] : null;
-    }
+    const finalResult = await findAllTVL(vaults);
     
     res.status(200).json({
       message: `Successful response`,
@@ -348,3 +353,5 @@ module.exports.totalHandle = async (req, res) => {
   });
   return;
 }
+
+module.exports.findAllTVL = findAllTVL;
