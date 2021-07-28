@@ -506,9 +506,7 @@ module.exports.findAllHistoricalAPY = async(startTime, network) => {
     
       if(network !== "" && vault.network === network) {
         const collectionName = symbol + "_historical-apy";
-        console.log(`Reading collection in handleAllHistoricalAPY(): ${collectionName}`);
         const historicalApys = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), collectionName);
-        
         results[symbol] =  historicalApys.map(resultMapping);
       }
     }
