@@ -6,15 +6,9 @@ const CoinGeckoClient = new CoinGecko();
 
 const contractHelper = require('../../../utils/contract');
 
-const {
-  testContracts,
-  mainContracts,
-} = require("../../../config/serverless/domain");
-
 const getDecimals = async (contract) => {
   try {
-    let decimals = await contract.methods.decimals().call();
-    return decimals;
+    return await contract.methods.decimals().call();
   } catch (err) {
     // Catch error
     console.log(err);
@@ -26,8 +20,7 @@ const getDecimals = async (contract) => {
  */
 const getPoolAmount = async (contract) => {
   try {
-    let poolAmount = await contract.methods.pool().call();
-    return poolAmount;
+    return await contract.methods.pool().call();
   } catch (err) {
     // Catch error
     console.log(err);
@@ -36,8 +29,7 @@ const getPoolAmount = async (contract) => {
 
 const getBalance = async (contract, address) => {
   try {
-    let balanceOf = await contract.methods.balanceOf(address).call();
-    return balanceOf;
+    return await contract.methods.balanceOf(address).call();
   } catch (err) {
     // Catch error
     console.log(err);
@@ -46,8 +38,7 @@ const getBalance = async (contract, address) => {
 
 const getTotalSupply = async (contract) => {
   try {
-    let totalSupply = await contract.methods.totalSupply().call();
-    return totalSupply;
+    return await contract.methods.totalSupply().call();
   } catch (err) {
     // Catch error
     console.log(err);
@@ -57,8 +48,7 @@ const getTotalSupply = async (contract) => {
 const getContract = async (vault) => {
   try {
     const { abi, address, network } = vault;
-    const contract = await contractHelper.getContract(abi, address, network);
-    return contract
+    return await contractHelper.getContract(abi, address, network);
   } catch(err) {
     console.log("getContract", err);
   }
@@ -136,7 +126,6 @@ const getTVL = async (vault) => {
   return tvl;
 };
 
-
 const getVipTokenTVL = async (vipTokenVault, tokenVault) => {
   const { decimals } = vipTokenVault;
   const { tokenId } = tokenVault;
@@ -160,12 +149,9 @@ const getVipTokenTVL = async (vipTokenVault, tokenVault) => {
 
 // Get and Save all TVL of all Vaults
 const getAllTVL = async () => {
-  let vaults =
-    process.env.PRODUCTION != null && process.env.PRODUCTION != ""
-      ? mainContracts
-      : testContracts;
-
+  let vaults = contractHelper.getContractsFromDomain();
   let tvls = Array();
+
   for (vault in vaults.farmer) {
     try {
       let _vault = vaults.farmer[vault];
@@ -245,6 +231,7 @@ module.exports.saveAllTVLhandler = async () => {
   const tvls = await getAllTVL();
   const totalTvl = await getTotalTVL(tvls);
   await saveTotalTVL(totalTvl);
+  console.log(`[TVL] saveHistoricalTVL() completed`);
 };
 
 /* HANDLERS */
@@ -326,19 +313,16 @@ module.exports.tvlHandle = async (req, res) => {
 };
 
 module.exports.getAllTVLHandler = async(req, res) => {
-  let vaults =
-    process.env.PRODUCTION != null && process.env.PRODUCTION != ""
-      ? mainContracts
-      : testContracts;
-    
-    const finalResult = await findAllTVL(vaults);
-    
-    res.status(200).json({
-      message: `Successful response`,
-      body: finalResult,
-    });
+  let vaults = contractHelper.getContractsFromDomain();
 
-    return;
+  const finalResult = await findAllTVL(vaults);
+
+  res.status(200).json({
+    message: `Successful response`,
+    body: finalResult,
+  });
+
+  return;
 }
 
 module.exports.totalHandle = async (req, res) => {
