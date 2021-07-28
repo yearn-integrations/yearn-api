@@ -558,6 +558,7 @@ module.exports.saveHandler = async () => {
       console.error(err);
     }
   }
+  console.log(`[saveHistoricalAPY()] completed. ${new Date().getTime()}`);
 }
 
 // API Handler

@@ -97,7 +97,6 @@ const getPriceFromChainLink = async (block) => {
     const contracts = contractHelper.getContractsFromDomain();
     const contract = await contractHelper.getEthereumContract(contracts.chainLink.USDT_ETH.abi, contracts.chainLink.USDT_ETH.address);
     price = await contract.methods.latestAnswer().call(undefined, block);
-    console.log(`Price feed price ${price}`);
   } catch (ex) { }
   await delay(delayTime);
   return price;
@@ -120,7 +119,6 @@ const getCitadelPricePerFullShare = async (contract, block, inceptionBlockNbr) =
     const pool = await contract.methods.getAllPoolInETH(price).call(undefined, block);
     const totalSupply = await contract.methods.totalSupply().call(undefined, block);
     pricePerFullShare = pool / totalSupply;
-    console.log(`Ppfs ${pricePerFullShare}, pool ${pool}, block${block}`);
   } catch (ex) { }
 
   await delay(delayTime);
@@ -616,6 +614,8 @@ module.exports.handler = async () => {
       }
       await delay(delayTime);
     }
+
+    console.log(`[saveVaultAPY()] completed. ${new Date().getTime()}`);
   } catch (err) {
     console.error(err);
   }
