@@ -3,6 +3,7 @@ const { findAllHistoricalAPY } = require("../apy/save/historical-handle");
 const { getVaultsApy: findVaultsApy } = require("../apy/handler");
 const { findAllPool } = require("../../staking/handler");
 const { findAllVaultCategory: findAllVaults } = require("../category/handler");
+const { getVaultsStatistics } = require("../../user/vaults/statistics/handler");
 const constant = require("../../../utils/constant");
 const contractHelper = require("../../../utils/contract");
 const moment = require("moment");
@@ -37,6 +38,11 @@ const getVaultDAOmineAPY = (pools, vaultAddress) => {
     return pool ? pool.apr : null;
 }
 
+const getStatisticsInfo = (statistics, vaultAddress) => {
+    const vaultStatistic = statistics.find(s => s.contractAddress.toLowerCase() === vaultAddress.toLowerCase());
+    return vaultStatistic;
+}
+
 const getVaultInfo = (vaultContracts, vaultAddress, vaultObject) => {
     const vault = vaultContracts.find(v => v.contract_address.toLowerCase() === vaultAddress.toLowerCase());
     vaultObject["deposit"] = (!vault) ? true : vault.deposit;
@@ -47,14 +53,15 @@ const getVaultInfo = (vaultContracts, vaultAddress, vaultObject) => {
 }
 
 const proccessingVault = async (obj) => {
-   const { vaults, network, startTime } = obj;
+   const { vaults, network, startTime, userAddress } = obj;
 
-   const [tvls, historicalAPYS, apys, daominePools, vaultContracts] = await Promise.all([
+   const [tvls, historicalAPYS, apys, daominePools, vaultContracts, statistics] = await Promise.all([
         findAllTVL(contracts),
         findAllHistoricalAPY(startTime.unix(), network),
         findVaultsApy(),
         findAllPool(),
-        findAllVaults()
+        findAllVaults(),
+        getVaultsStatistics(userAddress, network),
    ]);
 
    const results = {};
@@ -65,6 +72,7 @@ const proccessingVault = async (obj) => {
        let obj = {};
        obj = getVaultInfo(vaultContracts, vaultAddress, obj);
        obj["apy"] = getVaultApy(apys, key);
+       obj["statistics"] = getStatisticsInfo(statistics, vaultAddress);
        obj["daomineApy"] = getVaultDAOmineAPY(daominePools , vaultAddress);
        obj["tvl"] = tvls[key] ? tvls[key] : null;
        // obj["historicalAPY"] = historicalAPYS[key] ? historicalAPYS[key] : null;
@@ -91,6 +99,13 @@ module.exports.handler = async (req, res) => {
             });
             return;
         } 
+        if (req.params.user === null || req.params.user === "") {
+            res.status(200).json({
+                message: 'Missing user.',
+                body: null
+            });
+            return;
+        }
 
         const startTime = getStartTime(req.params.days);
         if(startTime === -1) {
@@ -116,7 +131,11 @@ module.exports.handler = async (req, res) => {
                 vaults.push(k);
             }
         })
-        const result = await proccessingVault({vaults, network: req.params.network, startTime});
+        const result = await proccessingVault({
+            vaults, 
+            network: req.params.network, 
+            userAddress: req.params.user,
+            startTime});
 
         res.status(200).json({
             message: "Successful",

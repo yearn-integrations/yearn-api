@@ -189,6 +189,8 @@ const getVaultsStatistics = async (userAddress, network) => {
   // Get all user transactions
   const transactions = await getTransactionsByNetwork(userAddress, network);
 
+  contracts = contractHelper.getContractsFromDomain();
+  
   const vaultAddressesForUser = transactions.map(t => t.vaultAddress);
   const getVaultStatisticsWithTransactions = async (vault) => {
     return await getVaultStatistics(vault, transactions, userAddress);
@@ -219,7 +221,6 @@ const handler = async (req, res) => {
     return;
   }
   
-  contracts = contractHelper.getContractsFromDomain();
   const vaultsStatistics = await getVaultsStatistics(userAddress, network);
   res.status(200).json({
     message: '',
