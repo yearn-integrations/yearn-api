@@ -26,17 +26,13 @@ const {
 } = require("../transactions/handler");
 const _ = require("lodash");
 const contractHelper = require("../../../../utils/contract");
+const chainLinkHelper = require("../../../../utils/chainlinkHelper");
 const constant = require("../../../../utils/constant");
 
-const getVaultContract = (vaultAddress) => {
-  const abi = getMinimalVaultABI();
-  const contract = new web3.eth.Contract(abi, vaultAddress);
-  return contract;
-};
+let contracts;
 
-const getContract = (abi, contractAddress) => {
-  const contract = new web3.eth.Contract(abi, contractAddress);
-  return contract;
+const getContract = async(abi, contractAddress) => {
+  return await contractHelper.getContract(abi, contractAddress);
 };
 
 const getDepositedShares = async (vaultContract, userAddress) => {
@@ -84,23 +80,11 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   const transactionsForVault = _.find(transactions, findVault);
  
   // Get User Deposit Amount
-  let strategyContract;
-  let vaultContract;
-
-  const contracts = (process.env.PRODUCTION != null && process.env.PRODUCTION != '') 
-    ? mainContracts
-    : testContracts;
-
   const vault = Object.values(contracts.farmer).find(contract => contract.address.toLowerCase() === contractAddress.toLowerCase());
   const type = vault.contractType;
 
-  if(vault.network === constant.ETHEREUM) {
-    vaultContract = await contractHelper.getEthereumContract(vault.abi, vault.address);
-    strategyContract = await contractHelper.getEthereumContract(vault.strategyABI, vault.strategyAddress);
-  } else if (vault.network === constant.POLYGON) {
-    vaultContract = await contractHelper.getPolygonContract(vault.abi, vault.address);
-    strategyContract = await contractHelper.getPolygonContract(vault.strategyABI, vault.strategyAddress);
-  }
+  const vaultContract = await contractHelper.getContract(vault.abi, vault.address, vault.network);
+  const strategyContract = await contractHelper.getContract(vault.strategyABI, vault.strategyAddress, vault.network);
 
   const depositedShares = await getDepositedShares(vaultContract, userAddress);
 
@@ -122,11 +106,7 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
     depositedAmount = new BigNumber(depositedAmount);
   } else if (type === 'daoFaang') {
-    let usdtToUsdPriceFeedContract;
-    const contractInfo = (process.env.PRODUCTION != '') ? mainContracts.chainLink.USDT_USD : testContracts.chainLink.USDT_USD;
-    usdtToUsdPriceFeedContract = new archiveNodeWeb3.eth.Contract(contractInfo.abi, contractInfo.address);
-
-    const usdtToUsdPrice = await getPriceFromChainLink(usdtToUsdPriceFeedContract);
+    const usdtToUsdPrice = await chainLinkHelper.getEthereumUSDTUSDPrice();
     const pool = await vaultContract.methods.getTotalValueInPool().call(); 
     const totalSupply = await vaultContract.methods.totalSupply().call(); 
     const poolInUSD = (pool * usdtToUsdPrice) / (10 ** 20); // The reason to divide 20: pool in 18 , price feed in 8 , ( 18 + 8 ) / 20 =  6 decimals
@@ -134,14 +114,9 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     depositedAmount = (depositedShares * poolInUSD) / totalSupply;
     depositedAmount = new BigNumber(depositedAmount);
   } else if (type === 'moneyPrinter') {
-    let usdtToUsdPriceFeedContract;
-    const contractInfo = (process.env.PRODUCTION != '') ? mainContracts.polygonChainLink.USDT_USD : testContracts.polygonChainLink.USDT_USD;
-    usdtToUsdPriceFeedContract = await contractHelper.getPolygonContract(contractInfo.abi, contractInfo.address);
-
-    const usdtToUsdPrice = await getPriceFromChainLink(usdtToUsdPriceFeedContract);
+    const usdtToUsdPrice = await chainLinkHelper.getPolygonUSDTUSDPrice();
     const pool = await vaultContract.methods.getValueInPool().call(); 
     const totalSupply = await vaultContract.methods.totalSupply().call();
-
     const poolInUSD = (pool * usdtToUsdPrice) / (10 ** 20); // The reason to divide 20: pool in 18 , price feed in 8 , ( 18 + 8 ) / 20 =  6 decimals
   
     depositedAmount = (depositedShares * poolInUSD) / totalSupply;
@@ -190,7 +165,15 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   let totalTransferredInUSD = 0;
   let totalTransferredOutInUSD = 0;
 
-  if(type === "citadel" || type === "elon" || type === "cuban" || type === "daoFaang" || type === "moneyPrinter") {
+  const usdVaultsCategory = [
+    "citadel",
+    "elon",
+    "cuban",
+    "daoFaang",
+    "moneyPrinter"
+  ];
+
+  if(usdVaultsCategory.includes(type)) {
     totalDepositsInUSD = getSumForUSD(deposits);
     totalWithdrawalsInUSD = getSumForUSD(withdrawals);
     totalTransferredInUSD = getSumForUSD(transfersIn);
@@ -228,13 +211,23 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   return statistics;
 };
 
-const getVaultsStatistics = async (userAddress) => {
-  const vaultAddressesForUser = await getVaultAddressesForUser(userAddress);
-  const transactions = await getTransactions(userAddress);
+const getVaultsStatistics = async (userAddress, network) => {
+  // Get all user transactions
+  let transactions = [];
+  if(network === "all") {
+    const ethereumTransactions = await getTransactions(userAddress, constant.ETHEREUM);
+    transactions = transactions.concat(ethereumTransactions);
+    const polygonTransactions = await getTransactions(userAddress, constant.POLYGON);
+    transactions = transactions.concat(polygonTransactions);
+  } else {
+    const networkTransactions = await getTransactions(userAddress, network);
+    transactions = transactions.concat(networkTransactions);
+  }
+ 
+  const vaultAddressesForUser = transactions.map(t => t.vaultAddress);
   const getVaultStatisticsWithTransactions = async (vault) => {
     return await getVaultStatistics(vault, transactions, userAddress);
   }
-    
   const vaultsStatistics = await Promise.all(
     vaultAddressesForUser.map(getVaultStatisticsWithTransactions)
   );
@@ -243,18 +236,31 @@ const getVaultsStatistics = async (userAddress) => {
 
 const handler = async (req, res) => {
   const userAddress = req.params.userAddress || '';
-  if (userAddress === '') {
+  const network = req.params.network || '';
+
+  if (userAddress === '' || network === "") {
     res.status(200).json({
-      message: 'User Address is empty.',
+      message: 'User Address / Network is empty.',
       body: null
     });
-  } else {
-    const vaultsStatistics = await getVaultsStatistics(req.params.userAddress);
-    res.status(200).json({
-      message: '',
-      body: vaultsStatistics
-    });
+    return;
   }
+  
+  const supportedNetwork = ["all", constant.ETHEREUM, constant.POLYGON];
+  if(!supportedNetwork.includes(network)) {
+    res.status(200).json({
+      message: `Please pass either "all", "${constant.ETHEREUM}" or "${constant.POLYGON}"`,
+      body: null
+    });
+    return;
+  }
+  
+  contracts = contractHelper.getContractsFromDomain();
+  const vaultsStatistics = await getVaultsStatistics(userAddress, network);
+  res.status(200).json({
+    message: '',
+    body: vaultsStatistics
+  });
 };
 
 function getMinimalVaultABI() {

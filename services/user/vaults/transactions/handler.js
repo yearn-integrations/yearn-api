@@ -11,6 +11,7 @@ const {
   testContracts,
   mainContracts
 } = require('../../../../config/serverless/domain');
+const contractHelper = require("../../../../utils/contract");
 
 module.exports.handler = async (req, res) => {
   const userAddress = req.params.userAddress || '';
@@ -184,29 +185,9 @@ const getVaultAddressesForUser = async (userAddress) => {
   return vaultAddressesForUser;
 };
 
-const getTransactions = async (userAddress) => {
-  let deposits = [];
-  let withdrawals = [];
-  let transfersIn = [];
-  let transfersOut = [];
-
-  const ethereumTransactions = await getGraphTransactions(userAddress, constant.ETHEREUM);
-  if(ethereumTransactions) {
-    deposits = deposits.concat(ethereumTransactions.deposits);
-    withdrawals = withdrawals.concat(ethereumTransactions.withdrawals);
-    transfersIn = transfersIn.concat(ethereumTransactions.transfersIn);
-    transfersOut = transfersOut.concat(ethereumTransactions.transfersOut);
-  }
-
-  const polygonTransactions = await getGraphTransactions(userAddress, constant.POLYGON);
-  if(polygonTransactions) {
-    deposits = deposits.concat(polygonTransactions.deposits);
-    withdrawals = withdrawals.concat(polygonTransactions.withdrawals);
-    transfersIn = transfersIn.concat(polygonTransactions.transfersIn);
-    transfersOut = transfersOut.concat(polygonTransactions.transfersOut);
-  }
-
-  // let { deposits, withdrawals, transfersIn, transfersOut } = graphTransactions;
+const getTransactions = async (userAddress, network) => {
+  const graphTransactions = await getGraphTransactions(userAddress, network);
+  let { deposits, withdrawals, transfersIn, transfersOut } = graphTransactions;
   // const injectAmountIntoTransfer = (transfer) => {
   //   const amount = (transfer.balance * transfer.shares) / transfer.totalSupply;
   //   const newTransfer = {
@@ -219,19 +200,10 @@ const getTransactions = async (userAddress) => {
   // transfersOut = transfersOut.map(injectAmountIntoTransfer);
 
   // Get all the vaults the address has interacted with.
-  let vaultAddresses = [];
-  const ethereumAddresses = getVaultAddressesForUserWithGraphTransactions(
-    userAddress,
-    ethereumTransactions
-  );
-  vaultAddresses = vaultAddresses.concat(ethereumAddresses);
-  const polygonAddresses = getVaultAddressesForUserWithGraphTransactions(
-    userAddress,
-    polygonTransactions
-  )
-  vaultAddresses = vaultAddresses.concat(polygonAddresses);
- 
-  const farmers = process.env.PRODUCTION == '' ? Object.values(testContracts.farmer) : Object.values(mainContracts.farmer);
+  let vaultAddresses = getVaultAddressesForUserWithGraphTransactions(userAddress, graphTransactions);
+
+  const contracts = contractHelper.getContractsFromDomain();
+  const farmers = Object.values(contracts.farmer);
 
   const removeVaultAddressField = (deposit) => _.omit(deposit, "vaultAddress");
 
