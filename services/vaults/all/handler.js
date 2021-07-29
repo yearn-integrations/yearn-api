@@ -67,7 +67,7 @@ const proccessingVault = async (obj) => {
        obj["apy"] = getVaultApy(apys, key);
        obj["daomineApy"] = getVaultDAOmineAPY(daominePools , vaultAddress);
        obj["tvl"] = tvls[key] ? tvls[key] : null;
-       obj["historicalAPY"] = historicalAPYS[key] ? historicalAPYS[key] : null;
+       // obj["historicalAPY"] = historicalAPYS[key] ? historicalAPYS[key] : null;
       
        results[key] = obj;
    });
