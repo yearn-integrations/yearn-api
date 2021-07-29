@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const compression = require('compression');
 const db = require("./config/db");
 const vaultsApy = require("./services/vaults/apy/handler");
 const userStatistics = require("./services/user/vaults/statistics/handler");
@@ -54,6 +55,7 @@ async function init() {
     })
   );
   app.use(bodyParser.json());
+  app.use(compression())
 
   app.get("/vaults/apy", (req, res) => vaultsApy.handler(res));
   app.get("/vaults/:network/all/:days", (req, res) => allFarmers.handler(req, res));
@@ -75,7 +77,7 @@ async function init() {
   app.get("/vaults/category", (req, res) =>
     vaultCategory.getVaultCategory(req, res)
   );
-  app.get("/user/:userAddress/vaults/statistics", (req, res) =>
+  app.get("/user/:userAddress/vaults/statistics/:network", (req, res) =>
     userStatistics.handler(req, res)
   );
   app.get("/user/:userAddress/vaults/transactions", (req, res) =>
