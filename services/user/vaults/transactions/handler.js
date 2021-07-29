@@ -7,45 +7,71 @@ const subgraphUrl = process.env.SUBGRAPH_ENDPOINT;
 const polygonSubgraphUrl = process.env.POLYGON_SUBGRAPH_ENDPOINT;
 const constant = require("../../../../utils/constant");
 const _ = require("lodash");
-const {
-  testContracts,
-  mainContracts
-} = require('../../../../config/serverless/domain');
 const contractHelper = require("../../../../utils/contract");
 
 module.exports.handler = async (req, res) => {
   const userAddress = req.params.userAddress || '';
-  if (userAddress === '') {
+  const network = req.params.network || '';
+  
+  if (userAddress === '' || network === '') {
     res.status(200).json({
       message: 'User Address is empty.',
       body: null
     });
-  } else {
-    const transactions = await getTransactions(userAddress);
-    const contentMapping = (data) => {
-      data.contractAddress = data.vaultAddress;
-      delete data.vaultAddress;
+  } 
 
-      const transactionMapping = (tx) => {
-        delete tx.transaction;
-        tx.timestamp = Number(tx.timestamp);
-        return tx;
-      }
+  if (!isSupportedNetwork(network)) {
+    res.status(200).json({
+      message: `Please pass either "all", "${constant.ETHEREUM}" or "${constant.POLYGON}"`,
+      body: null
+    });
+    return;
+  }
 
-      data.deposits.map(transactionMapping);
-      data.withdrawals.map(transactionMapping);
-      data.transfersIn.map(transactionMapping);
-      data.transfersOut.map(transactionMapping);
-      return data;
+  const transactions = await getTransactions(userAddress, network);
+  const contentMapping = (data) => {
+    data.contractAddress = data.vaultAddress;
+    delete data.vaultAddress;
+
+    const transactionMapping = (tx) => {
+      delete tx.transaction;
+      tx.timestamp = Number(tx.timestamp);
+      return tx;
     }
 
-    transactions.map(contentMapping);
-    res.status(200).json({
-      message: '',
-      body: transactions
-    });
+    data.deposits.map(transactionMapping);
+    data.withdrawals.map(transactionMapping);
+    data.transfersIn.map(transactionMapping);
+    data.transfersOut.map(transactionMapping);
+    return data;
   }
+
+  transactions.map(contentMapping);
+  res.status(200).json({
+    message: '',
+    body: transactions
+  });
 };
+
+const getTransactionsByNetwork = async(userAddress, network) => {
+  let transactions = [];
+  if(network === "all") {
+    const ethereumTransactions = await getTransactions(userAddress, constant.ETHEREUM);
+    transactions = transactions.concat(ethereumTransactions);
+    const polygonTransactions = await getTransactions(userAddress, constant.POLYGON);
+    transactions = transactions.concat(polygonTransactions);
+  } else {
+    const networkTransactions = await getTransactions(userAddress, network);
+    transactions = transactions.concat(networkTransactions);
+  }
+
+  return transactions;
+}
+
+const isSupportedNetwork = (network) => {
+  const supportedNetwork = ["all", constant.ETHEREUM, constant.POLYGON];
+  return supportedNetwork.includes(network);
+}
 
 const getGraphTransactions = async (userAddress, network) => {
   const query = `
@@ -185,6 +211,17 @@ const getVaultAddressesForUser = async (userAddress) => {
   return vaultAddressesForUser;
 };
 
+const processingDepositWithdrawalData = (data) => {
+   _.omit(data, "vaultAddress"); // remove vault address field
+   return correctTransactionAddress(data);
+}
+
+const processingTransferData = (data) => {
+   let result;
+   result = stripUnneededTransferFields(data);
+   return correctTransactionAddress(result);
+}
+
 const getTransactions = async (userAddress, network) => {
   const graphTransactions = await getGraphTransactions(userAddress, network);
   let { deposits, withdrawals, transfersIn, transfersOut } = graphTransactions;
@@ -205,27 +242,25 @@ const getTransactions = async (userAddress, network) => {
   const contracts = contractHelper.getContractsFromDomain();
   const farmers = Object.values(contracts.farmer);
 
-  const removeVaultAddressField = (deposit) => _.omit(deposit, "vaultAddress");
-
   const getTransactionsByVaultAddress = (vaultAddress) => {
     const findItemByVaultAddress = (item) => item.vaultAddress === vaultAddress;
     const findVault = (vault) => vault.address.toLowerCase() === vaultAddress.toLowerCase();
 
     const depositsToVault = deposits
       .filter(findItemByVaultAddress)
-      .map(removeVaultAddressField);
+      .map(processingDepositWithdrawalData);
 
     const withdrawalsFromVault = withdrawals
       .filter(findItemByVaultAddress)
-      .map(removeVaultAddressField);
+      .map(processingDepositWithdrawalData);
 
     const transfersIntoVault = transfersIn
       .filter(findItemByVaultAddress)
-      .map(stripUnneededTransferFields);
+      .map(processingTransferData);
 
     const transfersOutOfVault = transfersOut
       .filter(findItemByVaultAddress)
-      .map(stripUnneededTransferFields);
+      .map(processingTransferData);
 
     const farmer = farmers.find(findVault);
 
@@ -233,10 +268,10 @@ const getTransactions = async (userAddress, network) => {
     const vaultTransactions = {
       vaultAddress: farmer == null ? "" : farmer.address,
       // vaultAddress: process.env.PRODUCTION != null && process.env.PRODUCTION != '' ? prodContract.prodYfUSDTContract : devContract.devYfUSDTContract,
-      deposits: depositsToVault.map(correctTransactionAddress),
-      withdrawals: withdrawalsFromVault.map(correctTransactionAddress),
-      transfersIn: transfersIntoVault.map(correctTransactionAddress),
-      transfersOut: transfersOutOfVault.map(correctTransactionAddress),
+      deposits: depositsToVault,
+      withdrawals: withdrawalsFromVault,
+      transfersIn: transfersIntoVault,
+      transfersOut: transfersOutOfVault,
     };
 
     return vaultTransactions;
@@ -266,3 +301,7 @@ function stripUnneededTransferFields(transfer) {
 module.exports.getTransactions = getTransactions;
 
 module.exports.getVaultAddressesForUser = getVaultAddressesForUser;
+
+module.exports.getTransactionsByNetwork = getTransactionsByNetwork;
+
+module.exports.isSupportedNetwork = isSupportedNetwork;

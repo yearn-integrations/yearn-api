@@ -1,28 +1,10 @@
 "use strict";
 
 require("dotenv").config();
-const fetch = require("node-fetch");
-const { pluck, uniq } = require("ramda/dist/ramda");
 const BigNumber = require("bignumber.js");
-const subgraphUrl = process.env.SUBGRAPH_ENDPOINT;
-const Web3 = require("web3");
-const web3 = new Web3(process.env.WEB3_ENDPOINT);
-const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
-const archiveNodeWeb3 = new Web3(archiveNodeUrl);
-const delay = require("delay");
-const earnABIContract = require('../../../../config/abi').earnABIContract;
-const vaultABIContract = require('../../../../config/abi').vaultABIContract;
-const yfUSDTABIContract = require('../../../../config/abi').yfUSDTABIContract;
 const {
-  devContract,
-  prodContract,
-  testContracts,
-  mainContracts
-} = require('../../../../config/serverless/domain');
-
-const {
-  getTransactions,
-  getVaultAddressesForUser,
+  getTransactionsByNetwork,
+  isSupportedNetwork
 } = require("../transactions/handler");
 const _ = require("lodash");
 const contractHelper = require("../../../../utils/contract");
@@ -62,14 +44,6 @@ const getTotalSupply = async (contract) => {
 };
 
 // Get USDT <-> USD Price
-const getPriceFromChainLink = async (contract) => {
-  let price = 0;
-  try {
-    price = await contract.methods.latestAnswer().call();
-  } catch (ex) { }
-  await delay(500);
-  return price;
-};
 
 const getVaultStatistics = async (contractAddress, transactions, userAddress) => {
   const findVault = (vault) => {
@@ -213,17 +187,8 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
 
 const getVaultsStatistics = async (userAddress, network) => {
   // Get all user transactions
-  let transactions = [];
-  if(network === "all") {
-    const ethereumTransactions = await getTransactions(userAddress, constant.ETHEREUM);
-    transactions = transactions.concat(ethereumTransactions);
-    const polygonTransactions = await getTransactions(userAddress, constant.POLYGON);
-    transactions = transactions.concat(polygonTransactions);
-  } else {
-    const networkTransactions = await getTransactions(userAddress, network);
-    transactions = transactions.concat(networkTransactions);
-  }
- 
+  const transactions = await getTransactionsByNetwork(userAddress, network);
+
   const vaultAddressesForUser = transactions.map(t => t.vaultAddress);
   const getVaultStatisticsWithTransactions = async (vault) => {
     return await getVaultStatistics(vault, transactions, userAddress);
@@ -246,10 +211,9 @@ const handler = async (req, res) => {
     return;
   }
   
-  const supportedNetwork = ["all", constant.ETHEREUM, constant.POLYGON];
-  if(!supportedNetwork.includes(network)) {
+  if(!isSupportedNetwork(network)) {
     res.status(200).json({
-      message: `Please pass either "all", "${constant.ETHEREUM}" or "${constant.POLYGON}"`,
+      message: `Please pass either 'all', '${constant.ETHEREUM}' or '${constant.POLYGON}'`,
       body: null
     });
     return;
@@ -263,26 +227,6 @@ const handler = async (req, res) => {
   });
 };
 
-function getMinimalVaultABI() {
-  return [
-    {
-      constant: true,
-      inputs: [{ type: "address", name: "arg0" }],
-      name: "balanceOf",
-      outputs: [{ type: "uint256", name: "out" }],
-      payable: false,
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "getPricePerFullShare",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      payable: false,
-      type: "function",
-    },
-  ];
-}
 
 module.exports = {
   getVaultsStatistics,

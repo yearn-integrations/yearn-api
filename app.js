@@ -77,10 +77,10 @@ async function init() {
   app.get("/vaults/category", (req, res) =>
     vaultCategory.getVaultCategory(req, res)
   );
-  app.get("/user/:userAddress/vaults/statistics/:network", (req, res) =>
+  app.get("/user/:userAddress/:network/vaults/statistics", (req, res) =>
     userStatistics.handler(req, res)
   );
-  app.get("/user/:userAddress/vaults/transactions", (req, res) =>
+  app.get("/user/:userAddress/:network/vaults/transactions", (req, res) =>
     userTransactions.handler(req, res)
   );
   app.get("/staking/get-vip-tokens", (req, res) =>
