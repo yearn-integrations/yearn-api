@@ -142,8 +142,8 @@ const getVipTokenTVL = async (vipTokenVault, tokenVault) => {
   const { tokenId } = tokenVault;
   let tvl;
   
-  const vipTokenContract = await getTokenContract(vipTokenVault);
-  const tokenContract = await getTokenContract(tokenVault);
+  const vipTokenContract = await getContract(vipTokenVault);
+  const tokenContract = await getContract(tokenVault);
 
   const vipTotalSupply = await getTotalSupply(vipTokenContract);
   const tokenBalOfVipToken = await getBalance(tokenContract, vipTokenContract._address);
