@@ -166,6 +166,7 @@ const saveVipApr = async () => {
 
 /** Store DAOVIP APR */
 const savePerformance = async () => {
+  console.log("[savePerformance]", new Date().getTime());
   await performanceSave.savePerformance();
   cron.schedule(
     "0 0 * * *",
