@@ -262,11 +262,11 @@ async function syncHistoricalPerformance() {
           basePrice = lpTokenPriceUSD;
           lpPriceInception = basePrice;
         }
-        if (btcPrice > 0 && btcBasePrice == 0) {
+        if (lpTokenPriceUSD > 0 && btcPrice > 0 && btcBasePrice == 0) {
           btcBasePrice = btcPrice;
           btcPriceInception = btcBasePrice;
         }
-        if (ethPrice > 0 && ethBasePrice == 0) {
+        if (lpTokenPriceUSD > 0 && ethPrice > 0 && ethBasePrice == 0) {
           ethBasePrice = ethPrice;
           ethPriceInception = ethBasePrice;
         }
