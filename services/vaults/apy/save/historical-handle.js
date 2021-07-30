@@ -238,6 +238,7 @@ const getApyForVault = async (vault) => {
       elonApy: 0,
       cubanApy: 0,
       faangApy: 0,
+      moneyPrinterApy: 0,
     };
   } else if (vault.isCitadel) {
     // Citadel Vault
@@ -268,6 +269,7 @@ const getApyForVault = async (vault) => {
       elonApy: 0,
       cubanApy: 0,
       faangApy: 0,
+      moneyPrinterApy: 0,
     }
   } else if (vault.isElon) {
     // Elon's APE Vault
@@ -328,6 +330,7 @@ const getApyForVault = async (vault) => {
       elonApy: 0,
       cubanApy: apy,
       faangApy: 0,
+      moneyPrinterApy: 0,
     }
   } else if (vault.isFaang) {
     // DAO Faang Stonk Vault
@@ -359,7 +362,8 @@ const getApyForVault = async (vault) => {
       citadelApy: 0,
       elonApy: 0,
       cubanApy: 0,
-      faangApy: apy
+      faangApy: apy,
+      moneyPrinterApy: 0,
     }
   } else if (vault.isHarvest) {
     // Harvest Vault
@@ -425,6 +429,7 @@ const getApyForVault = async (vault) => {
        elonApy: 0,
        cubanApy: 0,
        faangApy: 0,
+       moneyPrinterApy: 0,
      };
   } else {
     // Yearn Vault
@@ -546,6 +551,7 @@ const getApyForVault = async (vault) => {
       elonApy: 0,
       cubanApy: 0,
       faangApy: 0,
+      moneyPrinterApy: 0,
     };
   }
 };
@@ -608,6 +614,10 @@ const getHistoricalAPY = async (startTime, contractAddress) => {
     case testContracts.farmer['daoCUB'].address:
     case mainContracts.farmer['daoCUB'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoCUBFarmer);
+      break;
+    case testContracts.farmer['daoMPT'].address:
+    case mainContracts.farmer['daoMPT'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoMPTFarmer);
       break;
     case testContracts.farmer['daoSTO'].address:
     case mainContracts.farmer['daoSTO'].address:
