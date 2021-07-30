@@ -424,78 +424,51 @@ const mainContracts = {
       tokenId: ["tether", "usd-coin", "dai"],
       network: constant.ETHEREUM,
     },
-    daoSTO: {
-      address: "0x742a85daf742ca0213b06fdae449434e0448691e",
-      abi: abi.daoFaangStonkVaultContract,
-      strategyAddress: "0x7f1cffb0e0a7351a72ef53cb51796221e2bac3a5",
-      strategyABI: abi.daoFaangStonkStrategyContract,
-      contractType: "daoFaang",
-      tokenId: ["tether", "usd-coin", "dai"],
-      network: constant.ETHEREUM,
-    },
-    daoMPT: {
-      address: '', // Update to mainnet
-      abi: abi.moneyPrinterVaultContract,
-      strategyAddress: '', // Update to mainnet
-      strategyABI: abi.moneyPrinterStrategyContract,
-      contractType: 'moneyPrinter',
-      tokenId: ["tether", "usd-coin", "dai"],
-      network: constant.POLYGON
-    },
-    hfDAI: {
-      address: '', // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: '',
-      strategyABI:  abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "dai",
-      network: constant.ETHEREUM
-    },
-    hfUSDC: {
-      address: '', // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: '',
-      strategyABI: abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "usd-coin",
-      network: constant.ETHEREUM
-    },
-    hfUSDT: {
-      address: '', // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: '',
-      strategyABI: abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "tether",
-      network: constant.ETHEREUM
-    },
-    hfDAI: {
-      address: '0x2cc1507e6e3c844eeb77db90d193489f1ddfb299', 
-      abi: abi.hfVaultContract,
-      strategyAddress: '0x89541e3b8e8b73c108744909ea11d506b4a8e6c7',
-      strategyABI:  abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "dai",
-      network: constant.ETHEREUM
-    },
-    hfUSDC: {
-      address: '0xd0f0858578c7780f2d65f6d81bc7ddbe166367cc', 
-      abi: abi.hfVaultContract,
-      strategyAddress: '0x0af9547974e056fca221f679dbbb7f8651407d7f',
-      strategyABI: abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "usd-coin",
-      network: constant.ETHEREUM
-    },
-    hfUSDT: {
-      address: '0xe4e6ce7c1d9ff44db27f622accbb0753c2f48955',
-      abi: abi.hfVaultContract,
-      strategyAddress: '0xef9a15025c2ed048a67c5c8019a1101172eeb51c',
-      strategyABI: abi.hfStrategyContract,
-      contractType: 'harvest',
-      tokenId: "tether",
-      network: constant.ETHEREUM
-    },
+    // daoSTO: {
+    //   address: "0x742a85daf742ca0213b06fdae449434e0448691e",
+    //   abi: abi.daoFaangStonkVaultContract,
+    //   strategyAddress: "0x7f1cffb0e0a7351a72ef53cb51796221e2bac3a5",
+    //   strategyABI: abi.daoFaangStonkStrategyContract,
+    //   contractType: "daoFaang",
+    //   tokenId: ["tether", "usd-coin", "dai"],
+    //   network: constant.ETHEREUM,
+    // },
+    // daoMPT: {
+    //   address: '', // Update to mainnet
+    //   abi: abi.moneyPrinterVaultContract,
+    //   strategyAddress: '', // Update to mainnet
+    //   strategyABI: abi.moneyPrinterStrategyContract,
+    //   contractType: 'moneyPrinter',
+    //   tokenId: ["tether", "usd-coin", "dai"],
+    //   network: constant.POLYGON
+    // },
+    // hfDAI: {
+    //   address: '0x2cc1507e6e3c844eeb77db90d193489f1ddfb299', 
+    //   abi: abi.hfVaultContract,
+    //   strategyAddress: '0x89541e3b8e8b73c108744909ea11d506b4a8e6c7',
+    //   strategyABI:  abi.hfStrategyContract,
+    //   contractType: 'harvest',
+    //   tokenId: "dai",
+    //   network: constant.ETHEREUM
+    // },
+    // hfUSDC: {
+    //   address: '0xd0f0858578c7780f2d65f6d81bc7ddbe166367cc', 
+    //   abi: abi.hfVaultContract,
+    //   strategyAddress: '0x0af9547974e056fca221f679dbbb7f8651407d7f',
+    //   strategyABI: abi.hfStrategyContract,
+    //   contractType: 'harvest',
+    //   tokenId: "usd-coin",
+    //   network: constant.ETHEREUM
+    // },
+    // hfUSDT: {
+    //   address: '0xe4e6ce7c1d9ff44db27f622accbb0753c2f48955',
+    //   abi: abi.hfVaultContract,
+    //   strategyAddress: '0xef9a15025c2ed048a67c5c8019a1101172eeb51c',
+    //   strategyABI: abi.hfStrategyContract,
+    //   contractType: 'harvest',
+    //   tokenId: "tether",
+    //   network: constant.ETHEREUM
+    // },
   },
   compund: {
     cUSDT: {
