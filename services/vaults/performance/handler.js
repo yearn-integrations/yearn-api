@@ -318,89 +318,97 @@ module.exports.savePerformance = async (event) => {
 
 // Return just PNL of timeframe
 module.exports.pnlHandle = async (req, res) => {
-  if (
-    req.params.days !== "30d" &&
-    req.params.days !== "7d" &&
-    req.params.days !== "1d" &&
-    req.params.days !== undefined
-  ) {
-    res.status(200).json({
-      message: "Days should be 30d, 7d, 1d or empty (all).",
-      body: null,
-    });
-    return;
-  }
-  // check if vault param is input
-  if (req.params.farmer === null || req.params.farmer === "") {
-    res.status(200).json({
-      message: "Vault input is empty",
-      body: null,
-    });
-    return;
-  }
-
-  let startTime = -1;
-  let collection = "";
-  let result;
-  let pnl;
-  let lastDataIndex;
-
-  switch (req.params.farmer) {
-    case historicalDb.daoCDVFarmer:
-      collection = historicalDb.daoCDVFarmer;
-      break;
-    // case historicalDb.daoELOFarmer:
-    //   collection = historicalDb.daoELOFarmer;
-    //   break;
-    case historicalDb.daoSTOFarmer:
-      collection = historicalDb.daoSTOFarmer;
-      break;
-    default:
+  try {
+    if (
+      req.params.days !== "30d" &&
+      req.params.days !== "7d" &&
+      req.params.days !== "1d" &&
+      req.params.days !== undefined
+    ) {
       res.status(200).json({
-        message: "Invalid Farmer",
+        message: "Days should be 30d, 7d, 1d or empty (all).",
         body: null,
       });
       return;
-  }
-
-  switch (req.params.days) {
-    case "30d":
-      startTime = moment().subtract(30, "days").unix();
-      break;
-    case "7d":
-      startTime = moment().subtract(7, "days").unix();
-      break;
-    case "1d":
-      startTime = moment().subtract(1, "days").unix();
-      break;
-  }
-
-  if (startTime == -1) {
-    result = await historicalDb.findAll(collection);
-    lastDataIndex = result.length - 1;
+    }
+    // check if vault param is input
+    if (req.params.farmer === null || req.params.farmer === "") {
+      res.status(200).json({
+        message: "Vault input is empty",
+        body: null,
+      });
+      return;
+    }
+  
+    let startTime = -1;
+    let collection = "";
+    let result;
+    let pnl;
+    let lastDataIndex;
+  
+    switch (req.params.farmer) {
+      case historicalDb.daoCDVFarmer:
+        collection = historicalDb.daoCDVFarmer;
+        break;
+      // case historicalDb.daoELOFarmer:
+      //   collection = historicalDb.daoELOFarmer;
+      //   break;
+      case historicalDb.daoSTOFarmer:
+        collection = historicalDb.daoSTOFarmer;
+        break;
+      default:
+        res.status(200).json({
+          message: "Invalid Farmer",
+          body: null,
+        });
+        return;
+    }
+  
+    switch (req.params.days) {
+      case "30d":
+        startTime = moment().subtract(30, "days").unix();
+        break;
+      case "7d":
+        startTime = moment().subtract(7, "days").unix();
+        break;
+      case "1d":
+        startTime = moment().subtract(1, "days").unix();
+        break;
+    }
+  
+    if (startTime == -1) {
+      result = await historicalDb.findAll(collection);
+      lastDataIndex = result.length - 1;
+  
+      return res.status(200).json({
+        message: `Performance Data for ${req.params.farmer}`,
+        body: result[lastDataIndex]["lp_performance"],
+      });
+    } else {
+      result = await historicalDb.findPerformanceWithTimePeriods(
+        collection,
+        startTime
+      );
+    }
+  
+    if (result && result.length > 0) {
+      const basePrice = result[0]["lp_token_price_usd"];
+      lastDataIndex = result.length - 1;
+      pnl = calculatePerformance(
+        basePrice,
+        result[lastDataIndex]["lp_token_price_usd"]
+      );
+      console.log("🚀 | module.exports.pnlHandle= | pnl", pnl);
+    } 
 
     return res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
-      body: result[lastDataIndex]["lp_performance"],
+      body: result,
     });
-  } else {
-    result = await historicalDb.findPerformanceWithTimePeriods(
-      collection,
-      startTime
-    );
-  }
-
-  if (result) {
-    const basePrice = result[0]["lp_token_price_usd"];
-    lastDataIndex = result.length - 1;
-    pnl = calculatePerformance(
-      basePrice,
-      result[lastDataIndex]["lp_token_price_usd"]
-    );
-    console.log("🚀 | module.exports.pnlHandle= | pnl", pnl);
+  } catch (error) {
     return res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
-      body: pnl,
+      body: null,
     });
   }
 };
