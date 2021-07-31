@@ -380,10 +380,17 @@ module.exports.pnlHandle = async (req, res) => {
       result = await historicalDb.findAll(collection);
       lastDataIndex = result.length - 1;
   
-      return res.status(200).json({
-        message: `Performance Data for ${req.params.farmer}`,
-        body: result[lastDataIndex]["lp_performance"],
-      });
+      if (result && result.length > 0) {
+        return res.status(200).json({
+          message: `Performance Data for ${req.params.farmer}`,
+          body: result[lastDataIndex]["lp_performance"],
+        });
+      } else {
+        return res.status(200).json({
+          message: `Performance Data for ${req.params.farmer}`,
+          body: 0,
+        });
+      }
     } else {
       result = await historicalDb.findPerformanceWithTimePeriods(
         collection,
@@ -408,7 +415,7 @@ module.exports.pnlHandle = async (req, res) => {
   } catch (error) {
     return res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
-      body: null,
+      body: 0,
     });
   }
 };
