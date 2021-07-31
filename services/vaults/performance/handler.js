@@ -378,7 +378,6 @@ module.exports.pnlHandle = async (req, res) => {
   
     if (startTime == -1) {
       result = await historicalDb.findAll(collection);
-  
       if (result && result.length > 0) {
         lastDataIndex = result.length - 1;
         return res.status(200).json({
@@ -406,12 +405,16 @@ module.exports.pnlHandle = async (req, res) => {
         result[lastDataIndex]["lp_token_price_usd"]
       );
       console.log("🚀 | module.exports.pnlHandle= | pnl", pnl);
-    } 
-
-    return res.status(200).json({
-      message: `Performance Data for ${req.params.farmer}`,
-      body: pnl,
-    });
+      return res.status(200).json({
+        message: `Performance Data for ${req.params.farmer}`,
+        body: pnl,
+      });
+    } else {
+      return res.status(200).json({
+        message: `Performance Data for ${req.params.farmer}`,
+        body: 0,
+      });
+    }
   } catch (error) {
     return res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
