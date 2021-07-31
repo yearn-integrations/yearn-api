@@ -78,7 +78,7 @@ function getInceptionBlock(farmer) {
   if (process.env.PRODUCTION != "") {
     const farmers = {
       daoCDV: 12586420,
-      daoSTO: 12766399,
+      daoSTO: 12932754,
       daoELO: 12722655,
       daoCUB: 12799447,
     };
