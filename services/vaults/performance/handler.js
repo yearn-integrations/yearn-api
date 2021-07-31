@@ -403,7 +403,7 @@ module.exports.pnlHandle = async (req, res) => {
 
     return res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
-      body: result,
+      body: pnl,
     });
   } catch (error) {
     return res.status(200).json({
