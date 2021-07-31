@@ -378,9 +378,9 @@ module.exports.pnlHandle = async (req, res) => {
   
     if (startTime == -1) {
       result = await historicalDb.findAll(collection);
-      lastDataIndex = result.length - 1;
   
       if (result && result.length > 0) {
+        lastDataIndex = result.length - 1;
         return res.status(200).json({
           message: `Performance Data for ${req.params.farmer}`,
           body: result[lastDataIndex]["lp_performance"],
