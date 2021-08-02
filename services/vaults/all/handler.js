@@ -4,10 +4,8 @@ const { getVaultsApy: findVaultsApy } = require("../apy/handler");
 const { findAllPool } = require("../../staking/handler");
 const { findAllVaultCategory: findAllVaults } = require("../category/handler");
 const { getVaultsStatistics } = require("../../user/vaults/statistics/handler");
-const constant = require("../../../utils/constant");
 const contractHelper = require("../../../utils/contract");
 const moment = require("moment");
-const { zipObjectDeep } = require("lodash");
 
 let contracts;
 
