@@ -28,7 +28,7 @@ module.exports.handler = async (req, res) => {
     return;
   }
 
-  const transactions = await getTransactions(userAddress, network);
+  const transactions = await getTransactionsByNetwork(userAddress, network);
   const contentMapping = (data) => {
     data.contractAddress = data.vaultAddress;
     delete data.vaultAddress;
