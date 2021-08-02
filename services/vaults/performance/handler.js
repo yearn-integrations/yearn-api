@@ -18,9 +18,9 @@ const CoinGeckoClient = new CoinGecko();
 let url = process.env.ARCHIVENODE_ENDPOINT;
 
 // Using ethers.js
-const provider = new ethers.providers.JsonRpcProvider(url);
+let provider = new ethers.providers.JsonRpcProvider(url);
 
-const dater = new EthDater(
+let dater = new EthDater(
   provider // Web3 object, required.
 );
 
@@ -202,9 +202,17 @@ async function getSearchRange(firstBlock, lastBlock) {
 }
 
 async function getNextUpdateBlock(dateTime) {
+  let url = process.env.ARCHIVENODE_ENDPOINT;
+  // Using ethers.js
+  let provider = new ethers.providers.JsonRpcProvider(url);
+
+  let dater = new EthDater(
+    provider // Web3 object, required.
+  );
+
   let block = await dater.getDate(
     dateTime, // Date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
-    false // Block after, optional. Search for the nearest block before or after the given date. By default true.
+    true // Block after, optional. Search for the nearest block before or after the given date. By default true.
   );
   return [block];
 }
@@ -247,7 +255,13 @@ async function syncHistoricalPerformance(dateTime) {
       basePrice = latestEntry[0]["lp_inception_price"];
       btcBasePrice = latestEntry[0]["btc_inception_price"];
       ethBasePrice = latestEntry[0]["eth_inception_price"];
-      dates = await getNextUpdateBlock(dateTime);
+      console.log("🚀 | syncHistoricalPerformance | dateTime", dateTime);
+      if (dateTime) {
+        dates = await getNextUpdateBlock(dateTime);
+        console.log("🚀 | syncHistoricalPerformance | dates", dates);
+      } else {
+        return;
+      }
     } else {
       startBlock = getInceptionBlock(etf);
       latestBlock = await provider.getBlockNumber();

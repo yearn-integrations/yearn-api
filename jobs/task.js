@@ -131,21 +131,22 @@ const saveVipApr = async () => {
   );
 };
 
-/** Store DAOVIP APR */
+/** Store Performance */
 const savePerformance = async () => {
   currentDateTime = new Date().getTime();
-  console.log("[savePerformance]", currentDateTime);
+  console.log("[savePerformance first]", currentDateTime);
   await performanceSave.savePerformance(null);
   cron.schedule(
     "0 0 * * *",
+    // "* * * * *",
     async () => {
       currentDateTime = new Date().getTime();
-      console.log("[savePerformance]", currentDateTime);
+      console.log("[savePerformance job]", currentDateTime);
       await performanceSave.savePerformance(currentDateTime);
     },
     {
       scheduled: true,
-      timezone: "Etc/UTC", // UTC +0
+      // timezone: "Etc/UTC", // UTC +0
     }
   );
 };
