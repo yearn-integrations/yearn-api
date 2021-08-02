@@ -97,11 +97,8 @@ const getVipTokenAPR = async (tokenContract, vipTokenContract, days, tokenPriceI
     const tokenBalOfVipToken = await getTokenBalanceOfVipToken(tokenContract, vipTokenContract._address);
     const vipTotalSupply = await getTotalSupply(vipTokenContract);
 
-    // const tokenPrice = await getTokenPrice(tokenPriceId);
     // Get token usd price from Coingecko
-    const tokenPrice = (tokenPriceId === "daoventures") 
-        ? await getTokenPrice(tokenPriceId)
-        : 0.225 ; 
+    const tokenPrice = await getTokenPrice(tokenPriceId); 
 
     const vipTokenPrice = await getVipTokenPrice(vipTotalSupply, tokenBalOfVipToken, tokenPrice);
 
@@ -120,11 +117,8 @@ const getVipTokenInfo = async (tokenContract, vipTokenContract, vipContractInfo,
     const vipTotalSupply = await getTotalSupply(vipTokenContract);
     const tokenBalOfVipToken = await getTokenBalanceOfVipToken(tokenContract, vipTokenContract._address);
 
-    // const tokenPrice = await getTokenPrice(tokenPriceId);
     // Get token usd price from Coingecko
-    const tokenPrice = (tokenPriceId === "daoventures") 
-        ? await getTokenPrice(tokenPriceId)
-        : 0.225 ;
+    const tokenPrice = await getTokenPrice(tokenPriceId);
 
     let vipTokenPrice = await getVipTokenPrice(vipTotalSupply, tokenBalOfVipToken, tokenPrice);
 
