@@ -92,6 +92,15 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     : testContracts;
 
   const vault = Object.values(contracts.farmer).find(contract => contract.address.toLowerCase() === contractAddress.toLowerCase());
+  
+  if(!vault) {
+    // Return empty object, if subgraph's vault address cannot match with domain.js farmer
+    return {
+      contractAddress,
+      message: "No vault found.",
+    };
+  }
+
   const type = vault.contractType;
 
   if(vault.network === constant.ETHEREUM) {
