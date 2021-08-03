@@ -15,9 +15,9 @@ const {
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
-let url = process.env.ARCHIVENODE_ENDPOINT;
+let url = process.env.ARCHIVENODE_ENDPOINT_2;
 
-// Using ethers.js
+// Using ethers.js0.26
 let provider = new ethers.providers.JsonRpcProvider(url);
 
 let dater = new EthDater(
@@ -202,7 +202,8 @@ async function getSearchRange(firstBlock, lastBlock) {
 }
 
 async function getNextUpdateBlock(dateTime) {
-  let url = process.env.ARCHIVENODE_ENDPOINT;
+  console.log("🚀 | getNextUpdateBlock | dateTime", dateTime);
+  let url = process.env.ARCHIVENODE_ENDPOINT_2;
   // Using ethers.js
   let provider = new ethers.providers.JsonRpcProvider(url);
 
@@ -210,8 +211,11 @@ async function getNextUpdateBlock(dateTime) {
     provider // Web3 object, required.
   );
 
+  let nearestDateTime = dateTime - (dateTime % 86400000); // round down to midnight
+  console.log("🚀 | getNextUpdateBlock | dateTime", dateTime);
+
   let block = await dater.getDate(
-    dateTime, // Date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+    nearestDateTime, // Date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
     true // Block after, optional. Search for the nearest block before or after the given date. By default true.
   );
   return [block];
@@ -257,7 +261,7 @@ async function syncHistoricalPerformance(dateTime) {
       ethBasePrice = latestEntry[0]["eth_inception_price"];
       console.log("🚀 | syncHistoricalPerformance | dateTime", dateTime);
       if (dateTime) {
-        dates = await getNextUpdateBlock(dateTime);
+        dates = await getNextUpdateBlock(dateTime); // Round down to nearest 0:00 UTC day
         console.log("🚀 | syncHistoricalPerformance | dates", dates);
       } else {
         return;
@@ -269,16 +273,14 @@ async function syncHistoricalPerformance(dateTime) {
     }
 
     for (const date of dates) {
+      console.log("🚀 | syncHistoricalPerformance | date", date);
       try {
         totalSupply = await getTotalSupply(etf, vault, date.block);
         totalPool = await getTotalPool(etf, vault, date.block);
         btcPrice = await getBTCPriceCoinGecko(date.date);
         ethPrice = await getETHPriceCoinGecko(date.date);
         lpTokenPriceUSD = calcLPTokenPriceUSD(etf, totalSupply, totalPool);
-        console.log(
-          "🚀 | syncHistoricalPerformance | lpTokenPriceUSD",
-          lpTokenPriceUSD
-        );
+
         if (lpTokenPriceUSD > 0 && basePrice == 0) {
           basePrice = lpTokenPriceUSD;
           lpPriceInception = basePrice;
