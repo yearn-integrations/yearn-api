@@ -254,16 +254,31 @@ async function syncHistoricalPerformance(dateTime) {
     let btcPriceInception = 0;
     let latestBlock;
     let dates;
+    let latestUpdateDate;
 
     if (latestEntry.length != 0) {
       basePrice = latestEntry[0]["lp_inception_price"];
       btcBasePrice = latestEntry[0]["btc_inception_price"];
       ethBasePrice = latestEntry[0]["eth_inception_price"];
+      latestUpdateDate = latestEntry[0]["date"];
+      console.log(
+        "🚀 | syncHistoricalPerformance | latestUpdateDate",
+        latestUpdateDate
+      );
       console.log("🚀 | syncHistoricalPerformance | dateTime", dateTime);
       if (dateTime) {
         dates = await getNextUpdateBlock(dateTime); // Round down to nearest 0:00 UTC day
         console.log("🚀 | syncHistoricalPerformance | dates", dates);
+        if (dates[0].date === latestUpdateDate) {
+          console.log(
+            "🚀 | syncHistoricalPerformance | dates[0].date",
+            dates[0].date
+          );
+          console.log("already updated");
+          return;
+        }
       } else {
+        console.log("already initialized");
         return;
       }
     } else {
