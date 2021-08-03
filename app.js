@@ -77,6 +77,7 @@ async function init() {
     stakeVIP.getVipDVGToken(req, res)
   );
   app.get("/staking/get-pools", (req, res) => stakePool.getPools(req, res));
+  app.get("/staking/get-daomine-pools", (req, res) => stakePool.getDAOminePools(req, res));
   app.get("/staking/get-xdvg-stake", (req, res) =>
     stakeXDvg.getxDVGStake(req, res)
   );
