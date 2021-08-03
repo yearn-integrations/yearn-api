@@ -57,7 +57,6 @@ const ETHpriceFeed = new ethers.Contract(
 ); // 8 DEcimals
 
 async function getTokenPrice(coingecko_token_id, date) {
-  // console.log(coingecko_token_id);
   let data;
   try {
     data = await CoinGeckoClient.coins.fetchHistory(coingecko_token_id, {
@@ -70,7 +69,6 @@ async function getTokenPrice(coingecko_token_id, date) {
     }
   } catch (err) {
     // Catch error, Default Value = 1
-    console.log(err);
   }
 }
 
@@ -202,7 +200,6 @@ async function getSearchRange(firstBlock, lastBlock) {
 }
 
 async function getNextUpdateBlock(dateTime) {
-  console.log("🚀 | getNextUpdateBlock | dateTime", dateTime);
   let url = process.env.ARCHIVENODE_ENDPOINT_2;
   // Using ethers.js
   let provider = new ethers.providers.JsonRpcProvider(url);
@@ -212,7 +209,6 @@ async function getNextUpdateBlock(dateTime) {
   );
 
   let nearestDateTime = dateTime - (dateTime % 86400000); // round down to midnight
-  console.log("🚀 | getNextUpdateBlock | dateTime", dateTime);
 
   let block = await dater.getDate(
     nearestDateTime, // Date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
@@ -231,7 +227,6 @@ async function syncHistoricalPerformance(dateTime) {
   // Get latest entry in database
 
   for (const etf of ETF_STRATEGIES) {
-    // console.log(">", etf);
     let vaultAddress = contracts["farmer"][etf]["address"];
     let vaultABI = contracts["farmer"][etf]["abi"];
     vault = new ethers.Contract(vaultAddress, vaultABI, provider);
@@ -261,24 +256,12 @@ async function syncHistoricalPerformance(dateTime) {
       btcBasePrice = latestEntry[0]["btc_inception_price"];
       ethBasePrice = latestEntry[0]["eth_inception_price"];
       latestUpdateDate = latestEntry[0]["date"];
-      console.log(
-        "🚀 | syncHistoricalPerformance | latestUpdateDate",
-        latestUpdateDate
-      );
-      console.log("🚀 | syncHistoricalPerformance | dateTime", dateTime);
       if (dateTime) {
         dates = await getNextUpdateBlock(dateTime); // Round down to nearest 0:00 UTC day
-        console.log("🚀 | syncHistoricalPerformance | dates", dates);
         if (dates[0].date === latestUpdateDate) {
-          console.log(
-            "🚀 | syncHistoricalPerformance | dates[0].date",
-            dates[0].date
-          );
-          console.log("already updated");
           return;
         }
       } else {
-        console.log("already initialized");
         return;
       }
     } else {
@@ -288,7 +271,6 @@ async function syncHistoricalPerformance(dateTime) {
     }
 
     for (const date of dates) {
-      console.log("🚀 | syncHistoricalPerformance | date", date);
       try {
         totalSupply = await getTotalSupply(etf, vault, date.block);
         totalPool = await getTotalPool(etf, vault, date.block);
@@ -329,11 +311,8 @@ async function syncHistoricalPerformance(dateTime) {
           eth_inception_price: ethPriceInception.toString(),
         };
 
-        // console.log(data);
         historicalDb.add(etf, data);
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (e) {}
     }
   }
 }
@@ -443,7 +422,6 @@ module.exports.pnlHandle = async (req, res) => {
         basePrice,
         result[lastDataIndex]["lp_token_price_usd"]
       );
-      console.log("🚀 | module.exports.pnlHandle= | pnl", pnl);
       return res.status(200).json({
         message: `Performance Data for ${req.params.farmer}`,
         body: pnl,
