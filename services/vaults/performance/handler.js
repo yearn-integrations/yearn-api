@@ -18,9 +18,9 @@ const CoinGeckoClient = new CoinGecko();
 let url = process.env.ARCHIVENODE_ENDPOINT;
 
 // Using ethers.js
-const provider = new ethers.providers.JsonRpcProvider(url);
+let provider = new ethers.providers.JsonRpcProvider(url);
 
-const dater = new EthDater(
+let dater = new EthDater(
   provider // Web3 object, required.
 );
 
@@ -201,11 +201,27 @@ async function getSearchRange(firstBlock, lastBlock) {
   return days;
 }
 
+async function getNextUpdateBlock(dateTime) {
+  let url = process.env.ARCHIVENODE_ENDPOINT;
+  // Using ethers.js
+  let provider = new ethers.providers.JsonRpcProvider(url);
+
+  let dater = new EthDater(
+    provider // Web3 object, required.
+  );
+
+  let block = await dater.getDate(
+    dateTime, // Date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+    true // Block after, optional. Search for the nearest block before or after the given date. By default true.
+  );
+  return [block];
+}
+
 async function getUnixTime(block) {
   return (await provider.getBlock(block)).timestamp;
 }
 
-async function syncHistoricalPerformance() {
+async function syncHistoricalPerformance(dateTime) {
   // let results = [];
 
   // Get latest entry in database
@@ -232,19 +248,25 @@ async function syncHistoricalPerformance() {
     let lpPriceInception = 0;
     let ethPriceInception = 0;
     let btcPriceInception = 0;
+    let latestBlock;
+    let dates;
 
     if (latestEntry.length != 0) {
-      startBlock = latestEntry[0].block;
       basePrice = latestEntry[0]["lp_inception_price"];
       btcBasePrice = latestEntry[0]["btc_inception_price"];
       ethBasePrice = latestEntry[0]["eth_inception_price"];
+      console.log("🚀 | syncHistoricalPerformance | dateTime", dateTime);
+      if (dateTime) {
+        dates = await getNextUpdateBlock(dateTime);
+        console.log("🚀 | syncHistoricalPerformance | dates", dates);
+      } else {
+        return;
+      }
     } else {
       startBlock = getInceptionBlock(etf);
+      latestBlock = await provider.getBlockNumber();
+      dates = await getSearchRange(startBlock, latestBlock);
     }
-
-    let latestBlock = await provider.getBlockNumber();
-
-    let dates = await getSearchRange(startBlock, latestBlock);
 
     for (const date of dates) {
       try {
@@ -261,11 +283,11 @@ async function syncHistoricalPerformance() {
           basePrice = lpTokenPriceUSD;
           lpPriceInception = basePrice;
         }
-        if (btcPrice > 0 && btcBasePrice == 0) {
+        if (lpTokenPriceUSD > 0 && btcPrice > 0 && btcBasePrice == 0) {
           btcBasePrice = btcPrice;
           btcPriceInception = btcBasePrice;
         }
-        if (ethPrice > 0 && ethBasePrice == 0) {
+        if (lpTokenPriceUSD > 0 && ethPrice > 0 && ethBasePrice == 0) {
           ethBasePrice = ethPrice;
           ethPriceInception = ethBasePrice;
         }
@@ -299,8 +321,8 @@ async function syncHistoricalPerformance() {
   }
 }
 
-module.exports.savePerformance = async (event) => {
-  await syncHistoricalPerformance();
+module.exports.savePerformance = async (dateTime) => {
+  await syncHistoricalPerformance(dateTime);
 };
 
 // module.exports.handler = async (event) => {
@@ -339,13 +361,13 @@ module.exports.pnlHandle = async (req, res) => {
       });
       return;
     }
-  
+
     let startTime = -1;
     let collection = "";
     let result;
     let pnl;
     let lastDataIndex;
-  
+
     switch (req.params.farmer) {
       case historicalDb.daoCDVFarmer:
         collection = historicalDb.daoCDVFarmer;
@@ -363,7 +385,7 @@ module.exports.pnlHandle = async (req, res) => {
         });
         return;
     }
-  
+
     switch (req.params.days) {
       case "30d":
         startTime = moment().subtract(30, "days").unix();
@@ -375,7 +397,7 @@ module.exports.pnlHandle = async (req, res) => {
         startTime = moment().subtract(1, "days").unix();
         break;
     }
-  
+
     if (startTime == -1) {
       result = await historicalDb.findAll(collection);
       if (result && result.length > 0) {
@@ -396,7 +418,7 @@ module.exports.pnlHandle = async (req, res) => {
         startTime
       );
     }
-  
+
     if (result && result.length > 0) {
       const basePrice = result[0]["lp_token_price_usd"];
       lastDataIndex = result.length - 1;
@@ -445,11 +467,11 @@ module.exports.performanceHandle = async (req, res) => {
       });
       return;
     }
-  
+
     let startTime = -1;
     let collection = "";
     let result;
-  
+
     switch (req.params.farmer) {
       case historicalDb.daoCDVFarmer:
         collection = historicalDb.daoCDVFarmer;
@@ -467,7 +489,7 @@ module.exports.performanceHandle = async (req, res) => {
         });
         return;
     }
-  
+
     switch (req.params.days) {
       case "30d":
         startTime = moment().subtract(30, "days").unix();
@@ -479,7 +501,7 @@ module.exports.performanceHandle = async (req, res) => {
         startTime = moment().subtract(1, "days").unix();
         break;
     }
-  
+
     if (startTime == -1) {
       result = await historicalDb.findAll(collection);
     } else {
@@ -487,7 +509,7 @@ module.exports.performanceHandle = async (req, res) => {
         collection,
         startTime
       );
-  
+
       if (result != null && result.length > 0) {
         const basePrice = result[0]["lp_token_price_usd"];
         const btcBasePrice = result[0]["btc_price"];
@@ -508,7 +530,7 @@ module.exports.performanceHandle = async (req, res) => {
         });
       }
     }
-  
+
     if (result) {
       res.status(200).json({
         message: `Performance Data for ${req.params.farmer}`,
@@ -519,7 +541,7 @@ module.exports.performanceHandle = async (req, res) => {
     res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
       body: null,
-      error: err
+      error: err,
     });
   }
 };
