@@ -254,6 +254,13 @@ const testContracts = {
     poolPercent: 0.51,
     network: constant.ETHEREUM,
   },
+  daoMine: {
+    address: "0x651bf479d19cccb9d8646e760a7c1befbcda7411",
+    abi: abi.daoMineContract,
+    startBlock: 26524610, // Start block from contract's START_BLOCK
+    poolPercent: 0.51,
+    network: constant.ETHEREUM,
+  },
   uniswap: {
     ethDVG: {
       address: "0x0A15e37442e2a41A3A51A9Eff7fE1DCE0E96f0bB",
@@ -542,11 +549,18 @@ const mainContracts = {
     network: constant.ETHEREUM
   },
   daoStake: {
-    address: "", // TODO Update mainnet address
+    address: "0x8437a6bf9235fd003d50cd4024fa7ec6979208d5", // TODO Update mainnet address
     abi: abi.daoStakeContract,
     startBlock: 12770000,  // Start block from contract's START_BLOCK
     poolPercent: 0.51,
     network: constant.ETHEREUM
+  },
+  daoMine: {
+    address: "0x651bf479d19cccb9d8646e760a7c1befbcda7411", // TODO Update mainnet address
+    abi: abi.daoMineContract,
+    startBlock: 0, // Start block from contract's START_BLOCK
+    poolPercent: 0.51,
+    network: constant.ETHEREUM,
   },
   uniswap: {
     ethDVG: {
