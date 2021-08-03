@@ -80,6 +80,23 @@ db.stake_pool.insertMany([
     }
 ]);
 
+db.daomine_pool.insertMany([
+    {
+        name: 'vipDVD',
+        label: 'vipDVD LP',
+        contract_address: '0x4bb18f377a9d2dd62a6af7d78f6e7673e0e0f648', // TODO: Update to mainnet address
+        status: 'A',
+        pid: '0',
+        category: 'Basic',
+        tokenId: 'xDVD', 
+        symbol: 'xDVD',
+        startBlock: 26524610,
+        deposit: true,
+        withdraw: true,
+        emergencyWithdraw: false,
+    },
+]);
+
 // Testnet Contracts
 db.vault_categories.insertMany([
     { name: 'advance', contract_address: '0x6B150E9BD70E216775c8b73270E64e870a3110c1', symbol: 'yUSDT' },
@@ -159,6 +176,23 @@ db.stake_pool.insertMany([
         deposit: false,
         withdraw: true,
         emergencyWithdraw: true,
+    },
+]);
+
+db.daomine_pool.insertMany([
+    {
+        name: 'vipDVD',
+        label: 'vipDVD LP',
+        contract_address: '0x4bb18f377a9d2dd62a6af7d78f6e7673e0e0f648',
+        status: 'A',
+        pid: '0',
+        category: 'Basic',
+        tokenId: 'xDVD', 
+        symbol: 'xDVD',
+        startBlock: 26524610,
+        deposit: true,
+        withdraw: true,
+        emergencyWithdraw: false,
     },
 ]);
 

@@ -232,3 +232,5 @@ module.exports.getxDVDStake = async (req, res) => {
     }
     return;
 }
+
+module.exports.getVipTokenPrice = getVipTokenPrice;

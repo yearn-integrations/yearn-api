@@ -41,6 +41,7 @@ async function init() {
     jobs.savePolygonHistoricalAPY();
     jobs.saveHistoricalTVL();
     jobs.saveHistoricalPools();
+    jobs.saveDAOmineHistoricalPools();
     jobs.saveABIPools();
     jobs.saveVipApr();
     jobs.savePerformance();
