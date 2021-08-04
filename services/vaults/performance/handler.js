@@ -15,12 +15,12 @@ const {
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
-let url = process.env.ARCHIVENODE_ENDPOINT;
+let url = process.env.ARCHIVENODE_ENDPOINT_2;
 
-// Using ethers.js
-const provider = new ethers.providers.JsonRpcProvider(url);
+// Using ethers.js0.26
+let provider = new ethers.providers.JsonRpcProvider(url);
 
-const dater = new EthDater(
+let dater = new EthDater(
   provider // Web3 object, required.
 );
 
@@ -41,8 +41,7 @@ if (process.env.PRODUCTION != "") {
 }
 
 // const ETF_STRATEGIES = ["daoCDV", "daoSTO", "daoELO"];
-// const ETF_STRATEGIES = ["daoCDV", "daoSTO"];
-const ETF_STRATEGIES = ["daoCDV"];
+const ETF_STRATEGIES = ["daoCDV", "daoSTO"];
 
 const aggregatorV3InterfaceABI = require("./AggregatorABI.json");
 
@@ -58,7 +57,6 @@ const ETHpriceFeed = new ethers.Contract(
 ); // 8 DEcimals
 
 async function getTokenPrice(coingecko_token_id, date) {
-  // console.log(coingecko_token_id);
   let data;
   try {
     data = await CoinGeckoClient.coins.fetchHistory(coingecko_token_id, {
@@ -71,7 +69,6 @@ async function getTokenPrice(coingecko_token_id, date) {
     }
   } catch (err) {
     // Catch error, Default Value = 1
-    console.log(err);
   }
 }
 
@@ -79,7 +76,7 @@ function getInceptionBlock(farmer) {
   if (process.env.PRODUCTION != "") {
     const farmers = {
       daoCDV: 12586420,
-      daoSTO: 12766399,
+      daoSTO: 12932754,
       daoELO: 12722655,
       daoCUB: 12799447,
     };
@@ -202,17 +199,34 @@ async function getSearchRange(firstBlock, lastBlock) {
   return days;
 }
 
+async function getNextUpdateBlock(dateTime) {
+  let url = process.env.ARCHIVENODE_ENDPOINT_2;
+  // Using ethers.js
+  let provider = new ethers.providers.JsonRpcProvider(url);
+
+  let dater = new EthDater(
+    provider // Web3 object, required.
+  );
+
+  let nearestDateTime = dateTime - (dateTime % 86400000); // round down to midnight
+
+  let block = await dater.getDate(
+    nearestDateTime, // Date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+    true // Block after, optional. Search for the nearest block before or after the given date. By default true.
+  );
+  return [block];
+}
+
 async function getUnixTime(block) {
   return (await provider.getBlock(block)).timestamp;
 }
 
-async function syncHistoricalPerformance() {
+async function syncHistoricalPerformance(dateTime) {
   // let results = [];
 
   // Get latest entry in database
 
   for (const etf of ETF_STRATEGIES) {
-    // console.log(">", etf);
     let vaultAddress = contracts["farmer"][etf]["address"];
     let vaultABI = contracts["farmer"][etf]["abi"];
     vault = new ethers.Contract(vaultAddress, vaultABI, provider);
@@ -233,19 +247,28 @@ async function syncHistoricalPerformance() {
     let lpPriceInception = 0;
     let ethPriceInception = 0;
     let btcPriceInception = 0;
+    let latestBlock;
+    let dates;
+    let latestUpdateDate;
 
     if (latestEntry.length != 0) {
-      startBlock = latestEntry[0].block;
       basePrice = latestEntry[0]["lp_inception_price"];
       btcBasePrice = latestEntry[0]["btc_inception_price"];
       ethBasePrice = latestEntry[0]["eth_inception_price"];
+      latestUpdateDate = latestEntry[0]["date"];
+      if (dateTime) {
+        dates = await getNextUpdateBlock(dateTime); // Round down to nearest 0:00 UTC day
+        if (dates[0].date === latestUpdateDate) {
+          return;
+        }
+      } else {
+        return;
+      }
     } else {
       startBlock = getInceptionBlock(etf);
+      latestBlock = await provider.getBlockNumber();
+      dates = await getSearchRange(startBlock, latestBlock);
     }
-
-    let latestBlock = await provider.getBlockNumber();
-
-    let dates = await getSearchRange(startBlock, latestBlock);
 
     for (const date of dates) {
       try {
@@ -254,19 +277,16 @@ async function syncHistoricalPerformance() {
         btcPrice = await getBTCPriceCoinGecko(date.date);
         ethPrice = await getETHPriceCoinGecko(date.date);
         lpTokenPriceUSD = calcLPTokenPriceUSD(etf, totalSupply, totalPool);
-        console.log(
-          "🚀 | syncHistoricalPerformance | lpTokenPriceUSD",
-          lpTokenPriceUSD
-        );
+
         if (lpTokenPriceUSD > 0 && basePrice == 0) {
           basePrice = lpTokenPriceUSD;
           lpPriceInception = basePrice;
         }
-        if (btcPrice > 0 && btcBasePrice == 0) {
+        if (lpTokenPriceUSD > 0 && btcPrice > 0 && btcBasePrice == 0) {
           btcBasePrice = btcPrice;
           btcPriceInception = btcBasePrice;
         }
-        if (ethPrice > 0 && ethBasePrice == 0) {
+        if (lpTokenPriceUSD > 0 && ethPrice > 0 && ethBasePrice == 0) {
           ethBasePrice = ethPrice;
           ethPriceInception = ethBasePrice;
         }
@@ -291,17 +311,14 @@ async function syncHistoricalPerformance() {
           eth_inception_price: ethPriceInception.toString(),
         };
 
-        // console.log(data);
         historicalDb.add(etf, data);
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (e) {}
     }
   }
 }
 
-module.exports.savePerformance = async (event) => {
-  await syncHistoricalPerformance();
+module.exports.savePerformance = async (dateTime) => {
+  await syncHistoricalPerformance(dateTime);
 };
 
 // module.exports.handler = async (event) => {
@@ -319,180 +336,207 @@ module.exports.savePerformance = async (event) => {
 
 // Return just PNL of timeframe
 module.exports.pnlHandle = async (req, res) => {
-  if (
-    req.params.days !== "30d" &&
-    req.params.days !== "7d" &&
-    req.params.days !== "1d" &&
-    req.params.days !== undefined
-  ) {
-    res.status(200).json({
-      message: "Days should be 30d, 7d, 1d or empty (all).",
-      body: null,
-    });
-    return;
-  }
-  // check if vault param is input
-  if (req.params.farmer === null || req.params.farmer === "") {
-    res.status(200).json({
-      message: "Vault input is empty",
-      body: null,
-    });
-    return;
-  }
-
-  let startTime = -1;
-  let collection = "";
-  let result;
-  let pnl;
-  let lastDataIndex;
-
-  switch (req.params.farmer) {
-    case historicalDb.daoCDVFarmer:
-      collection = historicalDb.daoCDVFarmer;
-      break;
-    // case historicalDb.daoELOFarmer:
-    //   collection = historicalDb.daoELOFarmer;
-    //   break;
-    case historicalDb.daoSTOFarmer:
-      collection = historicalDb.daoSTOFarmer;
-      break;
-    default:
+  try {
+    if (
+      req.params.days !== "30d" &&
+      req.params.days !== "7d" &&
+      req.params.days !== "1d" &&
+      req.params.days !== undefined
+    ) {
       res.status(200).json({
-        message: "Invalid Farmer",
+        message: "Days should be 30d, 7d, 1d or empty (all).",
         body: null,
       });
       return;
-  }
+    }
+    // check if vault param is input
+    if (req.params.farmer === null || req.params.farmer === "") {
+      res.status(200).json({
+        message: "Vault input is empty",
+        body: null,
+      });
+      return;
+    }
 
-  switch (req.params.days) {
-    case "30d":
-      startTime = moment().subtract(30, "days").unix();
-      break;
-    case "7d":
-      startTime = moment().subtract(7, "days").unix();
-      break;
-    case "1d":
-      startTime = moment().subtract(1, "days").unix();
-      break;
-  }
+    let startTime = -1;
+    let collection = "";
+    let result;
+    let pnl;
+    let lastDataIndex;
 
-  if (startTime == -1) {
-    result = await historicalDb.findAll(collection);
-    lastDataIndex = result.length - 1;
+    switch (req.params.farmer) {
+      case historicalDb.daoCDVFarmer:
+        collection = historicalDb.daoCDVFarmer;
+        break;
+      // case historicalDb.daoELOFarmer:
+      //   collection = historicalDb.daoELOFarmer;
+      //   break;
+      case historicalDb.daoSTOFarmer:
+        collection = historicalDb.daoSTOFarmer;
+        break;
+      default:
+        res.status(200).json({
+          message: "Invalid Farmer",
+          body: null,
+        });
+        return;
+    }
 
+    switch (req.params.days) {
+      case "30d":
+        startTime = moment().subtract(30, "days").unix();
+        break;
+      case "7d":
+        startTime = moment().subtract(7, "days").unix();
+        break;
+      case "1d":
+        startTime = moment().subtract(1, "days").unix();
+        break;
+    }
+
+    if (startTime == -1) {
+      result = await historicalDb.findAll(collection);
+      if (result && result.length > 0) {
+        lastDataIndex = result.length - 1;
+        return res.status(200).json({
+          message: `Performance Data for ${req.params.farmer}`,
+          body: result[lastDataIndex]["lp_performance"],
+        });
+      } else {
+        return res.status(200).json({
+          message: `Performance Data for ${req.params.farmer}`,
+          body: 0,
+        });
+      }
+    } else {
+      result = await historicalDb.findPerformanceWithTimePeriods(
+        collection,
+        startTime
+      );
+    }
+
+    if (result && result.length > 0) {
+      const basePrice = result[0]["lp_token_price_usd"];
+      lastDataIndex = result.length - 1;
+      pnl = calculatePerformance(
+        basePrice,
+        result[lastDataIndex]["lp_token_price_usd"]
+      );
+      return res.status(200).json({
+        message: `Performance Data for ${req.params.farmer}`,
+        body: pnl,
+      });
+    } else {
+      return res.status(200).json({
+        message: `Performance Data for ${req.params.farmer}`,
+        body: 0,
+      });
+    }
+  } catch (error) {
     return res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
-      body: result[lastDataIndex]["lp_performance"],
-    });
-  } else {
-    result = await historicalDb.findPerformanceWithTimePeriods(
-      collection,
-      startTime
-    );
-  }
-
-  if (result) {
-    const basePrice = result[0]["lp_token_price_usd"];
-    lastDataIndex = result.length - 1;
-    pnl = calculatePerformance(
-      basePrice,
-      result[lastDataIndex]["lp_token_price_usd"]
-    );
-    console.log("🚀 | module.exports.pnlHandle= | pnl", pnl);
-    return res.status(200).json({
-      message: `Performance Data for ${req.params.farmer}`,
-      body: pnl,
+      body: 0,
     });
   }
 };
 
 module.exports.performanceHandle = async (req, res) => {
-  if (
-    req.params.days !== "30d" &&
-    req.params.days !== "7d" &&
-    req.params.days !== "1d" &&
-    req.params.days !== undefined
-  ) {
-    res.status(200).json({
-      message: "Days should be 30d, 7d, 1d or empty (all).",
-      body: null,
-    });
-    return;
-  }
-  // check if vault param is input
-  if (req.params.farmer === null || req.params.farmer === "") {
-    res.status(200).json({
-      message: "Vault input is empty",
-      body: null,
-    });
-    return;
-  }
-
-  let startTime = -1;
-  let collection = "";
-  let result;
-
-  switch (req.params.farmer) {
-    case historicalDb.daoCDVFarmer:
-      collection = historicalDb.daoCDVFarmer;
-      break;
-    // case historicalDb.daoELOFarmer:
-    //   collection = historicalDb.daoELOFarmer;
-    //   break;
-    case historicalDb.daoSTOFarmer:
-      collection = historicalDb.daoSTOFarmer;
-      break;
-    default:
+  try {
+    if (
+      req.params.days !== "30d" &&
+      req.params.days !== "7d" &&
+      req.params.days !== "1d" &&
+      req.params.days !== undefined
+    ) {
       res.status(200).json({
-        message: "Invalid Farmer",
+        message: "Days should be 30d, 7d, 1d or empty (all).",
         body: null,
       });
       return;
-  }
+    }
+    // check if vault param is input
+    if (req.params.farmer === null || req.params.farmer === "") {
+      res.status(200).json({
+        message: "Vault input is empty",
+        body: null,
+      });
+      return;
+    }
 
-  switch (req.params.days) {
-    case "30d":
-      startTime = moment().subtract(30, "days").unix();
-      break;
-    case "7d":
-      startTime = moment().subtract(7, "days").unix();
-      break;
-    case "1d":
-      startTime = moment().subtract(1, "days").unix();
-      break;
-  }
+    let startTime = -1;
+    let collection = "";
+    let result;
 
-  if (startTime == -1) {
-    result = await historicalDb.findAll(collection);
-  } else {
-    result = await historicalDb.findPerformanceWithTimePeriods(
-      collection,
-      startTime
-    );
+    switch (req.params.farmer) {
+      case historicalDb.daoCDVFarmer:
+        collection = historicalDb.daoCDVFarmer;
+        break;
+      // case historicalDb.daoELOFarmer:
+      //   collection = historicalDb.daoELOFarmer;
+      //   break;
+      case historicalDb.daoSTOFarmer:
+        collection = historicalDb.daoSTOFarmer;
+        break;
+      default:
+        res.status(200).json({
+          message: "Invalid Farmer",
+          body: null,
+        });
+        return;
+    }
 
-    const basePrice = result[0]["lp_token_price_usd"];
-    const btcBasePrice = result[0]["btc_price"];
-    const ethBasePrice = result[0]["eth_price"];
-    result.forEach((data) => {
-      data["lp_performance"] = calculatePerformance(
-        basePrice,
-        data["lp_token_price_usd"]
+    switch (req.params.days) {
+      case "30d":
+        startTime = moment().subtract(30, "days").unix();
+        break;
+      case "7d":
+        startTime = moment().subtract(7, "days").unix();
+        break;
+      case "1d":
+        startTime = moment().subtract(1, "days").unix();
+        break;
+    }
+
+    if (startTime == -1) {
+      result = await historicalDb.findAll(collection);
+    } else {
+      result = await historicalDb.findPerformanceWithTimePeriods(
+        collection,
+        startTime
       );
-      data["btc_performance"] = calculatePerformance(
-        btcBasePrice,
-        data["btc_price"]
-      );
-      data["eth_performance"] = calculatePerformance(
-        ethBasePrice,
-        data["eth_price"]
-      );
-    });
-  }
 
-  if (result) {
+      if (result != null && result.length > 0) {
+        const basePrice = result[0]["lp_token_price_usd"];
+        const btcBasePrice = result[0]["btc_price"];
+        const ethBasePrice = result[0]["eth_price"];
+        result.forEach((data) => {
+          data["lp_performance"] = calculatePerformance(
+            basePrice,
+            data["lp_token_price_usd"]
+          );
+          data["btc_performance"] = calculatePerformance(
+            btcBasePrice,
+            data["btc_price"]
+          );
+          data["eth_performance"] = calculatePerformance(
+            ethBasePrice,
+            data["eth_price"]
+          );
+        });
+      }
+    }
+
+    if (result) {
+      res.status(200).json({
+        message: `Performance Data for ${req.params.farmer}`,
+        body: result,
+      });
+    }
+  } catch (err) {
     res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
-      body: result,
+      body: null,
+      error: err,
     });
   }
 };
