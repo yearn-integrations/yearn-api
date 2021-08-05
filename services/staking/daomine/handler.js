@@ -125,8 +125,10 @@ const poolCalculation = async(daoMine, poolInfo, tokensPrice) => {
     const daominePool = await getPool(daoMineContract, pool.pid);
     const { poolWeight } = daominePool;
 
+    const decimal = await contractHelper.decimals(poolContract);
+
     // Get DAOmine balance in each LP tokens
-    const tokenBalOfDAOmine = await contractHelper.balanceOf(poolContract, daoMineContract._address);
+    const tokenBalOfDAOmine = await contractHelper.balanceOf(poolContract, daoMineContract._address) / (10 ** decimal);
     
     // Pass in start block, last reward block to invoke getMultiplier() in DAOmine contract
     const multiplier = await getMultiplier(pool.startBlock, pool.endBlock, daoMineContract);
@@ -137,14 +139,12 @@ const poolCalculation = async(daoMine, poolInfo, tokensPrice) => {
     // APR Calculation
     apr = (multiplier * poolPercent * dvdPrice * (poolWeight / 100)) / 
                     ((totalPoolWeight / 100) * tokenBalOfDAOmine * poolTokenPrice);
-    console.log(`APR Calculation :(${multiplier} * ${poolPercent} * ${dvdPrice} * (${poolWeight} / 100)) / ((${totalPoolWeight} / 100) * ${tokenBalOfDAOmine} *${poolTokenPrice})`);
+    console.log(`APR Calculation for pool ${pool.name} :(${multiplier} * ${poolPercent} * ${dvdPrice} * (${poolWeight} / 100)) / ((${totalPoolWeight} / 100) * ${tokenBalOfDAOmine} *${poolTokenPrice}) * 100`);
 
     apr = apr * 100; // For percent display on frontend.
 
     // TVL Calculation
     const tvl = tokenBalOfDAOmine * poolTokenPrice;
-
-    const decimal = await contractHelper.decimals(poolContract);
 
     Object.assign(pool, { apr: apr === Infinity ? 0 : apr, tvl , multiplier, decimal});
    
