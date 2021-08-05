@@ -252,14 +252,19 @@ async function syncHistoricalPerformance(dateTime) {
     let latestUpdateDate;
 
     if (latestEntry.length != 0) {
+      console.log("🚀 | syncHistoricalPerformance | latestEntry", latestEntry);
       basePrice = latestEntry[0]["lp_inception_price"];
       btcBasePrice = latestEntry[0]["btc_inception_price"];
       ethBasePrice = latestEntry[0]["eth_inception_price"];
+      lpPriceInception = basePrice;
+      btcPriceInception = btcBasePrice;
+      ethPriceInception = ethBasePrice;
+
       latestUpdateDate = latestEntry[0]["date"];
       if (dateTime) {
         dates = await getNextUpdateBlock(dateTime); // Round down to nearest 0:00 UTC day
         if (dates[0].date === latestUpdateDate) {
-          return;
+          continue;
         }
       } else {
         return;
@@ -271,6 +276,15 @@ async function syncHistoricalPerformance(dateTime) {
     }
 
     for (const date of dates) {
+      console.log("🚀 | syncHistoricalPerformance | basePrice", basePrice);
+      console.log(
+        "🚀 | syncHistoricalPerformance | btcBasePrice",
+        btcBasePrice
+      );
+      console.log(
+        "🚀 | syncHistoricalPerformance | ethBasePrice",
+        ethBasePrice
+      );
       try {
         totalSupply = await getTotalSupply(etf, vault, date.block);
         totalPool = await getTotalPool(etf, vault, date.block);
@@ -278,17 +292,19 @@ async function syncHistoricalPerformance(dateTime) {
         ethPrice = await getETHPriceCoinGecko(date.date);
         lpTokenPriceUSD = calcLPTokenPriceUSD(etf, totalSupply, totalPool);
 
-        if (lpTokenPriceUSD > 0 && basePrice == 0) {
-          basePrice = lpTokenPriceUSD;
-          lpPriceInception = basePrice;
-        }
-        if (lpTokenPriceUSD > 0 && btcPrice > 0 && btcBasePrice == 0) {
-          btcBasePrice = btcPrice;
-          btcPriceInception = btcBasePrice;
-        }
-        if (lpTokenPriceUSD > 0 && ethPrice > 0 && ethBasePrice == 0) {
-          ethBasePrice = ethPrice;
-          ethPriceInception = ethBasePrice;
+        if (lpTokenPriceUSD > 0) {
+          if (basePrice === 0) {
+            basePrice = lpTokenPriceUSD;
+            lpPriceInception = basePrice;
+          }
+          if (btcPrice > 0 && btcBasePrice === 0) {
+            btcBasePrice = btcPrice;
+            btcPriceInception = btcBasePrice;
+          }
+          if (ethPrice > 0 && ethBasePrice === 0) {
+            ethBasePrice = ethPrice;
+            ethPriceInception = ethBasePrice;
+          }
         }
         lpPerformance = calculatePerformance(basePrice, lpTokenPriceUSD);
         btcPerformance = calculatePerformance(btcBasePrice, btcPrice);
