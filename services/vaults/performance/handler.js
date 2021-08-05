@@ -161,9 +161,11 @@ function calcLPTokenPriceUSD(etf, totalSupply, totalPool) {
     // totalSupply = await getTotalSupply(vault, date.block);
     // totalPool = await getTotalPool(vault, date.block);
     if (totalSupply != 0) {
-      return totalPool
-        .mul(ethers.BigNumber.from("1000000000000"))
-        .div(totalSupply);
+      return (
+        totalPool
+          // .mul(ethers.BigNumber.from("1000000000000"))
+          .div(totalSupply)
+      );
     } else {
       return 0;
     }
@@ -252,7 +254,6 @@ async function syncHistoricalPerformance(dateTime) {
     let latestUpdateDate;
 
     if (latestEntry.length != 0) {
-      console.log("🚀 | syncHistoricalPerformance | latestEntry", latestEntry);
       basePrice = latestEntry[0]["lp_inception_price"];
       btcBasePrice = latestEntry[0]["btc_inception_price"];
       ethBasePrice = latestEntry[0]["eth_inception_price"];
@@ -267,7 +268,7 @@ async function syncHistoricalPerformance(dateTime) {
           continue;
         }
       } else {
-        return;
+        continue;
       }
     } else {
       startBlock = getInceptionBlock(etf);
