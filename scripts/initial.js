@@ -14,11 +14,8 @@ db.vault_categories.insertMany([
     { name: 'advance', contract_address: '0x2Cc1507E6E3C844EEb77Db90d193489f1Ddfb299', symbol: 'hfUSDT'},
     { name: 'advance', contract_address: '0xd0f0858578C7780f2D65f6d81BC7DdBe166367cC', symbol: 'hfUSDC'},
     { name: 'advance', contract_address: '0xE4E6Ce7c1D9Ff44Db27f622aCcbB0753C2f48955', symbol: 'hfDAI'},
-    { name: 'advance', contract_address: '0x7e515e00e2d605d763ffe25fd7b1e00f8fd97a16', symbol: 'daoMPT', },
+    { name: 'advance', contract_address: '0x3db93e95c9881bc7d9f2c845ce12e97130ebf5f2', symbol: 'daoMPT', },
     // TODO: add in mainnet contract addresss
-    // { name: 'basic', contract_address: '', symbol: 'hfUSDT'},
-    // { name: 'basic', contract_address: '', symbol: 'hfUSDC'},
-    // { name: 'basic', contract_address: '', symbol: 'hfDAI'},
 ]);
 
 db.stake_pool.insertMany([

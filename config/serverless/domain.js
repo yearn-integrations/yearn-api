@@ -434,40 +434,13 @@ const mainContracts = {
       network: constant.ETHEREUM,
     },
     daoMPT: {
-      address: "0x7e515e00e2d605d763ffe25fd7b1e00f8fd97a16",
+      address: '0x3db93e95c9881bc7d9f2c845ce12e97130ebf5f2',
       abi: abi.moneyPrinterVaultContract,
-      strategyAddress: "0x111de482a01eb87875d18f8c1131fca709b6a646",
+      strategyAddress: '0x822427cd2a5a69e810301626bb355450a47c60ea',
       strategyABI: abi.moneyPrinterStrategyContract,
       contractType: "moneyPrinter",
       tokenId: ["tether", "usd-coin", "dai"],
       network: constant.POLYGON,
-    },
-    hfDAI: {
-      address: "", // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: "",
-      strategyABI: abi.hfStrategyContract,
-      contractType: "harvest",
-      tokenId: "dai",
-      network: constant.ETHEREUM,
-    },
-    hfUSDC: {
-      address: "", // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: "",
-      strategyABI: abi.hfStrategyContract,
-      contractType: "harvest",
-      tokenId: "usd-coin",
-      network: constant.ETHEREUM,
-    },
-    hfUSDT: {
-      address: "", // TODO: Update that this to mainnet address
-      abi: abi.hfVaultContract,
-      strategyAddress: "",
-      strategyABI: abi.hfStrategyContract,
-      contractType: "harvest",
-      tokenId: "tether",
-      network: constant.ETHEREUM,
     },
     hfDAI: {
       address: "0x2cc1507e6e3c844eeb77db90d193489f1ddfb299",
