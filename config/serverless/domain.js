@@ -433,15 +433,15 @@ const mainContracts = {
     //   tokenId: ["tether", "usd-coin", "dai"],
     //   network: constant.ETHEREUM,
     // },
-    // daoMPT: {
-    //   address: '', // Update to mainnet
-    //   abi: abi.moneyPrinterVaultContract,
-    //   strategyAddress: '', // Update to mainnet
-    //   strategyABI: abi.moneyPrinterStrategyContract,
-    //   contractType: 'moneyPrinter',
-    //   tokenId: ["tether", "usd-coin", "dai"],
-    //   network: constant.POLYGON
-    // },
+    daoMPT: {
+      address: '0x3db93e95c9881bc7d9f2c845ce12e97130ebf5f2',
+      abi: abi.moneyPrinterVaultContract,
+      strategyAddress: '0x822427cd2a5a69e810301626bb355450a47c60ea',
+      strategyABI: abi.moneyPrinterStrategyContract,
+      contractType: 'moneyPrinter',
+      tokenId: ["tether", "usd-coin", "dai"],
+      network: constant.POLYGON
+    },
     // hfDAI: {
     //   address: '0x2cc1507e6e3c844eeb77db90d193489f1ddfb299', 
     //   abi: abi.hfVaultContract,
