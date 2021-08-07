@@ -170,7 +170,8 @@ const savePerformance = async () => {
   console.log("[savePerformance first]", currentDateTime);
   await performanceSave.savePerformance(null);
   cron.schedule(
-    "0 0 * * *",
+    "*/5 * * * *",
+    // "0 0 * * *",
     // "* * * * *",
     async () => {
       currentDateTime = new Date().getTime();

@@ -15,9 +15,9 @@ const {
 const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
-let url = process.env.ARCHIVENODE_ENDPOINT;
+let url = process.env.ARCHIVENODE_ENDPOINT_2;
 
-// Using ethers.js
+// Using ethers.js0.26
 let provider = new ethers.providers.JsonRpcProvider(url);
 
 let dater = new EthDater(
@@ -57,7 +57,6 @@ const ETHpriceFeed = new ethers.Contract(
 ); // 8 DEcimals
 
 async function getTokenPrice(coingecko_token_id, date) {
-  // console.log(coingecko_token_id);
   let data;
   try {
     data = await CoinGeckoClient.coins.fetchHistory(coingecko_token_id, {
@@ -70,7 +69,6 @@ async function getTokenPrice(coingecko_token_id, date) {
     }
   } catch (err) {
     // Catch error, Default Value = 1
-    console.log(err);
   }
 }
 
@@ -163,9 +161,11 @@ function calcLPTokenPriceUSD(etf, totalSupply, totalPool) {
     // totalSupply = await getTotalSupply(vault, date.block);
     // totalPool = await getTotalPool(vault, date.block);
     if (totalSupply != 0) {
-      return totalPool
-        .mul(ethers.BigNumber.from("1000000000000"))
-        .div(totalSupply);
+      return (
+        totalPool
+          // .mul(ethers.BigNumber.from("1000000000000"))
+          .div(totalSupply)
+      );
     } else {
       return 0;
     }
@@ -202,7 +202,7 @@ async function getSearchRange(firstBlock, lastBlock) {
 }
 
 async function getNextUpdateBlock(dateTime) {
-  let url = process.env.ARCHIVENODE_ENDPOINT;
+  let url = process.env.ARCHIVENODE_ENDPOINT_2;
   // Using ethers.js
   let provider = new ethers.providers.JsonRpcProvider(url);
 
@@ -210,8 +210,10 @@ async function getNextUpdateBlock(dateTime) {
     provider // Web3 object, required.
   );
 
+  let nearestDateTime = dateTime - (dateTime % 86400000); // round down to midnight
+
   let block = await dater.getDate(
-    dateTime, // Date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+    nearestDateTime, // Date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
     true // Block after, optional. Search for the nearest block before or after the given date. By default true.
   );
   return [block];
@@ -227,7 +229,6 @@ async function syncHistoricalPerformance(dateTime) {
   // Get latest entry in database
 
   for (const etf of ETF_STRATEGIES) {
-    // console.log(">", etf);
     let vaultAddress = contracts["farmer"][etf]["address"];
     let vaultABI = contracts["farmer"][etf]["abi"];
     vault = new ethers.Contract(vaultAddress, vaultABI, provider);
@@ -250,17 +251,24 @@ async function syncHistoricalPerformance(dateTime) {
     let btcPriceInception = 0;
     let latestBlock;
     let dates;
+    let latestUpdateDate;
 
     if (latestEntry.length != 0) {
       basePrice = latestEntry[0]["lp_inception_price"];
       btcBasePrice = latestEntry[0]["btc_inception_price"];
       ethBasePrice = latestEntry[0]["eth_inception_price"];
-      console.log("🚀 | syncHistoricalPerformance | dateTime", dateTime);
+      lpPriceInception = basePrice;
+      btcPriceInception = btcBasePrice;
+      ethPriceInception = ethBasePrice;
+
+      latestUpdateDate = latestEntry[0]["date"];
       if (dateTime) {
-        dates = await getNextUpdateBlock(dateTime);
-        console.log("🚀 | syncHistoricalPerformance | dates", dates);
+        dates = await getNextUpdateBlock(dateTime); // Round down to nearest 0:00 UTC day
+        if (dates[0].date === latestUpdateDate) {
+          continue;
+        }
       } else {
-        return;
+        continue;
       }
     } else {
       startBlock = getInceptionBlock(etf);
@@ -269,27 +277,35 @@ async function syncHistoricalPerformance(dateTime) {
     }
 
     for (const date of dates) {
+      console.log("🚀 | syncHistoricalPerformance | basePrice", basePrice);
+      console.log(
+        "🚀 | syncHistoricalPerformance | btcBasePrice",
+        btcBasePrice
+      );
+      console.log(
+        "🚀 | syncHistoricalPerformance | ethBasePrice",
+        ethBasePrice
+      );
       try {
         totalSupply = await getTotalSupply(etf, vault, date.block);
         totalPool = await getTotalPool(etf, vault, date.block);
         btcPrice = await getBTCPriceCoinGecko(date.date);
         ethPrice = await getETHPriceCoinGecko(date.date);
         lpTokenPriceUSD = calcLPTokenPriceUSD(etf, totalSupply, totalPool);
-        console.log(
-          "🚀 | syncHistoricalPerformance | lpTokenPriceUSD",
-          lpTokenPriceUSD
-        );
-        if (lpTokenPriceUSD > 0 && basePrice == 0) {
-          basePrice = lpTokenPriceUSD;
-          lpPriceInception = basePrice;
-        }
-        if (lpTokenPriceUSD > 0 && btcPrice > 0 && btcBasePrice == 0) {
-          btcBasePrice = btcPrice;
-          btcPriceInception = btcBasePrice;
-        }
-        if (lpTokenPriceUSD > 0 && ethPrice > 0 && ethBasePrice == 0) {
-          ethBasePrice = ethPrice;
-          ethPriceInception = ethBasePrice;
+
+        if (lpTokenPriceUSD > 0) {
+          if (basePrice === 0) {
+            basePrice = lpTokenPriceUSD;
+            lpPriceInception = basePrice;
+          }
+          if (btcPrice > 0 && btcBasePrice === 0) {
+            btcBasePrice = btcPrice;
+            btcPriceInception = btcBasePrice;
+          }
+          if (ethPrice > 0 && ethBasePrice === 0) {
+            ethBasePrice = ethPrice;
+            ethPriceInception = ethBasePrice;
+          }
         }
         lpPerformance = calculatePerformance(basePrice, lpTokenPriceUSD);
         btcPerformance = calculatePerformance(btcBasePrice, btcPrice);
@@ -312,11 +328,8 @@ async function syncHistoricalPerformance(dateTime) {
           eth_inception_price: ethPriceInception.toString(),
         };
 
-        // console.log(data);
         historicalDb.add(etf, data);
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (e) {}
     }
   }
 }
@@ -426,7 +439,6 @@ module.exports.pnlHandle = async (req, res) => {
         basePrice,
         result[lastDataIndex]["lp_token_price_usd"]
       );
-      console.log("🚀 | module.exports.pnlHandle= | pnl", pnl);
       return res.status(200).json({
         message: `Performance Data for ${req.params.farmer}`,
         body: pnl,
