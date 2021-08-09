@@ -83,13 +83,13 @@ const getTokenPrice = async () => {
 
 
         /** Uniswap ETH <-> DVD LP */
-        // const ethDVGPoolInfo = getContractInfo("uniswap").ethDVG;
-        // const ethDVGPoolContract = await getContract(ethDVGPoolInfo);
-        // const ethDVGPoolPrice = await getUniswapLPTokenPrice(ethDVGPoolContract, ethDVGPoolInfo.address, tokens, 'daoventures', 'ethereum');
-        // tokens.push({
-        //     tokenId: 'ethDVG',
-        //     price: ethDVGPoolPrice,
-        // });
+        const ethDVDPoolInfo = contracts.uniswap["ethDVD"];
+        const ethDVDPoolContract = await getContract(ethDVDPoolInfo);
+        const ethDVDPoolPrice = await getUniswapLPTokenPrice(ethDVDPoolContract, ethDVDPoolInfo.address, tokens, 'daoventures', 'ethereum');
+        tokens.push({
+            tokenId: 'ethDVD',
+            price: ethDVDPoolPrice,
+        });
 
         return tokens;
     } catch (err) {
@@ -107,8 +107,8 @@ const getPoolAbiContractMap = async() => {
     // DAOvip (DVD)
     poolAbiContractMap.set(contracts.vipDVD.address.toLowerCase(), contracts.vipDVD.abi);
     
-    // Uniswap ETH <-> DVG Pool 
-    // poolAbiContractMap.set(contracts.uniswap.ethDVG.address.toLowerCase(), contracts.uniswap.ethDVG.abi);
+    // Uniswap ETH <-> DVD Pool 
+    poolAbiContractMap.set(contracts.uniswap.ethDVD.address.toLowerCase(), contracts.uniswap.ethDVD.abi);
 
     return poolAbiContractMap;
 }
@@ -157,6 +157,7 @@ module.exports.saveDAOminePools = async () => {
 
         // Find price for each token
         const tokens = await getTokenPrice();
+       
         // Get DVG price
         const dvdPrice = tokens.find(t => t.tokenId === 'daoventures').price;
         const tokensPrice = { tokens, dvdPrice };
