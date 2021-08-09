@@ -338,3 +338,5 @@ module.exports.saveStakedPools = async () => {
     }
     return;
 }
+
+module.exports.getUniswapLPTokenPrice = getUniswapLPTokenPrice;

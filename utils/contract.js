@@ -11,6 +11,8 @@ const EthDater = require("../services/vaults/apy/save/ethereum-block-by-date");
 const ethereumBlocks = new EthDater(web3, 1000);
 const polygonBlocks = new EthDater(polygonWeb3, 1000);
 
+const { testContracts, mainContracts } = require("../config/serverless/domain");
+
 // Create Ethereum network contract
 module.exports.getEthereumContract =  async (abi, address) => {
     try {
@@ -84,3 +86,36 @@ module.exports.getPolygonBlockNumberByTimeline = async(timeline) => {
     }
 }
 
+// Get contracts from domain.js based on environment
+module.exports.getContractsFromDomain = () => {
+    return (process.env.PRODUCTION !== null && process.env.PRODUCTION != "")
+      ? mainContracts
+      : testContracts;
+}
+
+// Get contract's total supply 
+module.exports.totalSupply = async(contract) => {
+    try{
+        return await contract.methods.totalSupply().call();
+    } catch (err) {
+        console.error("Error in contract helper totalSupply(): ", err);
+    }
+}
+
+// Get contract balance of address 
+module.exports.balanceOf = async(contract, address) => {
+    try{
+        return await contract.methods.balanceOf(address).call();
+    } catch (err) {
+        console.error("Error in contract helper balanceOf(): ", err);
+    }
+}
+
+// Get contract's decimal
+module.exports.decimals = async(contract) => {
+    try {
+        return await contract.methods.decimals().call();
+    } catch (err) {
+        console.error("Error in contract helper decimals(): ", err);
+    }
+}
