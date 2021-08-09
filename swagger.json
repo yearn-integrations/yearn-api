@@ -230,6 +230,18 @@
         "responses": {}
       }
     },
+    "/staking/get-daomine-pools": {
+      "get": {
+          "tags": [
+              "Stake"
+          ],
+          "description": "Stake Pools v2 Information",
+          "produces": [
+              "application/json"
+          ],
+          "responses": {}
+      }
+  },
     "/staking/get-xdvg-stake": {
       "get": {
         "tags": ["Stake"],
