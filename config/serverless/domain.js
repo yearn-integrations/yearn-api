@@ -266,7 +266,12 @@ const testContracts = {
       address: "0x0A15e37442e2a41A3A51A9Eff7fE1DCE0E96f0bB",
       abi: abi.uniswapPairABIContract,  
       network: constant.ETHEREUM,
-    }  
+    },
+    ethDVD: {
+      address: "0xf8098e1a33e5445322171c0acf785bd35def54fa",
+      abi: abi.uniswapPairABIContract,  
+      network: constant.ETHEREUM,
+    }
   },
   harvest: {
     'hfDAI': {
@@ -567,6 +572,11 @@ const mainContracts = {
       address: "0xd11aD84D720A5e7fA11c8412Af6C1cAA815a436d",
       abi: abi.uniswapPairABIContract,
       network: constant.ETHEREUM
+    },
+    ethDVD: {
+      address: "0xce9add58ec5a07cb643faf7418eb94c193672844",
+      abi: abi.uniswapPairABIContract,  
+      network: constant.ETHEREUM,
     }
   },
   chainLink: {
