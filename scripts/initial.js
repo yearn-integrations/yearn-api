@@ -94,6 +94,8 @@ db.daomine_pool.insertMany([
         deposit: true,
         withdraw: true,
         emergencyWithdraw: false,
+        compound: true,
+        harvest: true,
     },
 ]);
 
@@ -193,6 +195,8 @@ db.daomine_pool.insertMany([
         deposit: true,
         withdraw: true,
         emergencyWithdraw: false,
+        compound: true,
+        harvest: true,
     },
 ]);
 
