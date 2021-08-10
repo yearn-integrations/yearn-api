@@ -151,21 +151,25 @@ function calcLPTokenPriceUSD(etf, totalSupply, totalPool) {
     // totalSupply = await getTotalSupply(vault, date.block);
     // totalPool = await getTotalPool(vault, date.block);
     if (totalSupply != 0) {
-      return totalPool
+      let lpPrice = totalPool
         .mul(ethers.BigNumber.from("1000000000000"))
+        .mul(ethers.BigNumber.from("1000000000000000000"))
         .div(totalSupply);
+      lpPrice = ethers.utils.formatEther(lpPrice);
+      return lpPrice;
     } else {
       return 0;
     }
   } else if (etf === "daoSTO") {
     // totalSupply = await getTotalSupply(vault, date.block);
     // totalPool = await getTotalPool(vault, date.block);
+
     if (totalSupply != 0) {
-      return (
-        totalPool
-          // .mul(ethers.BigNumber.from("1000000000000"))
-          .div(totalSupply)
-      );
+      let lpPrice = totalPool
+        .mul(ethers.BigNumber.from("1000000000000000000"))
+        .div(totalSupply);
+      lpPrice = ethers.utils.formatEther(lpPrice);
+      return lpPrice;
     } else {
       return 0;
     }
