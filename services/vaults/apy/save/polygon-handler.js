@@ -34,8 +34,15 @@ const getApyForVault = async (vault) => {
 
         const n = 5 * 24 * 365;  // Assume trigger compound function 5 times per HOUR
         const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-        const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
-    
+        let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+        if(apy === 0) {
+            // Use back previous value if apy = 0
+            const mpApyObj = await apyDb.getApy("daoMPT");
+            console.log(`MP Apy Obj ${mpApyObj.moneyPrinterApy}, timestamp: ${mpApyObj.timestamp}`);
+            apy = mpApyObj.moneyPrinterApy;
+        }
+        
         return {
             apyInceptionSample: 0,
             apyOneDaySample: 0,
