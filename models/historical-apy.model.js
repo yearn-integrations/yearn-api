@@ -15,6 +15,17 @@ const findWithTimePeriods = async (startTime, endTime, collection) => {
   }).toArray();
 }
 
+const getLatestNonZeroMoneyPrinterHistoricalAPY = async() => {
+  const db = mongo.getDB();
+  return await db.collection("daoMPT_historical-apy").find({
+    moneyPrinterApy: {
+      $ne: 0
+    }
+  }).sort({
+    timestamp: -1
+  }).limit(1).toArray();
+}
+
 const add = async (params, collection) => {
   const db = mongo.getDB();
   Object.assign(params, {
@@ -26,6 +37,7 @@ const add = async (params, collection) => {
 module.exports = {
   findAll,
   findWithTimePeriods,
+  getLatestNonZeroMoneyPrinterHistoricalAPY,
   add,
   usdtFarmer: 'yUSDT_historical-apy',
   usdcFarmer: 'yUSDC_historical-apy',

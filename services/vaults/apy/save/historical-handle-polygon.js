@@ -56,7 +56,13 @@ const getApyForVault = async (vault) => {
 
         const n = 5 * 24 * 365;  // Assume trigger compound function 5 times per HOUR
         const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-        const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+        let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+        // If APY is 0, then take the previous value
+        if(apy === 0) {
+            const mpHistoricalApy = await historicalDb.getLatestNonZeroMoneyPrinterHistoricalAPY();
+            apy = mpHistoricalApy[0].moneyPrinterApy
+        }
     
         return {
             apyInceptionSample: 0,
