@@ -15,6 +15,7 @@ let polygonBlockNumber = {
     current: 0,
     oneDay: 0,
 }
+const { jobDelayTime } = require("../../../../constant/delayTimeConfig");
 
 
 const getApyForVault = async (vault) => {
@@ -87,7 +88,7 @@ const saveVaultWithApy = async (data) => {
 
 module.exports.saveHandler = async() => {
     try {
-        await delay(2 * 60 * 1000); // Delay for 2 minutes
+        await delay(jobDelayTime.savePolygonVaultAPY());
         
         const oneDayAgo = moment().subtract(1, "days").valueOf();
        

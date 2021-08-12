@@ -104,8 +104,6 @@ const saveHistoricalAPY = async (data, collection) => {
 // Cronjob handler
 const saveHandler = async() => {
     try {
-        await delay(2 * 60 * 1000); // Delay for 2 minutes.
-     
         const oneDayAgo = moment().subtract(1, "days").valueOf();
         const threeDaysAgo = moment().subtract(3, "days").valueOf();
         const oneWeekAgo = moment().subtract(1, "weeks").valueOf();
