@@ -4,6 +4,7 @@ const snapshot = require("../../models/emergency-withdraw.model");
 const fetch = require("node-fetch");
 const delay = require("delay");
 const _ = require("lodash");
+const { jobDelayTime } = require("../../constant/delayTimeConfig");
 
 const delayTime = 500;
 
@@ -30,6 +31,7 @@ const getPoolInfo = async (pool) => {
 
 module.exports.savePoolInfo = async () => {
     try {
+        await delay(jobDelayTime.saveABIPools);
         const pools = await db.findAll();
         const poolSize = _.size(pools);
         for (idx = 0; idx < poolSize; idx++) {

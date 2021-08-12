@@ -10,6 +10,8 @@ const {
   testContracts,
   mainContracts,
 } = require("../../../config/serverless/domain");
+const delay = require("delay");
+const { jobDelayTime } = require("../../../constant/delayTimeConfig");
 
 const getDecimals = async (contract) => {
   try {
@@ -232,6 +234,7 @@ const saveTVL = async (name, tvl) => {
 
 // Save All TVLs to database
 module.exports.saveAllTVLhandler = async () => {
+  await delay(jobDelayTime.saveHistoricalTVL);
   const tvls = await getAllTVL();
   const totalTvl = await getTotalTVL(tvls);
   await saveTotalTVL(totalTvl);

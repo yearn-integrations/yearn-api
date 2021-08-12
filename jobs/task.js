@@ -154,7 +154,7 @@ const saveDAOmineHistoricalPools = async() => {
 const saveABIPools = async () => {
   await poolSave.savePoolInfo();
   cron.schedule(
-    "*/5 * * * *",
+    "0 0 0 * * *",
     async () => {
       console.log("[savePoolInfo]", new Date().getTime());
       await poolSave.savePoolInfo();
