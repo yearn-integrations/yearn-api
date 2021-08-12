@@ -436,7 +436,7 @@ const mainContracts = {
     daoMPT: {
       address: '0x3db93e95c9881bc7d9f2c845ce12e97130ebf5f2',
       abi: abi.moneyPrinterVaultContract,
-      strategyAddress: '0x822427cd2a5a69e810301626bb355450a47c60ea',
+      strategyAddress: '0x4728a38b6b00cdff9fdc59ace8e3c7ef3c6560e5',
       strategyABI: abi.moneyPrinterStrategyContract,
       contractType: "moneyPrinter",
       tokenId: ["tether", "usd-coin", "dai"],
