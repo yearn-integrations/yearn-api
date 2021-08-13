@@ -455,7 +455,7 @@ const mainContracts = {
       network: constant.POLYGON,
     },
     hfDAI: {
-      address: "0x2cc1507e6e3c844eeb77db90d193489f1ddfb299",
+      address: '0x2cc1507e6e3c844eeb77db90d193489f1ddfb299', 
       abi: abi.hfVaultContract,
       strategyAddress: "0x89541e3b8e8b73c108744909ea11d506b4a8e6c7",
       strategyABI: abi.hfStrategyContract,
@@ -527,7 +527,7 @@ const mainContracts = {
     network: constant.ETHEREUM,
   },
   daoStake: {
-    address: "0x8437a6bf9235fd003d50cd4024fa7ec6979208d5", // TODO Update mainnet address
+    address: "0x8437a6bf9235fd003d50cd4024fa7ec6979208d5", 
     abi: abi.daoStakeContract,
     startBlock: 12770000, // Start block from contract's START_BLOCK
     poolPercent: 0.51,
