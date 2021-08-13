@@ -428,18 +428,18 @@ const mainContracts = {
       network: constant.ETHEREUM,
     },
     daoCUB: {
-      address: "", // TODO: Update that this to mainnet address
+      address: "0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd", 
       abi: abi.cubanApeVaultContract,
-      strategyAddress: "", // TODO: Update that this to mainnet address
+      strategyAddress: "0x7c0f84e9dc6f721de21d51a490de6e370fa01cd6",
       strategyABI: abi.cubanApeStrategyContract,
       contractType: "cuban",
       tokenId: ["tether", "usd-coin", "dai"],
       network: constant.ETHEREUM,
     },
     daoSTO: {
-      address: "0x9ee54014e1E6CF10fD7E9290FdB6101fd0d5D416",
+      address: "0x9ee54014e1e6cf10fd7e9290fdb6101fd0d5d416",
       abi: abi.daoFaangStonkVaultContract,
-      strategyAddress: "0x7f1cffb0e0a7351a72ef53cb51796221e2bac3a5",
+      strategyAddress: "0x4a73dd597b8257e651ef12fd04a91a8819c89416",
       strategyABI: abi.daoFaangStonkStrategyContract,
       contractType: "daoFaang",
       tokenId: ["tether", "usd-coin", "dai"],
@@ -455,7 +455,7 @@ const mainContracts = {
       network: constant.POLYGON,
     },
     hfDAI: {
-      address: "0x2cc1507e6e3c844eeb77db90d193489f1ddfb299",
+      address: '0x2cc1507e6e3c844eeb77db90d193489f1ddfb299', 
       abi: abi.hfVaultContract,
       strategyAddress: "0x89541e3b8e8b73c108744909ea11d506b4a8e6c7",
       strategyABI: abi.hfStrategyContract,
@@ -527,7 +527,7 @@ const mainContracts = {
     network: constant.ETHEREUM,
   },
   daoStake: {
-    address: "0x8437a6bf9235fd003d50cd4024fa7ec6979208d5", // TODO Update mainnet address
+    address: "0x8437a6bf9235fd003d50cd4024fa7ec6979208d5", 
     abi: abi.daoStakeContract,
     startBlock: 12770000, // Start block from contract's START_BLOCK
     poolPercent: 0.51,
