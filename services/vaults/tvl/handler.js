@@ -5,6 +5,14 @@ const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
 const contractHelper = require('../../../utils/contract');
+const constant = require("../../../utils/constant");
+
+let tokens = {
+  "tether": 0.00,
+  "dai": 0.00,
+  "true-usd": 0.00,
+  "usd-coin": 0.00
+};
 
 const {
   testContracts,
@@ -67,24 +75,28 @@ const getContract = async (vault) => {
 /**
  * Get Token price from coingecko
  */
-const getTokenPrice = async (coingecko_token_id) => {
-  // console.log(coingecko_token_id);
-  let data;
+const getTokenPrice = async() => {
+  const tokenIds = Object.keys(tokens);
+
   try {
     data = await CoinGeckoClient.simple.price({
-      ids: coingecko_token_id,
+      ids: tokenIds,
       vs_currencies: ["usd"],
     });
-    if (Object.keys(data.data).length != 0) {
-      return data.data[coingecko_token_id]["usd"];
-    } else {
-      return 1;
+
+    if (data.code == 200 && data.message == 'OK' && data.data) {
+      const result = data.data;
+
+      tokenIds.map(t => {
+        tokens[t] = result[t]["usd"];
+      })
     }
-  } catch (err) {
-    // Catch error, Default Value = 1
-    console.log(err);
+    
+  } catch(err)  {
+    console.log("Error occur in getTokenPrice(): ", err);
   }
-};
+
+}
 
 const getVipTokenPrice = async (vipTotalSupply, tokenBalOfVipToken, tokenPrice) => {
   return (tokenBalOfVipToken * tokenPrice) / vipTotalSupply;
@@ -121,7 +133,7 @@ const getTVL = async (vault) => {
     const strategyContract = await getContract(strategy);
 
     const poolAmount = await getPoolAmount(strategyContract);
-    const tokenPrice = await getTokenPrice(tokenId);
+    const tokenPrice = tokens[tokenId] ? tokens[tokenId] : 0.00;
 
     let decimals = 0;
     if(vault.contractType === 'harvest') {
@@ -130,6 +142,7 @@ const getTVL = async (vault) => {
     } else {
       decimals = await getDecimals(strategyContract);
     }
+
     tvl = (poolAmount / 10 ** decimals) * tokenPrice;
   }
   
@@ -232,6 +245,7 @@ const saveTVL = async (name, tvl) => {
 
 // Save All TVLs to database
 module.exports.saveAllTVLhandler = async () => {
+  await getTokenPrice();
   const tvls = await getAllTVL();
   const totalTvl = await getTotalTVL(tvls);
   await saveTotalTVL(totalTvl);
