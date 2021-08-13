@@ -428,9 +428,9 @@ const mainContracts = {
       network: constant.ETHEREUM,
     },
     daoCUB: {
-      address: "", // TODO: Update that this to mainnet address
+      address: "0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd", 
       abi: abi.cubanApeVaultContract,
-      strategyAddress: "", // TODO: Update that this to mainnet address
+      strategyAddress: "0x7c0f84e9dc6f721de21d51a490de6e370fa01cd6",
       strategyABI: abi.cubanApeStrategyContract,
       contractType: "cuban",
       tokenId: ["tether", "usd-coin", "dai"],
