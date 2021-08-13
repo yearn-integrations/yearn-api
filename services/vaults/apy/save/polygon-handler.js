@@ -87,13 +87,7 @@ const saveVaultWithApy = async (data) => {
 };
 
 module.exports.saveHandler = async() => {
-<<<<<<< HEAD
-    try {
-        await delay(jobDelayTime.savePolygonVaultAPY());
-        
-=======
     try {  
->>>>>>> 3a8926b75be040a099eebc3427249f4093de9a1f
         const oneDayAgo = moment().subtract(1, "days").valueOf();
        
         console.log("Fetching Polygon historical blocks");

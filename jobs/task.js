@@ -208,11 +208,7 @@ const saveABIPools = async () => {
   await saveABIPoolsHandler();
 
   cron.schedule(
-<<<<<<< HEAD
-    "0 0 0 * * *",
-=======
     "0 2 0 * * *",
->>>>>>> 3a8926b75be040a099eebc3427249f4093de9a1f
     async () => {
       await saveABIPoolsHandler();
     },
