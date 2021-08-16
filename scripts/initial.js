@@ -14,6 +14,7 @@ db.vault_categories.insertMany([
     { name: 'basic', contract_address: '0x89541e3b8e8b73c108744909ea11d506b4a8e6c7', symbol: 'hfUSDT' ,deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
     { name: 'basic', contract_address: '0x0af9547974e056fca221f679dbbb7f8651407d7f', symbol: 'hfUSDC',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
     { name: 'basic', contract_address: '0xef9a15025c2ed048a67c5c8019a1101172eeb51c', symbol: 'hfDAI',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
+    { name: 'advance', contract_address: '0x7e515e00e2d605d763ffe25fd7b1e00f8fd97a16', symbol: 'daoMPT',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
 ]);
 
 db.stake_pool.insertMany([

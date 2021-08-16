@@ -37,9 +37,9 @@ const mainVaults = [
         description: "DAO Vault Money Printer for 3 stablecoins",
         vaultSymbol: "daoMPT",
         erc20address: "0xbd21a10f619be90d6066c941b04e340841f1f989",
-        vaultContractAddress: "",  // TODO: Mainnet Address
+        vaultContractAddress: "0x3db93e95c9881bc7d9f2c845ce12e97130ebf5f2",  
         vaultContractABI: abi.moneyPrinterVaultContract,
-        strategyContractAddress: "", // TODO: Mainnet Address
+        strategyContractAddress: "0x4728a38b6b00cdff9fdc59ace8e3c7ef3c6560e5", 
         strategyABI: abi.moneyPrinterStrategyContract,
         balance: 0,
         vaultBalance: 0,
