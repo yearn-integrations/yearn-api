@@ -5,7 +5,7 @@
     "title": "DAOventures API",
     "description": "DAOventures API documentation"
   },
-  "basePath": "/api/",
+  "basePath": "/",
   "consumes": ["application/json"],
   "produces": ["application/json"],
   "paths": {
@@ -17,33 +17,30 @@
         "responses": {}
       }
     },
-    "/user/{userAddress}/vaults/statistics": {
+    "/vaults/{network}/all/{user}/{days}": {
       "get": {
-        "tags": ["Users"],
-        "description": "Transaction information of the user and vaults",
+        "tags": ["Vaults"],
+        "description": "User information by strategies.",
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "userAddress",
+            "name": "user",
             "in": "path",
             "description": "User Wallet Address (Lower Case)",
             "required": true,
             "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-    "/user/{userAddress}/vaults/transactions": {
-      "get": {
-        "tags": ["Users"],
-        "description": "Transaction history of the user",
-        "produces": ["application/json"],
-        "parameters": [
+          },
           {
-            "name": "userAddress",
+            "name": "network",
             "in": "path",
-            "description": "User Wallet Address (Lower Case)",
+            "description": "Network to be query. Example: 'ethereum', 'polygon",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "days",
+            "in": "path",
+            "description": "Period for data. Example: '30d', '7d' or '1d'",
             "required": true,
             "type": "string"
           }
@@ -61,6 +58,30 @@
             "name": "farmer",
             "in": "path",
             "description": "Vault ID with '_price'",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "days",
+            "in": "path",
+            "description": "Number of days. Only available for '30d', '7d', '1d'.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/vaults/price/{network}/all/{days}": {
+      "get": {
+        "tags": ["Vaults"],
+        "description": "Price history of the vault",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "network",
+            "in": "path",
+            "description": "Network. Example: 'ethereum', 'polygon'",
             "required": true,
             "type": "string"
           },
@@ -99,6 +120,72 @@
         "responses": {}
       }
     },
+    "/vaults/historical-apy/{network}/all/{days}": {
+      "get": {
+        "tags": ["Vaults"],
+        "description": "APY history of the vaults",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "network",
+            "in": "path",
+            "description": "Network. Example: 'ethereum', 'polygon' ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "days",
+            "in": "path",
+            "description": "Number of days. Only available for '30d', '7d', '1d'.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    }, 
+    "/user/{userAddress}/vaults/statistics": {
+      "get": {
+        "tags": ["Users"],
+        "description": "Transaction information of the user and vaults",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "User Wallet Address (Lower Case)",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/user/{userAddress}/vaults/transactions": {
+      "get": {
+        "tags": ["Users"],
+        "description": "Transaction history of the user",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "User Wallet Address (Lower Case)",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/vaults/tvl/total": {
+      "get": {
+        "tags": ["Vaults"],
+        "description": "Total TVL of all the existing vaults",
+        "produces": ["application/json"],
+        "responses": {}
+      }
+    },
     "/vaults/tvl/{farmer}": {
       "get": {
         "tags": ["Vaults"],
@@ -116,11 +203,12 @@
         "responses": {}
       }
     },
-    "/vaults/tvl/total": {
+    "/vaults/tvl/find/all": {
       "get": {
         "tags": ["Vaults"],
-        "description": "Total TVL of all the existing vaults",
+        "description": "TVL of the vaults",
         "produces": ["application/json"],
+        "parameters": [],
         "responses": {}
       }
     },
