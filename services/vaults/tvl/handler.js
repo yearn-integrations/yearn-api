@@ -15,13 +15,6 @@ let tokens = {
   "daoventures": 0.00
 };
 
-let tokens = {
-  "tether": 0.00,
-  "dai": 0.00,
-  "true-usd": 0.00,
-  "usd-coin": 0.00
-};
-
 const getDecimals = async (contract) => {
   try {
     return await contract.methods.decimals().call();
