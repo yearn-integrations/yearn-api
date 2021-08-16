@@ -11,10 +11,10 @@ db.vault_categories.insertMany([
     { name: 'degen', contract_address: '0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8', symbol: 'daoELO',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''  },
     { name: 'degen', contract_address: '0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd', symbol: 'daoCUB' ,deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
     { name: 'advance', contract_address: '0x742a85daf742ca0213b06fdae449434e0448691e', symbol: 'daoSTO',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'basic', contract_address: '0x89541e3b8e8b73c108744909ea11d506b4a8e6c7', symbol: 'hfUSDT' ,deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'basic', contract_address: '0x0af9547974e056fca221f679dbbb7f8651407d7f', symbol: 'hfUSDC',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'basic', contract_address: '0xef9a15025c2ed048a67c5c8019a1101172eeb51c', symbol: 'hfDAI',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'advance', contract_address: '0x7e515e00e2d605d763ffe25fd7b1e00f8fd97a16', symbol: 'daoMPT',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
+    { name: 'basic', contract_address: '0x2cc1507e6e3c844eeb77db90d193489f1ddfb299', symbol: 'hfUSDT' ,deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
+    { name: 'basic', contract_address: '0xd0f0858578c7780f2d65f6d81bc7ddbe166367cc', symbol: 'hfUSDC',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
+    { name: 'basic', contract_address: '0xe4e6ce7c1d9ff44db27f622accbb0753c2f48955', symbol: 'hfDAI',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
+    { name: 'advance', contract_address: '0x3db93e95c9881bc7d9f2c845ce12e97130ebf5f2', symbol: 'daoMPT',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
 ]);
 
 db.stake_pool.insertMany([

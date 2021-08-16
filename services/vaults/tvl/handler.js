@@ -11,6 +11,14 @@ let tokens = {
   "tether": 0.00,
   "dai": 0.00,
   "true-usd": 0.00,
+  "usd-coin": 0.00,
+  "daoventures": 0.00
+};
+
+let tokens = {
+  "tether": 0.00,
+  "dai": 0.00,
+  "true-usd": 0.00,
   "usd-coin": 0.00
 };
 
@@ -76,7 +84,6 @@ const getTokenPrice = async() => {
 
     if (data.code == 200 && data.message == 'OK' && data.data) {
       const result = data.data;
-
       tokenIds.map(t => {
         tokens[t] = result[t]["usd"];
       })
@@ -151,7 +158,7 @@ const getVipTokenTVL = async (vipTokenVault, tokenVault) => {
   const tokenBalOfVipToken = await getBalance(tokenContract, vipTokenContract._address);
 
   const tokenPrice = (tokenId === "daoventures") 
-        ? await getTokenPrice(tokenId)
+        ? tokens["daoventures"]
         : 0.225 ;
 
   const vipTokenPrice = await getVipTokenPrice(vipTotalSupply, tokenBalOfVipToken, tokenPrice);
