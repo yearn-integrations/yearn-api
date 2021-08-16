@@ -58,7 +58,7 @@ async function init() {
   app.use(compression())
 
   app.get("/vaults/apy", (req, res) => vaultsApy.handler(res));
-  app.get("/vaults/:user/:network/all/:days", (req, res) => allFarmers.handler(req, res));
+  app.get("/vaults/:network/all/:user/:days", (req, res) => allFarmers.handler(req, res));
   app.get("/vaults/price/:farmer/:days", (req, res) =>
     vaultsPrice.handleHistoricialPrice(req, res)
   );
