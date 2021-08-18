@@ -28,6 +28,11 @@ const DAOCDV_ASSET_DISTRIBUTION = {
     DAI: { percent: 5, tokenId: TOKEN_COINGECKO_ID.DAI },
 };
 
+const ETF_STRATEGIES = [
+    "daoSTO",
+    "daoCDV"
+];
+
 module.exports = {
     // Network Category
     ETHEREUM: "ethereum",
@@ -44,5 +49,6 @@ module.exports = {
     USD: "USD",
 
     DAOCDV_ASSET_DISTRIBUTION,
-    TOKEN_COINGECKO_ID
+    TOKEN_COINGECKO_ID,
+    ETF_STRATEGIES
 }

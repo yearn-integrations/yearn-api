@@ -1,10 +1,12 @@
 const { findAllTVL } = require("../tvl/handler");
-const { findAllHistoricalAPY } = require("../apy/save/historical-handle");
 const { getVaultsApy: findVaultsApy } = require("../apy/handler");
 const { findAllPool } = require("../../staking/handler");
 const { findAllVaultCategory: findAllVaults } = require("../category/handler");
 const { getVaultsStatistics } = require("../../user/vaults/statistics/handler");
+const { findAllHistoricalAPY } = require("../apy/save/historical-handle");
+const performanceDb = require("../../../models/performance.model");
 const contractHelper = require("../../../utils/contract");
+const constant = require("../../../utils/constant");
 const moment = require("moment");
 
 let contracts;
@@ -36,11 +38,6 @@ const getVaultDAOmineAPY = (pools, vaultAddress) => {
     return pool ? pool.apr : null;
 }
 
-const getStatisticsInfo = (statistics, vaultAddress) => {
-    const vaultStatistic = statistics.find(s => s.contractAddress.toLowerCase() === vaultAddress.toLowerCase());
-    return vaultStatistic;
-}
-
 const getVaultInfo = (vaultContracts, vaultAddress, vaultObject) => {
     const vault = vaultContracts.find(v => v.contract_address.toLowerCase() === vaultAddress.toLowerCase());
     vaultObject["deposit"] = (!vault) ? true : vault.deposit;
@@ -50,33 +47,57 @@ const getVaultInfo = (vaultContracts, vaultAddress, vaultObject) => {
     return vaultObject;
 }
 
-const proccessingVault = async (obj) => {
-   const { vaults, network, startTime, userAddress } = obj;
+const getStatisticsInfo = (statistics, vaultAddress) => {
+    const vaultStatistic = statistics.find(s => s.contractAddress.toLowerCase() === vaultAddress.toLowerCase());
+    return vaultStatistic;
+}
 
-   const [tvls, historicalAPYS, apys, daominePools, vaultContracts, statistics] = await Promise.all([
+const findAllPerformance = async () => {
+    // Only for daoCDV and daoSTO for now
+    const etfTypeStrategies = constant.ETF_STRATEGIES;
+
+    const returnResult = {};
+    for(const strategy of etfTypeStrategies) {
+        const result = await performanceDb.findAll(strategy);
+        const lastDataIndex = result.length - 1;
+        returnResult[strategy] = result[lastDataIndex]["lp_performance"];
+    }
+
+    return returnResult;
+}
+
+const proccessingVault = async (obj) => {
+   const { vaults } = obj;
+
+   const [tvls, apys, daominePools, vaultContracts, performances] = await Promise.all([
         findAllTVL(contracts),
-        findAllHistoricalAPY(startTime.unix(), network),
         findVaultsApy(),
         findAllPool(),
         findAllVaults(),
-        getVaultsStatistics(userAddress, network),
+        findAllPerformance(),
+        // findAllHistoricalAPY(startTime.unix(), network),
+        // getVaultsStatistics(userAddress, network),
    ]);
 
    const results = {};
+   const etfStrategies = constant.ETF_STRATEGIES;
 
-   vaults.map(key  =>  {
-       const vaultAddress = contracts.farmer[key].address;
+    vaults.map(key => {
+        const vaultAddress = contracts.farmer[key].address;
 
-       let obj = {};
-       obj = getVaultInfo(vaultContracts, vaultAddress, obj);
-       obj["apy"] = getVaultApy(apys, key);
-       obj["statistics"] = getStatisticsInfo(statistics, vaultAddress);
-       obj["daomineApy"] = getVaultDAOmineAPY(daominePools , vaultAddress);
-       obj["tvl"] = tvls[key] ? tvls[key] : null;
-       // obj["historicalAPY"] = historicalAPYS[key] ? historicalAPYS[key] : null;
-      
-       results[key] = obj;
-   });
+        let obj = {};
+        obj = getVaultInfo(vaultContracts, vaultAddress, obj);
+        obj["apy"] = getVaultApy(apys, key);
+        obj["daomineApy"] = getVaultDAOmineAPY(daominePools, vaultAddress);
+        obj["tvl"] = tvls[key] ? tvls[key] : null;
+        // obj["historicalAPY"] = historicalAPYS[key] ? historicalAPYS[key] : null;
+        // obj["statistics"] = getStatisticsInfo(statistics, vaultAddress);
+
+        if (etfStrategies.includes(key)) {
+            obj["lp_performance"] = performances[key];
+        }
+        results[key] = obj;
+    });
 
    return results;
 }
@@ -90,29 +111,6 @@ module.exports.handler = async (req, res) => {
             });
             return;
         } 
-        if (req.params.days === null || req.params.days === "") {
-            res.status(200).json({
-                message: 'Missing days type.',
-                body: null
-            });
-            return;
-        } 
-        if (req.params.user === null || req.params.user === "") {
-            res.status(200).json({
-                message: 'Missing user.',
-                body: null
-            });
-            return;
-        }
-
-        const startTime = getStartTime(req.params.days);
-        if(startTime === -1) {
-            res.status(200).json({
-                message: "Please only pass '30d', '7d' or '1d' as days option.",
-                body: null
-            });
-            return;
-        }
 
         contracts = await contractHelper.getContractsFromDomain();
         if(contracts.length <= 0) {
@@ -129,11 +127,7 @@ module.exports.handler = async (req, res) => {
                 vaults.push(k);
             }
         })
-        const result = await proccessingVault({
-            vaults, 
-            network: req.params.network, 
-            userAddress: req.params.user,
-            startTime});
+        const result = await proccessingVault({vaults});
 
         res.status(200).json({
             message: "Successful",
