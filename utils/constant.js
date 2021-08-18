@@ -48,6 +48,9 @@ module.exports = {
     // Currency
     USD: "USD",
 
+    // Strategy ID
+    DAOCDV: "daoCDV",
+
     DAOCDV_ASSET_DISTRIBUTION,
     TOKEN_COINGECKO_ID,
     ETF_STRATEGIES

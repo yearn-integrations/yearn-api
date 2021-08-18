@@ -2,6 +2,7 @@ const { findAllTVL } = require("../tvl/handler");
 const { getVaultsApy: findVaultsApy } = require("../apy/handler");
 const { findAllPool } = require("../../staking/handler");
 const { findAllVaultCategory: findAllVaults } = require("../category/handler");
+const { findAllStrategiesAssetDistribution } = require("../distribution/handler");
 const { getVaultsStatistics } = require("../../user/vaults/statistics/handler");
 const { findAllHistoricalAPY } = require("../apy/save/historical-handle");
 const performanceDb = require("../../../models/performance.model");
@@ -69,12 +70,13 @@ const findAllPerformance = async () => {
 const proccessingVault = async (obj) => {
    const { vaults } = obj;
 
-   const [tvls, apys, daominePools, vaultContracts, performances] = await Promise.all([
+   const [tvls, apys, daominePools, vaultContracts, performances, assetsDistribution] = await Promise.all([
         findAllTVL(contracts),
         findVaultsApy(),
         findAllPool(),
         findAllVaults(),
         findAllPerformance(),
+        findAllStrategiesAssetDistribution(),
         // findAllHistoricalAPY(startTime.unix(), network),
         // getVaultsStatistics(userAddress, network),
    ]);
@@ -95,6 +97,7 @@ const proccessingVault = async (obj) => {
 
         if (etfStrategies.includes(key)) {
             obj["lp_performance"] = performances[key];
+            obj["asset_distribution"] = assetsDistribution[key];
         }
         results[key] = obj;
     });

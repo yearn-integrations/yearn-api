@@ -1,19 +1,15 @@
-const contractHelper = require("../../../utils/contract");
 const constant = require("../../../utils/constant");
 const tokenDb = require("../../../models/token.model");
 const moment = require("moment");
 const delay = require("delay");
 const { getTokenPrice } = require("../performance/handler");
 
-let contracts;
 let delayTime = 5000;
 let tokens = {};
 
 const getStrategyUnderlyingAssets = (assetAddress) => {
-    const farmers = contracts.farmer;
-
     switch(assetAddress) {
-        case farmers["daoCDV"].address:
+        case constant.DAOCDV:
             return constant.DAOCDV_ASSET_DISTRIBUTION;
         default: 
             break;
@@ -32,7 +28,52 @@ const calculateChangePercentage = (oldPrice, newPrice) => {
     }
 }
 
-module.exports.saveAssetsPrice = async() => {
+const getStrategyAssetDistribution = async(strategyId) => {
+    try {
+        if(strategyId === undefined || strategyId === "") {
+            throw `Missing Strategy ID`;
+        }
+
+        const strategyUnderlyingAssets = getStrategyUnderlyingAssets(strategyId);
+        if(strategyUnderlyingAssets === undefined) {
+            return {};
+        }
+
+        const underlyingAssetsIds = Object.values(strategyUnderlyingAssets).map(asset => asset.tokenId);
+        const underlyingAssets = await tokenDb.findTokenByIds(underlyingAssetsIds);
+
+        underlyingAssets.map(asset => {
+            const assetSymbol = asset.symbol;
+            const assetObject = strategyUnderlyingAssets[assetSymbol];
+
+            assetObject.currentPrice = asset.currentPrice || 0.00;
+            assetObject.oneDayPrice = asset.oneDayPrice || 0.00;
+            assetObject.changePercentage = asset.changePercentage || 0.00;
+            assetObject.timestamp = asset.timestamp;
+           
+            strategyUnderlyingAssets[assetSymbol] = assetObject;
+        });
+
+        return strategyUnderlyingAssets;
+    } catch (error) {
+        console.error(`Error occur in getStrategyAssetDistribution():`, error);
+    }
+}
+
+const findAllStrategiesAssetDistribution = async() => {
+    const etfStrategies = constant.ETF_STRATEGIES;
+    const result = {};
+
+    for(let i = 0 ; i < etfStrategies.length; i++) {
+        const strategyId = etfStrategies[i];
+        const strategyAssetDistribution = await getStrategyAssetDistribution(strategyId);
+        result[strategyId] = strategyAssetDistribution;
+    }
+
+    return result;
+}
+
+const saveAssetsPrice = async() => {
     try {
         const assets = await tokenDb.findAll();
        
@@ -64,32 +105,8 @@ module.exports.saveAssetsPrice = async() => {
     }
 }
 
-module.exports.getStrategyAssetDistribution = async(assetAddress) => {
-    try {
-        if(assetAddress === undefined || assetAddress === "") {
-            throw `Missing Asset Address`;
-        }
-
-        contracts = contractHelper.getContractsFromDomain();
-        const strategyUnderlyingAssets = getStrategyUnderlyingAssets(assetAddress);
-
-        const underlyingAssetsIds = Object.values(strategyUnderlyingAssets).map(asset => asset.tokenId);
-        const underlyingAssets = await tokenDb.findTokenByIds(underlyingAssetsIds);
-
-        underlyingAssets.map(asset => {
-            const assetSymbol = asset.symbol;
-            const assetObject = strategyUnderlyingAssets[assetSymbol];
-
-            assetObject.currentPrice = asset.currentPrice || 0.00;
-            assetObject.oneDayPrice = asset.oneDayPrice || 0.00;
-            assetObject.changePercentage = asset.changePercentage || 0.00;
-            assetObject.timestamp = asset.timestamp;
-           
-            strategyUnderlyingAssets[assetSymbol] = assetObject;
-        });
-
-        return strategyUnderlyingAssets;
-    } catch (error) {
-        console.error(`Error occur in getStrategyAssetDistribution():`, error);
-    }
+module.exports = {
+    findAllStrategiesAssetDistribution,
+    saveAssetsPrice,
+    getStrategyAssetDistribution
 }
