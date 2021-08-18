@@ -18,6 +18,7 @@ const stakeDaoStakes = require("./services/staking/dao-stake/handler");
 const specialEvent = require("./services/user/special-event/handler");
 const reimburse = require("./services/user/reimburse/handler");
 const allFarmers = require("./services/vaults/all/handler");
+const vaultAssetDistribution = require("./services/vaults/distribution/handler");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 8080;
@@ -75,9 +76,8 @@ async function init() {
   app.get("/vaults/tvl/total", (req, res) => vaultsTvl.totalHandle(req, res));
   app.get("/vaults/tvl/:farmer", (req, res) => vaultsTvl.tvlHandle(req, res));
   app.get("/vaults/tvl/find/all", (req, res) => vaultsTvl.getAllTVLHandler(req, res));
-  app.get("/vaults/category", (req, res) =>
-    vaultCategory.getVaultCategory(req, res)
-  );
+  app.get("/vaults/category", (req, res) => vaultCategory.getVaultCategory(req, res));
+  app.get("/vaults/:farmerId/distribution", (req, res) => vaultAssetDistribution.handler(req, res));
   app.get("/user/:userAddress/:network/vaults/statistics", (req, res) =>
     userStatistics.handler(req, res)
   );

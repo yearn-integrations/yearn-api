@@ -104,8 +104,35 @@ const saveAssetsPrice = async() => {
     }
 }
 
-module.exports = {
-    findAllStrategiesAssetDistribution,
-    saveAssetsPrice,
-    getStrategyAssetDistribution
+module.exports.handler = async(req, res) => {
+    try {
+        const farmer = req.params.farmerId === "" || req.params.farmerId === null
+            ? "all"
+            : req.params.farmerId;
+
+        if(farmer === "all") {
+            const strategiesAssetDistribution = await findAllStrategiesAssetDistribution();
+
+            res.status(200).json({
+                message: "Assets distribution.",
+                body: strategiesAssetDistribution,
+            });
+            return;
+        } else {
+            const strategyId = req.params.farmerId;
+            const strategyAssetDistribution = await getStrategyAssetDistribution(strategyId);
+        
+            res.status(200).json({
+                message: `Asset distribution for ${req.params.farmer}`,
+                body: strategyAssetDistribution,
+            });
+        }
+    } catch (err) {
+        console.error(`[distribution/handler] Error in handler(): `, err);
+    }
 }
+
+module.exports.findAllStrategiesAssetDistribution = findAllStrategiesAssetDistribution;
+module.exports.saveAssetsPrice = saveAssetsPrice;
+module.exports.getStrategyAssetDistribution = getStrategyAssetDistribution;
+
