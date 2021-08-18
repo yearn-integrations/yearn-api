@@ -34,27 +34,31 @@ const getStrategyAssetDistribution = async(strategyId) => {
             throw `Missing Strategy ID`;
         }
 
+        const result = [];
         const strategyUnderlyingAssets = getStrategyUnderlyingAssets(strategyId);
         if(strategyUnderlyingAssets === undefined) {
-            return {};
+            return result;
         }
 
         const underlyingAssetsIds = Object.values(strategyUnderlyingAssets).map(asset => asset.tokenId);
         const underlyingAssets = await tokenDb.findTokenByIds(underlyingAssetsIds);
 
         underlyingAssets.map(asset => {
+            const assetArray = [];
             const assetSymbol = asset.symbol;
+            assetArray.push(assetSymbol);
+    
             const assetObject = strategyUnderlyingAssets[assetSymbol];
-
             assetObject.currentPrice = asset.currentPrice || 0.00;
             assetObject.oneDayPrice = asset.oneDayPrice || 0.00;
             assetObject.changePercentage = asset.changePercentage || 0.00;
             assetObject.timestamp = asset.timestamp;
            
-            strategyUnderlyingAssets[assetSymbol] = assetObject;
+            assetArray.push(assetObject);
+            result.push(assetArray);
         });
 
-        return strategyUnderlyingAssets;
+        return result;
     } catch (error) {
         console.error(`Error occur in getStrategyAssetDistribution():`, error);
     }
