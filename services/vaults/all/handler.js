@@ -60,8 +60,10 @@ const findAllPerformance = async () => {
     const returnResult = {};
     for(const strategy of etfTypeStrategies) {
         const result = await performanceDb.findAll(strategy);
-        const lastDataIndex = result.length - 1;
-        returnResult[strategy] = result[lastDataIndex]["lp_performance"];
+        if(result.length > 0) {
+            const lastDataIndex = result.length - 1;
+            returnResult[strategy] = result[lastDataIndex]["lp_performance"];
+        }
     }
 
     return returnResult;

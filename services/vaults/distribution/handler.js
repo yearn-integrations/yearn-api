@@ -7,13 +7,8 @@ const { getTokenPrice } = require("../performance/handler");
 let delayTime = 5000;
 let tokens = {};
 
-const getStrategyUnderlyingAssets = (assetAddress) => {
-    switch(assetAddress) {
-        case constant.DAOCDV:
-            return constant.DAOCDV_ASSET_DISTRIBUTION;
-        default: 
-            break;
-    }
+const getStrategyUnderlyingAssets = (strategyId) => {
+    return constant[`${strategyId.toUpperCase()}_ASSET_DISTRIBUTION`];
 }
 
 const getStartOfDay = (momentDate) => {

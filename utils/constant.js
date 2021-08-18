@@ -21,16 +21,43 @@ const TOKEN_COINGECKO_ID = {
 }
 
 const DAOCDV_ASSET_DISTRIBUTION = {
-    HBTC: { percent: 30, tokenId: TOKEN_COINGECKO_ID.HBTC },
     ETH: { percent: 35, tokenId: TOKEN_COINGECKO_ID.ETH }, 
+    HBTC: { percent: 30, tokenId: TOKEN_COINGECKO_ID.HBTC },
     WBTC: { percent: 15, tokenId: TOKEN_COINGECKO_ID.WBTC }, 
     DPI: { percent: 15, tokenId: TOKEN_COINGECKO_ID.DPI }, 
     DAI: { percent: 5, tokenId: TOKEN_COINGECKO_ID.DAI },
 };
 
+const DAOSTO_ASSET_DISTRIBUTION = {
+    UST: { percent: 50, tokenId: TOKEN_COINGECKO_ID.UST },
+    MAAPL: { percent: 15, tokenId: TOKEN_COINGECKO_ID.MAAPL },
+    MGOOGL: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.MGOOGL },
+    MAMZN: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.MAMZN },
+    MFB: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.MFB},
+    MNFLX: { percent: 2.5, tokenId: TOKEN_COINGECKO_ID.MNFLX},
+};
+
+const DAOCUB_ASSET_DISTRIBUTION = {
+    RENDOGE: { percent: 15, tokenId: TOKEN_COINGECKO_ID.RENDOGE },
+    MATIC: { percent: 15, tokenId: TOKEN_COINGECKO_ID.MATIC },
+    AAVE: { percent: 14, tokenId: TOKEN_COINGECKO_ID.AAVE },
+    SUSHI: { percent: 14, tokenId: TOKEN_COINGECKO_ID.SUSHI },
+    AXS: { percent: 14, tokenId: TOKEN_COINGECKO_ID.AXS},
+    INJ: { percent: 14, tokenId: TOKEN_COINGECKO_ID.INJ},
+    ALCX: { percent: 14, tokenId: TOKEN_COINGECKO_ID.ALCX},
+};
+
+const DAOELO_ASSET_DISTRIBUTION = {
+    MTSLA: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.MTSLA },
+    WBTC: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.WBTC },
+    RENDOGE: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.RENDOGE},
+}
+
 const ETF_STRATEGIES = [
     "daoSTO",
-    "daoCDV"
+    "daoCDV",
+    "daoCUB",
+    "daoELO",
 ];
 
 module.exports = {
@@ -50,8 +77,14 @@ module.exports = {
 
     // Strategy ID
     DAOCDV: "daoCDV",
+    DAOELO: "daoELO",
+    DAOCUB: "daoCUB",
+    DAOSTO: "daoSTO",
 
     DAOCDV_ASSET_DISTRIBUTION,
+    DAOSTO_ASSET_DISTRIBUTION,
+    DAOCUB_ASSET_DISTRIBUTION,
+    DAOELO_ASSET_DISTRIBUTION,
     TOKEN_COINGECKO_ID,
     ETF_STRATEGIES
 }
