@@ -46,6 +46,7 @@ async function init() {
     jobs.saveABIPools();
     jobs.saveVipApr();
     jobs.savePerformance();
+    jobs.saveTokenPrice();
   });
 
   app.use(cors());

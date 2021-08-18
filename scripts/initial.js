@@ -166,3 +166,25 @@ db.special_event.insertMany([
     { startTime: 1622542200000, endTime: 1622543400000, threshold: 6000 },
     { startTime: 1622606400000, endTime: 1622610000000, threshold: 3000 }
 ]);
+
+db.tokens.insertMany([
+    { tokenId: 'huobi-token', symbol: 'HBTC'},
+    { tokenId: 'ethereum', symbol: 'ETH'},
+    { tokenId: 'wrapped-bitcoin', symbol: 'WBTC'},
+    { tokenId: 'defipulse-index', symbol: 'DPI'},
+    { tokenId: 'dai', symbol: 'DAI'},
+    { tokenId: 'mirrored-facebook', symbol: 'MFB'},
+    { tokenId: 'mirrored-amazon', symbol: 'MAMZN'},
+    { tokenId: 'mirrored-apple', symbol: 'MAAPL'},
+    { tokenId: 'mirrored-netflix', symbol: 'MNFLX'},
+    { tokenId: 'mirrored-google', symbol: 'MGOOGL'},
+    { tokenId: 'terrausd', symbol: 'UST'},
+    { tokenId: 'rendoge', symbol: 'RENDOGE'},
+    { tokenId: 'matic-network', symbol: 'MATIC'},
+    { tokenId: 'aave', symbol: 'AAVE'},
+    { tokenId: 'sushi', symbol: 'SUSHI'},
+    { tokenId: 'axie-infinity', symbol: 'AXS'},
+    { tokenId: 'injective-protocol', symbol: 'INJ'},
+    { tokenId: 'alchemix', symbol: 'ALCX'},
+    { tokenId: 'mirrored-tesla', symbol: 'MTSLA'},
+]);

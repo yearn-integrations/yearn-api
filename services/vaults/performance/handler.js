@@ -338,7 +338,7 @@ async function syncHistoricalPerformance(dateTime) {
   }
 }
 
-module.exports.savePerformance = async (dateTime) => {
+const savePerformance = async (dateTime) => {
   await syncHistoricalPerformance(dateTime);
 };
 
@@ -356,7 +356,7 @@ module.exports.savePerformance = async (dateTime) => {
 // };
 
 // Return just PNL of timeframe
-module.exports.pnlHandle = async (req, res) => {
+const pnlHandle = async (req, res) => {
   try {
     if (
       req.params.days !== "30d" &&
@@ -461,7 +461,7 @@ module.exports.pnlHandle = async (req, res) => {
   }
 };
 
-module.exports.performanceHandle = async (req, res) => {
+const performanceHandle = async (req, res) => {
   try {
     if (
       req.params.days !== "30d" &&
@@ -561,3 +561,10 @@ module.exports.performanceHandle = async (req, res) => {
     });
   }
 };
+
+module.exports = {
+  savePerformance,
+  pnlHandle,
+  performanceHandle,
+  getTokenPrice
+}
