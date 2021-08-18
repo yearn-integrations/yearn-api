@@ -5,9 +5,6 @@ const moment = require("moment");
 const delay = require("delay");
 const { getTokenPrice } = require("../performance/handler");
 
-const CoinGecko = require("coingecko-api");
-const CoinGeckoClient = new CoinGecko();
-
 let contracts;
 let delayTime = 5000;
 let tokens = {};
