@@ -464,13 +464,15 @@ const pnlHandle = async (req, res) => {
 const performanceHandle = async (req, res) => {
   try {
     if (
+      req.params.days !== "1y" &&
+      req.params.days !== "6m" && 
       req.params.days !== "30d" &&
       req.params.days !== "7d" &&
       req.params.days !== "1d" &&
       req.params.days !== undefined
     ) {
       res.status(200).json({
-        message: "Days should be 30d, 7d, 1d or empty (all).",
+        message: "Days should be 1y, 6m, 30d, 7d, 1d or empty (all).",
         body: null,
       });
       return;
@@ -507,6 +509,12 @@ const performanceHandle = async (req, res) => {
     }
 
     switch (req.params.days) {
+      case "1y":
+        startTime = moment().subtract(1, "years").unix();
+        break;
+      case "6m":
+        startTime = moment().subtract(6, "months").unix();
+        break;
       case "30d":
         startTime = moment().subtract(30, "days").unix();
         break;
