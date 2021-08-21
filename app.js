@@ -13,12 +13,13 @@ const vaultPerformance = require("./services/vaults/performance/handler");
 const stakeVIP = require("./services/staking/xdvg/handler");
 const stakePool = require("./services/staking/handler");
 const stakeXDvg = require("./services/staking/vipdvg/handler");
-const reimbursementAddresses = require("./services/reimbursement/handler")
+const reimbursementAddresses = require("./services/reimbursement/handler");
 const stakeDaoStakes = require("./services/staking/dao-stake/handler");
 const specialEvent = require("./services/user/special-event/handler");
 const reimburse = require("./services/user/reimburse/handler");
 const allFarmers = require("./services/vaults/all/handler");
 const vaultAssetDistribution = require("./services/vaults/distribution/handler");
+const performanceApy = require("./services/vaults/performance-apy/handler");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 8080;
@@ -67,6 +68,7 @@ async function init() {
   app.get("/vaults/price/:network/all/:days", (req, res) => {
     vaultsPrice.handleAllHistoricialPrice(req, res)
   });
+  app.get("/vaults/performance-apy/:strategy/:days", (req, res) => performanceApy.handler(req, res));
   app.get("/vaults/historical-apy/:contractAddress/:days", (req, res) =>
     vaultHistoricalAPYSave.handleHistoricialAPY(req, res)
   );

@@ -53,12 +53,30 @@ const DAOELO_ASSET_DISTRIBUTION = {
     RENDOGE: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.RENDOGE},
 }
 
+const CONTRACT_IDS = {
+    DAOCDV: "daoCDV",
+    DAOELO: "daoELO",
+    DAOCUB: "daoCUB",
+    DAOSTO: "daoSTO", 
+}
+
 const ETF_STRATEGIES = [
-    "daoSTO",
-    "daoCDV",
-    "daoCUB",
-    "daoELO",
+    CONTRACT_IDS.DAOSTO,
+    CONTRACT_IDS.DAOCDV,
+    // CONTRACT_IDS.DAOCUB,
+    // CONTRACT_IDS.DAOELO
 ];
+
+const STRATEGY_TYPE = {
+    YEARN: "yearn",
+    COMPOUND: "compound",
+    CITADEL: "citadel",
+    ELON: "elon",
+    CUBAN: "cuban",
+    FAANG: "daoFaang",
+    HARVEST: "harvest",
+    MONEYPRINTER: "moneyPrinter",
+}
 
 module.exports = {
     // Network Category
@@ -76,15 +94,16 @@ module.exports = {
     USD: "USD",
 
     // Strategy ID
-    DAOCDV: "daoCDV",
-    DAOELO: "daoELO",
-    DAOCUB: "daoCUB",
-    DAOSTO: "daoSTO",
+    // DAOCDV: "daoCDV",
+    // DAOELO: "daoELO",
+    // DAOCUB: "daoCUB",
+    // DAOSTO: "daoSTO",
 
     DAOCDV_ASSET_DISTRIBUTION,
     DAOSTO_ASSET_DISTRIBUTION,
     DAOCUB_ASSET_DISTRIBUTION,
     DAOELO_ASSET_DISTRIBUTION,
     TOKEN_COINGECKO_ID,
-    ETF_STRATEGIES
+    ETF_STRATEGIES,
+    STRATEGY_TYPE
 }

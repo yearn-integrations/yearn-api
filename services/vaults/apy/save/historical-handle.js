@@ -477,6 +477,12 @@ const getStartTime = (days) => {
   var startTime = -1;
 
   switch (days) {
+    case '1y': 
+      startTime = moment().subtract(1, 'years');
+      break;
+    case '6m': 
+      startTime = moment().subtract(6, "months");
+      break;
     case '30d':
       startTime = moment().subtract(30, 'days');
       break;
@@ -588,7 +594,7 @@ module.exports.handleAllHistoricalAPY = async(req, res) => {
     })
   } else {
     res.status(200).json({
-      message: "Please only pass '30d', '7d' or '1d' as days option.",
+      message: "Please only pass '1y', '6m', '30d', '7d' or '1d' as days option.",
       body: null
     })
   }
@@ -629,3 +635,4 @@ module.exports.handleHistoricialAPY = async (req, res) => {
     }
   }
 }
+
