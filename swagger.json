@@ -87,7 +87,7 @@
         "tags": [
           "Vaults"
         ],
-        "description": "Price history of the vault",
+        "description": "PNL / Historical APY Chart Data for Vault",
         "produces": [
           "application/json"
         ],
@@ -231,6 +231,23 @@
         "tags": ["Vaults"],
         "description": "Get All Vault Categories",
         "produces": ["application/json"],
+        "responses": {}
+      }
+    },
+    "/vaults/{farmerId}/distribution" : {
+      "get": {
+        "tags": ["Vaults"],
+        "description": "Asset distribution for vault.",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "farmerId",
+            "in": "path",
+            "description": "Vault ID. Example: 'daoCDV', 'daoMPT'",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
