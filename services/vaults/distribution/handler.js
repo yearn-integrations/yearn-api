@@ -114,7 +114,7 @@ module.exports.handler = async(req, res) => {
             const strategiesAssetDistribution = await findAllStrategiesAssetDistribution();
 
             res.status(200).json({
-                message: "Assets distribution.",
+                message: `Assets distribution for ${req.params.farmerId}`,
                 body: strategiesAssetDistribution,
             });
             return;
@@ -123,7 +123,7 @@ module.exports.handler = async(req, res) => {
             const strategyAssetDistribution = await getStrategyAssetDistribution(strategyId);
         
             res.status(200).json({
-                message: `Asset distribution for ${req.params.farmer}`,
+                message: `Asset distribution for ${req.params.farmerId}`,
                 body: strategyAssetDistribution,
             });
         }
