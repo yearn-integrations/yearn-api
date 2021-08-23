@@ -37,8 +37,9 @@ const getApyAttributeNameByStrategy = (strategyType) => {
         case constant.STRATEGY_TYPE.FAANG:
             return [
                 { seriesName: "FAANG Stonk", attributeName: "lp_performance" },
-                { seriesName: "BTC", attributeName: "btc_performance" },
-                { seriesName: "ETH", attributeName: "eth_performance" },
+                // enable back once FAANG need to display btc and eth chart
+                // { seriesName: "BTC", attributeName: "btc_performance" }, 
+                // { seriesName: "ETH", attributeName: "eth_performance" },
             ];
         default: 
             return [];
