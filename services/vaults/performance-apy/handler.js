@@ -58,19 +58,16 @@ const processChartData = (apys, strategyType, strategyId) => {
     apyAttributes.forEach(attributes => { result.push([attributes.seriesName, []]) });
 
     apys.forEach(data => {
-        // let date;
-        // if(!isEtfStrategies) {
-        //     date = dateTimeHelper.formatDateForTimestamp(data[timestampAttribute] / 1000);
-        // } else {
-        //     date = data[timestampAttribute];
-        // }
+        const date = (!isEtfStrategies) 
+            ? data[timestampAttribute]
+            : data[timestampAttribute] * 1000; // from timestamp in seconds to timestamp in milliseconds
       
         apyAttributes.map((a, index) => {
             // Add APY into data, etf strategies or yearn aprs require to multiply by 100 for percentage
             const apy = (isEtfStrategies || a.attributeName === "aprs") 
                 ? data[a.attributeName] * 100 
                 : data[a.attributeName];
-            result[index][1].push([data[timestampAttribute], +parseFloat(apy).toFixed(4)]); // "+" apy as number instead of string
+            result[index][1].push([date, +parseFloat(apy).toFixed(4)]); // "+" apy as number instead of string
         });
     });
 
