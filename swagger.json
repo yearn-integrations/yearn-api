@@ -17,30 +17,16 @@
         "responses": {}
       }
     },
-    "/vaults/{network}/all/{user}/{days}": {
+    "/vaults/{network}/all": {
       "get": {
         "tags": ["Vaults"],
         "description": "User information by strategies.",
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "user",
-            "in": "path",
-            "description": "User Wallet Address (Lower Case)",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "network",
             "in": "path",
             "description": "Network to be query. Example: 'ethereum', 'polygon",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "days",
-            "in": "path",
-            "description": "Period for data. Example: '30d', '7d' or '1d'",
             "required": true,
             "type": "string"
           }
@@ -89,6 +75,34 @@
             "name": "days",
             "in": "path",
             "description": "Number of days. Only available for '30d', '7d', '1d'.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/vaults/performance-apy/{strategy}/{days}": {
+      "get": {
+        "tags": [
+          "Vaults"
+        ],
+        "description": "Price history of the vault",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "strategy",
+            "in": "path",
+            "description": "Vault ID. Example: 'daoCDV', 'daoMPT'",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "days",
+            "in": "path",
+            "description": "Number of days. Only available for '1y', '6m', '30d', '7d', '1d'.",
             "required": true,
             "type": "string"
           }
