@@ -18,6 +18,7 @@ const TOKEN_COINGECKO_ID = {
     INJ: "injective-protocol",
     ALCX: "alchemix",
     MTSLA: "mirrored-tesla",
+    BTC: "bitcoin",
 }
 
 const DAOCDV_ASSET_DISTRIBUTION = {
