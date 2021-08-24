@@ -52,7 +52,7 @@ const getTotalPool = async(etf, vault, block) => {
         if(etf === "daoSTO") {
             return await vault.getTotalValueInPool({ blockTag: block });
         }
-        // daoELO, daoCDV using this
+        // daoELO, daoCDV, daoCUB using this
         return await vault.getAllPoolInUSD({ blockTag: block });
     } catch (err) {
         console.error(`[performance/handlerv2] getTotalPool(): `, err);
@@ -60,11 +60,11 @@ const getTotalPool = async(etf, vault, block) => {
 }
 
 const calcLPTokenPriceUSD = (etf, totalSupply, totalPool) => {
-    if (totalSupply === 0) {
+    if (totalSupply == 0) {
         return 0;
     }
     // These strategies having total pool value in 6 decimals, need to magnify the value
-    const etfs = ["daoCDV", "daoELO"];
+    const etfs = ["daoCDV", "daoELO", "daoCUB"];
     const newTotalPool = etfs.includes(etf)
         ? totalPool.mul(ethers.BigNumber.from("1000000000000"))
         : totalPool;
@@ -120,6 +120,9 @@ const getNextUpdateBlock = async(dateTime) => {
     return [block];
 }
 
+// If want to add new strategy.
+// 1. Check and add for "pnl" property in contract.farmers.strategyId
+// 2. Check getTotalPool(), getTotalSupply(), calcLPTokenPriceUSD() in current document
 const syncHistoricalPerformance = async (dateTime) => {
      
   contracts = contractHelper.getContractsFromDomain();
@@ -129,7 +132,7 @@ const syncHistoricalPerformance = async (dateTime) => {
     const { abi, address } = etfContractInfo;
     const vault = new ethers.Contract(address, abi, provider);
 
-    // Get latest reco
+    // Get latest record
     let latestEntry = await performanceDb.findLatest(etf);
     let dates;
 

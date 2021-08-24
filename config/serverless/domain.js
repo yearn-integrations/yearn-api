@@ -176,9 +176,8 @@ const testContracts = {
       inceptionBlock: 25413059,
       pnl:[
         {db: "lp", tokenId: ""},
-        {db: "mstla", tokenId: constant.TOKEN_COINGECKO_ID.MTSLA},
-        {db: "wbtc", tokenId: constant.TOKEN_COINGECKO_ID.WBTC},
-        {db: "rendoge", tokenId: constant.TOKEN_COINGECKO_ID.RENDOGE},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
       ],
       network: constant.ETHEREUM,
     },
@@ -190,6 +189,11 @@ const testContracts = {
       contractType: "cuban",
       tokenId: ["tether", "usd-coin", "dai"],
       inceptionBlock: 25536976,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+      ],
       network: constant.ETHEREUM,
     },
     daoSTO: {
@@ -460,9 +464,8 @@ const mainContracts = {
       inceptionBlock: 12722655,
       pnl:[
         {db: "lp", tokenId: ""},
-        {db: "mstla", tokenId: constant.TOKEN_COINGECKO_ID.MTSLA},
-        {db: "wbtc", tokenId: constant.TOKEN_COINGECKO_ID.WBTC},
-        {db: "rendoge", tokenId: constant.TOKEN_COINGECKO_ID.RENDOGE},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
       ],
       network: constant.ETHEREUM,
     },
@@ -474,6 +477,11 @@ const mainContracts = {
       contractType: "cuban",
       tokenId: ["tether", "usd-coin", "dai"],
       inceptionBlock: 12799447,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+      ],
       network: constant.ETHEREUM,
     },
     daoSTO: {
