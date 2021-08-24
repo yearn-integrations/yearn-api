@@ -42,6 +42,15 @@ module.exports.formatDateForTimestamp = (timestamp) => {
     return moment.unix(timestamp).format(DATE_FORMAT);
 }
 
+module.exports.formatDate = (date, format = null) => {
+    try {
+        const dateFormat = format ? format : DATE_FORMAT;
+        return moment(date).format(dateFormat);
+    } catch (err) {
+       console.log(`[dateTimeHelper] formatDate(): `,err);
+    }
+}
+
 module.exports.subtractDay = (subtractDays, date) => {
     let selectedDate = checkDate(date);
     return moment(selectedDate).subtract(subtractDays, "days");
