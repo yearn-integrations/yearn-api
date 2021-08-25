@@ -461,81 +461,55 @@ const performanceHandle = async (req, res) => {
       return;
     }
 
-    let startTime = -1;
-    let collection = "";
-    let result;
-
-    switch (req.params.farmer) {
-      case historicalDb.daoCDVFarmer:
-        collection = historicalDb.daoCDVFarmer;
-        break;
-      // case historicalDb.daoELOFarmer:
-      //   collection = historicalDb.daoELOFarmer;
-      //   break;
-      case historicalDb.daoSTOFarmer:
-        collection = historicalDb.daoSTOFarmer;
-        break;
-      default:
-        res.status(200).json({
-          message: "Invalid Farmer",
-          body: null,
-        });
-        return;
-    }
-
-    switch (req.params.days) {
-      case "1y":
-        startTime = moment().subtract(1, "years").unix();
-        break;
-      case "6m":
-        startTime = moment().subtract(6, "months").unix();
-        break;
-      case "30d":
-        startTime = moment().subtract(30, "days").unix();
-        break;
-      case "7d":
-        startTime = moment().subtract(7, "days").unix();
-        break;
-      case "1d":
-        startTime = moment().subtract(1, "days").unix();
-        break;
-    }
-
-    if (startTime == -1) {
-      result = await historicalDb.findAll(collection);
-    } else {
-      result = await historicalDb.findPerformanceWithTimePeriods(
-        collection,
-        startTime
-      );
-
-      if (result != null && result.length > 0) {
-        const basePrice = result[0]["lp_token_price_usd"];
-        const btcBasePrice = result[0]["btc_price"];
-        const ethBasePrice = result[0]["eth_price"];
-        result.forEach((data) => {
-          data["lp_performance"] = calculatePerformance(
-            basePrice,
-            data["lp_token_price_usd"]
-          );
-          data["btc_performance"] = calculatePerformance(
-            btcBasePrice,
-            data["btc_price"]
-          );
-          data["eth_performance"] = calculatePerformance(
-            ethBasePrice,
-            data["eth_price"]
-          );
-        });
-      }
-    }
-
-    if (result) {
+     // Check is ETF Strategies
+    const etfStrategies = constant.ETF_STRATEGIES;
+    if(!etfStrategies.includes(req.params.farmer)) {
       res.status(200).json({
+         message: `Invalid Farmer: ${etfStrategies}`,
+         body: null,
+       });
+      return;
+    }
+
+    const startTime = dateTimeHelper.getStartTimeFromParameter(req.params.days);
+    const collection = req.params.farmer;
+  
+    const result = (startTime == -1) 
+      ? await historicalDb.findAll(collection)
+      : await historicalDb.findPerformanceWithTimePeriods(collection, dateTimeHelper.toTimestamp(startTime));
+  
+    if(!result || result.length <= 0) {
+      return res.status(200).json({
         message: `Performance Data for ${req.params.farmer}`,
-        body: result,
+        body: null
+      })
+    }
+    
+    if(startTime !== -1) {
+      const basePrice = result[0]["lp_token_price_usd"];
+      const btcBasePrice = result[0]["btc_price"];
+      const ethBasePrice = result[0]["eth_price"];
+
+      result.forEach((data) => {
+        data["lp_performance"] = calculatePerformance(
+          basePrice,
+          data["lp_token_price_usd"]
+        );
+        data["btc_performance"] = calculatePerformance(
+          btcBasePrice,
+          data["btc_price"]
+        );
+        data["eth_performance"] = calculatePerformance(
+          ethBasePrice,
+          data["eth_price"]
+        );
       });
     }
+
+    res.status(200).json({
+      message: `Performance Data for ${req.params.farmer}`,
+      body: result,
+    });
   } catch (err) {
     res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
