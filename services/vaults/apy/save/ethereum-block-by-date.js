@@ -33,11 +33,11 @@ module.exports = class {
             await this.getBlockTime();
         if (date.isBefore(this.firstTimestamp))
             return { date: date.format(), block: 1 };
-        if (date.isSameOrAfter(this.savedBlocks.latest))
+        if (date.isSameOrAfter(moment.unix(this.savedBlocks.latest.timestamp)))
             return {
                 date: date.format(),
                 block: await this.web3.eth.getBlockNumber(),
-            };
+            };    
         await delay(this.delayTime);
         this.checkedBlocks[date.unix()] = [];
         let predictedBlock = await this.getBlockWrapper(
@@ -45,10 +45,12 @@ module.exports = class {
                 date.diff(this.firstTimestamp, "seconds") / this.blockTime
             )
         );
+        const block = await this.findBetter(date, predictedBlock, after);
         return {
             date: date.format(),
-            block: await this.findBetter(date, predictedBlock, after),
-        };
+            block: block,
+            timestamp: this.savedBlocks[block].timestamp
+        };;
     }
 
     async getEvery(duration, start, end, every = 1, after = true) {
