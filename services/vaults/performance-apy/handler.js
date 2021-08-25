@@ -12,12 +12,16 @@ const getApyAttributeNameByStrategy = (strategyType) => {
                 { seriesName: "Compound", attributeName: "compoundApy" },
             ];
         case constant.STRATEGY_TYPE.ELON: 
-            return [
-                { seriesName: "Elon", attributeName: "elonApy" },
-            ];
+        return [
+            { seriesName: "Elon", attributeName: "lp_performance" },
+            { seriesName: "BTC", attributeName: "btc_performance" },
+            { seriesName: "ETH", attributeName: "eth_performance" },
+        ];
         case constant.STRATEGY_TYPE.CUBAN:
             return [
-                { seriesName: "Cuban", attributeName: "cubanApy" },
+                { seriesName: "Cuban", attributeName: "lp_performance" },
+                { seriesName: "BTC", attributeName: "btc_performance" },
+                { seriesName: "ETH", attributeName: "eth_performance" },
             ];
         case constant.STRATEGY_TYPE.MONEYPRINTER:
             return [
@@ -131,7 +135,7 @@ module.exports.handler = async(req,res) => {
                 collectionName
             );
         }
-    
+
         if(historicalData.length > 0) {
             result = processChartData(historicalData, strategyType, strategyId);
         }
