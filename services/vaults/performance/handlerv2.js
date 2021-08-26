@@ -5,6 +5,7 @@ const performanceDb = require("../../../models/performance.model");
 
 const delay = require("delay");
 const ethers = require("ethers");
+const BigNumber = require("bignumber.js");
 
 const url = process.env.ARCHIVENODE_ENDPOINT_2;
 let provider = new ethers.providers.JsonRpcProvider(url);
@@ -41,6 +42,9 @@ const getTokenPrice = async(tokenId, date) => {
 
 const getTotalSupply = async(etf, vault, block) => {
     try {
+        if(etf === "daoMPT") {
+          return await vault.methods.totalSupply().call(undefined, block);
+        }
         return await vault.totalSupply({ blockTag: block });
     } catch (err) {
         console.error(`[performance/handlerv2] getTotalSupply(): `, err);
@@ -50,7 +54,10 @@ const getTotalSupply = async(etf, vault, block) => {
 const getTotalPool = async(etf, vault, block) => {
     try {
         if(etf === "daoSTO") {
-            return await vault.getTotalValueInPool({ blockTag: block });
+          return await vault.getTotalValueInPool({ blockTag: block });
+        }
+        if(etf === "daoMPT") {
+          return await vault.methods.getValueInPool().call(undefined, 16318498);
         }
         // daoELO, daoCDV, daoCUB using this
         return await vault.getAllPoolInUSD({ blockTag: block });
@@ -59,18 +66,24 @@ const getTotalPool = async(etf, vault, block) => {
     }
 }
 
-const calcLPTokenPriceUSD = (etf, totalSupply, totalPool) => {
+const calcLPTokenPriceUSD = (etf, totalSupply, totalPool, network) => {
     if (totalSupply == 0) {
         return 0;
     }
-    // These strategies having total pool value in 6 decimals, need to magnify the value
-    const etfs = ["daoCDV", "daoELO", "daoCUB"];
-    const newTotalPool = etfs.includes(etf)
-        ? totalPool.mul(ethers.BigNumber.from("1000000000000"))
-        : totalPool;
 
-    let lpPrice = newTotalPool.mul(ethers.BigNumber.from("1000000000000000000")).div(totalSupply);
-    lpPrice = ethers.utils.formatEther(lpPrice);
+    let lpPrice;
+    if(network === constant.ETHEREUM) {
+       // These strategies having total pool value in 6 decimals, need to magnify the value
+      const etfs = ["daoCDV", "daoELO", "daoCUB"];
+      let newTotalPool = etfs.includes(etf)
+          ? totalPool.mul(ethers.BigNumber.from("1000000000000"))
+          : totalPool;
+      lpPrice = newTotalPool.mul(ethers.BigNumber.from("1000000000000000000")).div(totalSupply);
+      lpPrice = ethers.utils.formatEther(lpPrice);
+    } else if(network === constant.POLYGON) {
+      lpPrice = (new BigNumber(totalPool)).dividedBy(totalSupply);
+    }
+  
     return lpPrice;
 }
 
@@ -78,31 +91,46 @@ const calculatePerformance = (initial, current) => {
     return initial == 0 ? 0 : current / initial - 1;
 }
 
-const getSearchRange = async (firstBlock, lastBlock) => {
-    let firstTimestamp = await getUnixTime(firstBlock);
-
+const getSearchRange = async (firstBlock, lastBlock, network) => {
+    let firstTimestamp = await getUnixTime(firstBlock, network);
     firstTimestamp = firstTimestamp + (86400 - (firstTimestamp % 86400));
     firstTimestamp *= 1000;
-    let lastTimestamp = await getUnixTime(lastBlock);
+    let lastTimestamp = await getUnixTime(lastBlock, network);
     lastTimestamp = lastTimestamp - (lastTimestamp % 86400);
     lastTimestamp *= 1000;
-  
-    let days = await dater.getEvery(
-      "days", // Period, required. Valid value: years, quarters, months, weeks, days, hours, minutes
-      firstTimestamp, // Start date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
-      lastTimestamp, // End date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
-      1, // Duration, optional, integer. By default 1.
-      true // Block after, optional. Search for the nearest block before or after the given date. By default true.
-    );
-  
+
+    let days; 
+    if(network === constant.ETHEREUM) {
+      days = await dater.getEvery(
+        "days", // Period, required. Valid value: years, quarters, months, weeks, days, hours, minutes
+        firstTimestamp, // Start date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+        lastTimestamp, // End date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+        1, // Duration, optional, integer. By default 1.
+        true // Block after, optional. Search for the nearest block before or after the given date. By default true.
+      );
+    } else if (network === constant.POLYGON) {
+      days = await contractHelper.getEveryPolygon(
+        "days", // Period, required. Valid value: years, quarters, months, weeks, days, hours, minutes
+        firstTimestamp, // Start date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+        lastTimestamp, // End date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+        1, // Duration, optional, integer. By default 1.
+        true // Block after, optional. Search for the nearest block before or after the given date. By default true.
+      );
+    }
     return days;
 }
 
-const getUnixTime = async (block) => {
-    return (await provider.getBlock(block)).timestamp;
+const getUnixTime = async (block, network) => {
+  const blockInfo = (network === constant.ETHEREUM) 
+  ? (await provider.getBlock(block))
+  : (await contractHelper.getPolygonBlockInfo(block))
+  return blockInfo.timestamp;
 }
 
-const getNextUpdateBlock = async(dateTime) => {
+const getNextUpdateBlock = async (dateTime, network) => {
+  let nearestDateTime = dateTime - (dateTime % 86400000); // round down to midnight
+  
+  if(network === constant.ETHEREUM) {
     let url = process.env.ARCHIVENODE_ENDPOINT_2;
     // Using ethers.js
     let provider = new ethers.providers.JsonRpcProvider(url);
@@ -111,13 +139,15 @@ const getNextUpdateBlock = async(dateTime) => {
       provider // Web3 object, required.
     );
 
-    let nearestDateTime = dateTime - (dateTime % 86400000); // round down to midnight
-  
     let block = await dater.getDate(
       nearestDateTime, // Date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
       true // Block after, optional. Search for the nearest block before or after the given date. By default true.
     );
     return [block];
+  } else if (network === constant.POLYGON) {
+    const block = await contractHelper.getPolygonBlockByTimeline(nearestDateTime);
+    return [block];
+  }
 }
 
 // If want to add new strategy.
@@ -128,9 +158,17 @@ const syncHistoricalPerformance = async (dateTime) => {
   contracts = contractHelper.getContractsFromDomain();
   
   for (const etf of ETF_STRATEGIES) {
+    console.log(`[Performance PNL] Processing ${etf}`);
     const etfContractInfo = contracts["farmer"][etf];
-    const { abi, address } = etfContractInfo;
-    const vault = new ethers.Contract(address, abi, provider);
+    const { abi, address, network } = etfContractInfo;
+
+    let vault;
+    if(network === constant.ETHEREUM) {
+      vault = new ethers.Contract(address, abi, provider);
+    } else if (network === constant.POLYGON) {
+      vault = await contractHelper.getPolygonContract(abi, address);
+    }
+     
 
     // Get latest record
     let latestEntry = await performanceDb.findLatest(etf);
@@ -147,11 +185,10 @@ const syncHistoricalPerformance = async (dateTime) => {
 
     if (latestEntry.length !== 0) {
       latestRecord = latestEntry[0];
-
       const latestUpdateDate = latestRecord.date;
 
       if (dateTime) {
-        dates = await getNextUpdateBlock(dateTime); // Round down to nearest 0:00 UTC day
+        dates = await getNextUpdateBlock(dateTime, network); // Round down to nearest 0:00 UTC day
         if (dates[0].date === latestUpdateDate) {
           continue;
         }
@@ -160,8 +197,10 @@ const syncHistoricalPerformance = async (dateTime) => {
       }
     } else {
       const startBlock = etfContractInfo.inceptionBlock;
-      const latestBlock = await provider.getBlockNumber();
-      dates = await getSearchRange(startBlock, latestBlock);
+      const latestBlock = (network === constant.ETHEREUM) 
+        ? await provider.getBlockNumber()
+        : await contractHelper.getPolygonCurrentBlockNumber();
+      dates = await getSearchRange(startBlock, latestBlock, network);
     }
 
     pnlSeries.forEach(p => {
@@ -169,14 +208,14 @@ const syncHistoricalPerformance = async (dateTime) => {
       basePrice[p.db] = latestRecord[attributeName] !== undefined ? latestRecord[attributeName] : 0;
       inceptionPrice[p.db] = latestRecord[attributeName] !== undefined? latestRecord[attributeName] : 0;
     });
-    
+
     for (const date of dates) {
       try {
         const totalSupply = await getTotalSupply(etf, vault, date.block);
         await delay(1000);
         const totalPool = await getTotalPool(etf, vault, date.block);
-       
-        currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool);
+
+        currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
         if (basePrice["lp"] === 0) {
           basePrice["lp"] = currentPrice["lp"];
           inceptionPrice["lp"] = basePrice["lp"];

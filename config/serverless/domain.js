@@ -249,6 +249,11 @@ const testContracts = {
       contractType: "moneyPrinter",
       tokenId: ["tether", "usd-coin", "dai"],
       inceptionBlock: 16259595,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
       network: constant.POLYGON,
     },
   },
@@ -507,6 +512,11 @@ const mainContracts = {
       contractType: "moneyPrinter",
       tokenId: ["tether", "usd-coin", "dai"],
       inceptionBlock: 17566349,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
       network: constant.POLYGON,
     },
     hfDAI: {
