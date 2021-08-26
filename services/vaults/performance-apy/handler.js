@@ -62,8 +62,18 @@ const processChartData = (apys, strategyType, strategyId) => {
     // Array item added into the result: [seriesName, [[timestamp, apy], [timestamp, apy]]]
     // First item in array item: series name, example: citadelApy, represent a line in line chart
     // Second item in array item: series data, Array of [timestamp, apy]
-    apyAttributes.forEach(attributes => { result.push([attributes.seriesName, []]) });
+    // Third item in array item: series color
+    let chartColorIndex = 0; // Used to randomize chart color
+    apyAttributes.forEach(attributes => { 
+        let chartColor = constant.TOKEN_CHART_COLOR[attributes.seriesName.toUpperCase()];
+        if(chartColor === undefined) {
+            chartColor = constant.BACKUP_CHART_COLOR[chartColorIndex];
+            chartColorIndex++;
+        }
+        result.push([attributes.seriesName, [], chartColor]) 
+    });
 
+    
     apys.forEach(data => {
         const date = (!isEtfStrategies) 
             ? data[timestampAttribute]
