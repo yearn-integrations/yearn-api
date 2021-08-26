@@ -25,7 +25,9 @@ const getApyAttributeNameByStrategy = (strategyType) => {
             ];
         case constant.STRATEGY_TYPE.MONEYPRINTER:
             return [
-                { seriesName: "Money Printer", attributeName: "moneyPrinterApy" },
+                { seriesName: "Money Printer", attributeName: "lp_performance" },
+                { seriesName: "BTC", attributeName: "btc_performance" },
+                { seriesName: "ETH", attributeName: "eth_performance" },
             ];
         case constant.STRATEGY_TYPE.YEARN:
             return [
