@@ -26,7 +26,6 @@ module.exports.getEthereumContract =  async (abi, address) => {
 // Create Polygon network contract
 module.exports.getPolygonContract = async (abi, address) => {
     try {
-        console.log(`url ${archiveNodePolygonUrl}`);
         const contract = new polygonWeb3.eth.Contract(abi, address);
         return contract;
     } catch (err) {
