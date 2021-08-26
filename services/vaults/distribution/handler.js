@@ -37,7 +37,8 @@ const getStrategyAssetDistribution = async(strategyId) => {
 
         const underlyingAssetsIds = Object.values(strategyUnderlyingAssets).map(asset => asset.tokenId);
         const underlyingAssets = await tokenDb.findTokenByIds(underlyingAssetsIds);
-
+          
+        let index = 0; // To random assign chart color;
         underlyingAssets.map(asset => {
             const assetArray = [];
             const assetSymbol = asset.symbol;
@@ -48,6 +49,14 @@ const getStrategyAssetDistribution = async(strategyId) => {
             assetObject.oneDayPrice = asset.oneDayPrice || 0.00;
             assetObject.changePercentage = asset.changePercentage || 0.00;
             assetObject.timestamp = asset.timestamp;
+            
+            // Representative color in chart
+            let chartColor = constant.TOKEN_CHART_COLOR[assetSymbol];
+            if(chartColor === undefined) {
+                chartColor = constant.BACKUP_CHART_COLOR[index];
+                index ++;
+            }
+            assetObject.color = chartColor;
            
             assetArray.push(assetObject);
             result.push(assetArray);

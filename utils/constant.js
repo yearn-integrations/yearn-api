@@ -19,7 +19,38 @@ const TOKEN_COINGECKO_ID = {
     ALCX: "alchemix",
     MTSLA: "mirrored-tesla",
     BTC: "bitcoin",
+    USDT: "tether",
+    USDC: "usd-coin",
+    DAI: "dai",
+    ADAI: "aave-dai",
+    AUSDC: "aave-usdc",
+    AUSDT: "aave-usdt",
 }
+
+const TOKEN_CHART_COLOR = {
+    BTC: "#F7931A",
+    ETH: "#D7DBEC",
+    USDT: "#26A17B",
+    USDC: "#2775CA",
+    DAI: "#F8BD60",
+    TUSD: "#2B2E7F",
+    MATIC: "#8247E5",
+    DOGE: "#C25E33",
+    BNB: "#F3DF2F",
+}
+
+const BACKUP_CHART_COLOR = [
+    "#07F2C3",
+    "#4BDFFF",
+    "#07F249",
+    "#C3F207",
+    "#F20707",
+    "#F24E07",
+    "#F22307",
+    "#F207A2",
+    "#C307F2",
+    "#6007F2"
+];
 
 const DAOCDV_ASSET_DISTRIBUTION = {
     ETH: { percent: 35, tokenId: TOKEN_COINGECKO_ID.ETH }, 
@@ -52,6 +83,15 @@ const DAOELO_ASSET_DISTRIBUTION = {
     MTSLA: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.MTSLA },
     WBTC: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.WBTC },
     RENDOGE: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.RENDOGE},
+}
+
+const DAOMPT_ASSET_DISTRIBUTION = {
+    USDC: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.USDC },
+    USDT: { percent: 16.665, tokenId: TOKEN_COINGECKO_ID.USDT },
+    DAI: { percent: 16.665, tokenId: TOKEN_COINGECKO_ID.DAI},
+    ADAI: { percent: 11.11, tokenId: TOKEN_COINGECKO_ID.ADAI},
+    AUSDC: { percent: 11.11, tokenId: TOKEN_COINGECKO_ID.AUSDC},
+    AUSDT: { percent: 11.11, tokenId: TOKEN_COINGECKO_ID.AUSDT}, 
 }
 
 const CONTRACT_IDS = {
@@ -106,7 +146,12 @@ module.exports = {
     DAOSTO_ASSET_DISTRIBUTION,
     DAOCUB_ASSET_DISTRIBUTION,
     DAOELO_ASSET_DISTRIBUTION,
+    DAOMPT_ASSET_DISTRIBUTION,
+    
     TOKEN_COINGECKO_ID,
     ETF_STRATEGIES,
-    STRATEGY_TYPE
+    STRATEGY_TYPE,
+
+    TOKEN_CHART_COLOR,
+    BACKUP_CHART_COLOR
 }
