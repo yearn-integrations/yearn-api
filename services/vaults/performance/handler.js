@@ -436,6 +436,29 @@ const pnlHandle = async (req, res) => {
   }
 };
 
+const processPerformanceData = (datas) => {
+  const basePrice = datas[0]["lp_token_price_usd"];
+  const btcBasePrice = datas[0]["btc_price"];
+  const ethBasePrice = datas[0]["eth_price"];
+
+  datas.forEach((data) => {
+    data["lp_performance"] = calculatePerformance(
+      basePrice,
+      data["lp_token_price_usd"]
+    );
+    data["btc_performance"] = calculatePerformance(
+      btcBasePrice,
+      data["btc_price"]
+    );
+    data["eth_performance"] = calculatePerformance(
+      ethBasePrice,
+      data["eth_price"]
+    );
+  });
+
+  return datas;
+}
+
 const performanceHandle = async (req, res) => {
   try {
     if (
@@ -474,7 +497,7 @@ const performanceHandle = async (req, res) => {
     const startTime = dateTimeHelper.getStartTimeFromParameter(req.params.days);
     const collection = req.params.farmer;
   
-    const result = (startTime == -1) 
+    let result = (startTime == -1) 
       ? await historicalDb.findAll(collection)
       : await historicalDb.findPerformanceWithTimePeriods(collection, dateTimeHelper.toTimestamp(startTime));
   
@@ -486,24 +509,7 @@ const performanceHandle = async (req, res) => {
     }
     
     if(startTime !== -1) {
-      const basePrice = result[0]["lp_token_price_usd"];
-      const btcBasePrice = result[0]["btc_price"];
-      const ethBasePrice = result[0]["eth_price"];
-
-      result.forEach((data) => {
-        data["lp_performance"] = calculatePerformance(
-          basePrice,
-          data["lp_token_price_usd"]
-        );
-        data["btc_performance"] = calculatePerformance(
-          btcBasePrice,
-          data["btc_price"]
-        );
-        data["eth_performance"] = calculatePerformance(
-          ethBasePrice,
-          data["eth_price"]
-        );
-      });
+      result = processPerformanceData(result); 
     }
 
     res.status(200).json({
@@ -523,5 +529,6 @@ module.exports = {
   savePerformance,
   pnlHandle,
   performanceHandle,
-  getTokenPrice
+  getTokenPrice,
+  processPerformanceData
 }

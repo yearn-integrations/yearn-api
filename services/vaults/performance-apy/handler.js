@@ -1,6 +1,7 @@
 const contractHelper = require("../../../utils/contract");
 const dateTimeHelper = require("../../../utils/dateTime");
 const constant = require("../../../utils/constant");
+const { processPerformanceData } = require("../../vaults/performance/handler");
 
 const historicalApyDb = require("../../../models/historical-apy.model");
 const performanceDb = require("../../../models/performance.model");
@@ -135,10 +136,12 @@ module.exports.handler = async(req,res) => {
 
     try {
         if(etfStrategies.includes(strategyId)) {
-            historicalData = await performanceDb.findPerformanceWithTimePeriods(
+            const result = await performanceDb.findPerformanceWithTimePeriods(
                 strategyId,
                 startTime, 
             );
+
+            historicalData = processPerformanceData(result);
         } else {    
             const collectionName = `${strategyId}_historical-apy`;
             historicalData = await historicalApyDb.findWithTimePeriods(
