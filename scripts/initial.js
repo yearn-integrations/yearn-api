@@ -187,4 +187,9 @@ db.tokens.insertMany([
     { tokenId: 'injective-protocol', symbol: 'INJ'},
     { tokenId: 'alchemix', symbol: 'ALCX'},
     { tokenId: 'mirrored-tesla', symbol: 'MTSLA'},
+    { tokenId: 'bitcoin', symbol: 'BTC'},
+    { tokenId: 'tether', symbol: 'USDT'},
+    { tokenId: 'aave-dai', symbol: 'ADAI'},
+    { tokenId: 'aave-usdc', symbol: 'AUSDC'},
+    { tokenId: 'aave-usdt', symbol: 'AUSDT'},
 ]);
