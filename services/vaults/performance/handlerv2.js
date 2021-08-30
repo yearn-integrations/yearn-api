@@ -271,7 +271,8 @@ const savePerformance = async (dateTime) => {
 };
 
 module.exports = {
-    savePerformance
+    savePerformance,
+    calculatePerformance
 }
 
 

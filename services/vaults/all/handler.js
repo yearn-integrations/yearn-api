@@ -5,8 +5,10 @@ const { findAllVaultCategory: findAllVaults } = require("../category/handler");
 const { findAllStrategiesAssetDistribution } = require("../distribution/handler");
 const { getVaultsStatistics } = require("../../user/vaults/statistics/handler");
 const { findAllHistoricalAPY } = require("../apy/save/historical-handle");
+const { calculatePerformance } = require("../performance/handlerv2");
 const performanceDb = require("../../../models/performance.model");
 const contractHelper = require("../../../utils/contract");
+const dateTimeHelper = require("../../../utils/dateTime");
 const constant = require("../../../utils/constant");
 const moment = require("moment");
 
@@ -54,15 +56,28 @@ const getStatisticsInfo = (statistics, vaultAddress) => {
 }
 
 const findAllPerformance = async () => {
-    // Only for daoCDV and daoSTO for now
     const etfTypeStrategies = constant.ETF_STRATEGIES;
+    const period = "7d";
+    const startTime = dateTimeHelper.toTimestamp(
+        dateTimeHelper.getStartTimeFromParameter(period)
+    );
 
     const returnResult = {};
     for(const strategy of etfTypeStrategies) {
-        const result = await performanceDb.findAll(strategy);
+        const result = await performanceDb.findPerformanceWithTimePeriods(
+            strategy,
+            startTime
+        );
         if(result.length > 0) {
             const lastDataIndex = result.length - 1;
-            returnResult[strategy] = result[lastDataIndex]["lp_performance"];
+            const basePrice = result[0]["lp_token_price_usd"];
+
+            const pnl = calculatePerformance(
+                basePrice,
+                result[lastDataIndex]["lp_token_price_usd"]
+            );
+
+            returnResult[strategy] = pnl;
         }
     }
 
@@ -98,7 +113,7 @@ const proccessingVault = async (obj) => {
         // obj["statistics"] = getStatisticsInfo(statistics, vaultAddress);
 
         if (etfStrategies.includes(key)) {
-            obj["lp_performance"] = performances[key];
+            obj["pnl"] = performances[key];
             obj["asset_distribution"] = assetsDistribution[key];
         }
         results[key] = obj;
