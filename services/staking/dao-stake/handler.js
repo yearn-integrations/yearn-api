@@ -18,6 +18,8 @@ const infuraWeb3 = new Web3(infuraUrl);
 const delayTime = 500;
 let contracts = [];
 
+const contractHelper = require("../../../utils/contract");
+
 // xDVGPrice Formula :  xDVG price = ( DVG amount of xDVG SC * DVG price) / xDVG amount
 const getxDVGPrice = async (xDVGAmount, dvgBalanceOfxDVG, dvgPrice) => {
     return (dvgBalanceOfxDVG * dvgPrice) / xDVGAmount;
@@ -96,7 +98,7 @@ const getTokenPrice = async () => {
             tokenId: 'ethDVG',
             price: ethDVGPoolPrice,
         });
-
+        
         return tokens;
     } catch (err) {
         console.log("Error in getTokenPrice(): ", err);
@@ -173,18 +175,25 @@ const fetchContractABI = async (address) => {
 };
 
 const getUniswapLPTokenPrice = async (poolContract, poolAddress, tokenPrices, token0Id, token1Id) => {
+    if(contracts.length <= 0) {
+        contracts = contractHelper.getContractsFromDomain();
+    }
+   
     const token0Address = await poolContract.methods.token0().call();
     const token1Address = await poolContract.methods.token1().call();
     const totalSupply = await poolContract.methods.totalSupply().call();
 
-    const token0Abi = await fetchContractABI(token0Address);
+    // Get implementation contract ABI instead of proxy ABI for DVD
+    let token0Abi = (token0Address.toLowerCase() === contracts.DVD.address.toLowerCase()) 
+        ? contracts.DVD.abi
+        : JSON.parse(await fetchContractABI(token0Address));
     const token1Abi = await fetchContractABI(token1Address);
 
     const token0 = await getContract({
         address: token0Address,
-        abi: JSON.parse(token0Abi),
+        abi: token0Abi,
     });
-
+    
     const token1 = await getContract({
         address: token1Address,
         abi: JSON.parse(token1Abi),
@@ -338,3 +347,5 @@ module.exports.saveStakedPools = async () => {
     }
     return;
 }
+
+module.exports.getUniswapLPTokenPrice = getUniswapLPTokenPrice;

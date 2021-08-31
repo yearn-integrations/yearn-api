@@ -260,7 +260,7 @@ const testContracts = {
   DVD: {
     address: "0x6639c554a299d58284e36663f609a7d94526fec0",
     abi: abi.DVDABIContract,
-    tokenId: "",
+    tokenId: "daoventures",
     network: constant.ETHEREUM,
   },
   vipDVD: {
@@ -294,12 +294,24 @@ const testContracts = {
     poolPercent: 0.51,
     network: constant.ETHEREUM,
   },
+  daoMine: {
+    address: "0x651bf479d19cccb9d8646e760a7c1befbcda7411",
+    abi: abi.daoMineContract,
+    startBlock: 26524610, // Start block from contract's START_BLOCK
+    poolPercent: 0.51,
+    network: constant.ETHEREUM,
+  },
   uniswap: {
     ethDVG: {
       address: "0x0A15e37442e2a41A3A51A9Eff7fE1DCE0E96f0bB",
       abi: abi.uniswapPairABIContract,
       network: constant.ETHEREUM,
     },
+    ethDVD: {
+      address: "0xf8098e1a33e5445322171c0acf785bd35def54fa",
+      abi: abi.uniswapPairABIContract,  
+      network: constant.ETHEREUM,
+    }
   },
   harvest: {
     hfDAI: {
@@ -567,8 +579,8 @@ const mainContracts = {
   DVD: {
     address: "0x77dcE26c03a9B833fc2D7C31C22Da4f42e9d9582",
     abi: abi.DVDABIContract,
-    tokenId: "",
-    network: constant.ETHEREUM,
+    tokenId: "daoventures",
+    network: constant.ETHEREUM
   },
   vipDVD: {
     name: "vipDVD",
@@ -601,12 +613,24 @@ const mainContracts = {
     poolPercent: 0.51,
     network: constant.ETHEREUM,
   },
+  daoMine: {
+    address: "0x651bf479d19cccb9d8646e760a7c1befbcda7411", // TODO Update mainnet address
+    abi: abi.daoMineContract,
+    startBlock: 0, // Start block from contract's START_BLOCK
+    poolPercent: 0.51,
+    network: constant.ETHEREUM,
+  },
   uniswap: {
     ethDVG: {
       address: "0xd11aD84D720A5e7fA11c8412Af6C1cAA815a436d",
       abi: abi.uniswapPairABIContract,
       network: constant.ETHEREUM,
     },
+    ethDVD: {
+      address: "0xce9add58ec5a07cb643faf7418eb94c193672844",
+      abi: abi.uniswapPairABIContract,  
+      network: constant.ETHEREUM,
+    }
   },
   chainLink: {
     USDT_ETH: {

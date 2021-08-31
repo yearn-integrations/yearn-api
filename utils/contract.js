@@ -181,5 +181,3 @@ module.exports.getBlockInformation = async (blockNumber, network) => {
         console.log("Error in getBlockInformation(): ", err);
     }
 }
-
-

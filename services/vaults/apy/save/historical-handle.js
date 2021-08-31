@@ -3,6 +3,7 @@ const historicalDb = require('../../../../models/historical-apy.model');
 const Web3 = require("web3");
 const moment = require("moment");
 const delay = require("delay");
+const { jobDelayTime }  = require("../../../../constant/delayTimeConfig");
 const _ = require("lodash");
 const vaults = require("./vaults");
 const { delayTime } = require("./config");
@@ -525,6 +526,8 @@ module.exports.findAllHistoricalAPY = async(startTime, network) => {
 // Cronjob
 module.exports.saveHandler = async () => {
   try {
+    await delay(jobDelayTime.saveHistoricalApy);
+
     const oneDayAgo = moment().subtract(1, "days").valueOf();
     const threeDaysAgo = moment().subtract(3, "days").valueOf();
     const oneWeekAgo = moment().subtract(1, "weeks").valueOf();

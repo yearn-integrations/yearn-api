@@ -234,6 +234,7 @@ const resultMapping = (apy) => {
 };
 
 module.exports.handler = async () => {
+  await delay(jobDelayTime.savePricePerFullShare);
   await getCurrentPrice();
 }
 
