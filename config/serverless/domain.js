@@ -88,6 +88,7 @@ const testContracts = {
       strategyABI: abi.yearnUSDTABIContract,
       contractType: "yearn",
       tokenId: "tether",
+      inceptionBlock: 24705457,
       network: constant.ETHEREUM,
     },
     yUSDC: {
@@ -97,6 +98,7 @@ const testContracts = {
       strategyABI: abi.yearnUSDCABIContract,
       contractType: "yearn",
       tokenId: "usd-coin",
+      inceptionBlock: 24705463,
       network: constant.ETHEREUM,
     },
     yDAI: {
@@ -106,6 +108,7 @@ const testContracts = {
       strategyABI: abi.yearnDAIABIContract,
       contractType: "yearn",
       tokenId: "dai",
+      inceptionBlock: 24705468,
       network: constant.ETHEREUM,
     },
     yTUSD: {
@@ -115,6 +118,7 @@ const testContracts = {
       strategyABI: abi.yearnTUSDABIContract,
       contractType: "yearn",
       tokenId: "true-usd",
+      inceptionBlock: 24738659,
       network: constant.ETHEREUM,
     },
     cUSDT: {
@@ -124,6 +128,7 @@ const testContracts = {
       strategyABI: abi.compoundStrategyContract,
       contractType: "compound",
       tokenId: "tether",
+      inceptionBlock: 24070008,
       network: constant.ETHEREUM,
     },
     cUSDC: {
@@ -133,6 +138,7 @@ const testContracts = {
       strategyABI: abi.compoundStrategyContract,
       contractType: "compound",
       tokenId: "usd-coin",
+      inceptionBlock: 24069986,
       network: constant.ETHEREUM,
     },
     cDAI: {
@@ -142,6 +148,7 @@ const testContracts = {
       strategyABI: abi.compoundStrategyContract,
       contractType: "compound",
       tokenId: "dai",
+      inceptionBlock: 24069965,
       network: constant.ETHEREUM,
     },
     daoCDV: {
@@ -151,6 +158,12 @@ const testContracts = {
       strategyABI: abi.citadelStrategyABIContract,
       contractType: "citadel",
       tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 25336169,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
       network: constant.ETHEREUM,
     },
     daoELO: {
@@ -160,6 +173,12 @@ const testContracts = {
       strategyABI: abi.elonApeStrategyContract,
       contractType: "elon",
       tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 25413059,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+      ],
       network: constant.ETHEREUM,
     },
     daoCUB: {
@@ -169,6 +188,12 @@ const testContracts = {
       strategyABI: abi.cubanApeStrategyContract,
       contractType: "cuban",
       tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 25536976,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+      ],
       network: constant.ETHEREUM,
     },
     daoSTO: {
@@ -178,6 +203,12 @@ const testContracts = {
       strategyABI: abi.daoFaangStonkStrategyContract,
       contractType: "daoFaang",
       tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 25867824,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
       network: constant.ETHEREUM,
     },
     hfDAI: {
@@ -187,6 +218,7 @@ const testContracts = {
       strategyABI: abi.hfStrategyContract,
       contractType: "harvest",
       tokenId: "dai",
+      inceptionBlock: 25281070,
       network: constant.ETHEREUM,
     },
     hfUSDC: {
@@ -196,6 +228,7 @@ const testContracts = {
       strategyABI: abi.hfStrategyContract,
       contractType: "harvest",
       tokenId: "usd-coin",
+      inceptionBlock: 25281070,
       network: constant.ETHEREUM,
     },
     hfUSDT: {
@@ -205,6 +238,7 @@ const testContracts = {
       strategyABI: abi.hfStrategyContract,
       contractType: "harvest",
       tokenId: "tether",
+      inceptionBlock: 25281070,
       network: constant.ETHEREUM,
     },
     daoMPT: {
@@ -214,6 +248,12 @@ const testContracts = {
       strategyABI: abi.moneyPrinterStrategyContract,
       contractType: "moneyPrinter",
       tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 16259595,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
       network: constant.POLYGON,
     },
   },
@@ -353,6 +393,7 @@ const mainContracts = {
       strategyABI: abi.yearnUSDTABIContract,
       contractType: "yearn",
       tokenId: "tether",
+      inceptionBlock: 12081150,
       network: constant.ETHEREUM,
     },
     yUSDC: {
@@ -362,6 +403,7 @@ const mainContracts = {
       strategyABI: abi.yearnUSDCABIContract,
       contractType: "yearn",
       tokenId: "usd-coin",
+      inceptionBlock: 12081158,
       network: constant.ETHEREUM,
     },
     yDAI: {
@@ -371,6 +413,7 @@ const mainContracts = {
       strategyABI: abi.yearnDAIABIContract,
       contractType: "yearn",
       tokenId: "dai",
+      inceptionBlock: 12081163,
       network: constant.ETHEREUM,
     },
     yTUSD: {
@@ -380,6 +423,7 @@ const mainContracts = {
       strategyABI: abi.yearnTUSDABIContract,
       contractType: "yearn",
       tokenId: "true-usd",
+      inceptionBlock: 12081177,
       network: constant.ETHEREUM,
     },
     cUSDT: {
@@ -389,6 +433,7 @@ const mainContracts = {
       strategyABI: abi.compoundStrategyContract,
       contractType: "compound",
       tokenId: "tether",
+      inceptionBlock: 12126099,
       network: constant.ETHEREUM,
     },
     cUSDC: {
@@ -398,6 +443,7 @@ const mainContracts = {
       strategyABI: abi.compoundStrategyContract,
       contractType: "compound",
       tokenId: "usd-coin",
+      inceptionBlock: 12125523,
       network: constant.ETHEREUM,
     },
     cDAI: {
@@ -407,6 +453,7 @@ const mainContracts = {
       strategyABI: abi.compoundStrategyContract,
       contractType: "compound",
       tokenId: "dai",
+      inceptionBlock: 12125533,
       network: constant.ETHEREUM,
     },
     daoCDV: {
@@ -416,6 +463,12 @@ const mainContracts = {
       strategyABI: abi.citadelStrategyABIContract,
       contractType: "citadel",
       tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 12586420,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
       network: constant.ETHEREUM,
     },
     daoELO: {
@@ -425,6 +478,12 @@ const mainContracts = {
       strategyABI: abi.elonApeStrategyContract,
       contractType: "elon",
       tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 12722655,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+      ],
       network: constant.ETHEREUM,
     },
     daoCUB: {
@@ -434,6 +493,12 @@ const mainContracts = {
       strategyABI: abi.cubanApeStrategyContract,
       contractType: "cuban",
       tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 12799447,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+      ],
       network: constant.ETHEREUM,
     },
     daoSTO: {
@@ -443,6 +508,12 @@ const mainContracts = {
       strategyABI: abi.daoFaangStonkStrategyContract,
       contractType: "daoFaang",
       tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 12932754,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
       network: constant.ETHEREUM,
     },
     daoMPT: {
@@ -452,6 +523,12 @@ const mainContracts = {
       strategyABI: abi.moneyPrinterStrategyContract,
       contractType: "moneyPrinter",
       tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 17566349,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
       network: constant.POLYGON,
     },
     hfDAI: {
@@ -461,6 +538,7 @@ const mainContracts = {
       strategyABI: abi.hfStrategyContract,
       contractType: "harvest",
       tokenId: "dai",
+      inceptionBlock: 12586496,
       network: constant.ETHEREUM,
     },
     hfUSDC: {
@@ -470,6 +548,7 @@ const mainContracts = {
       strategyABI: abi.hfStrategyContract,
       contractType: "harvest",
       tokenId: "usd-coin",
+      inceptionBlock: 12586496,
       network: constant.ETHEREUM,
     },
     hfUSDT: {
@@ -479,6 +558,7 @@ const mainContracts = {
       strategyABI: abi.hfStrategyContract,
       contractType: "harvest",
       tokenId: "tether",
+      inceptionBlock: 12586496,
       network: constant.ETHEREUM,
     },
   },

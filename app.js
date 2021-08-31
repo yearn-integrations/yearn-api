@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const compression = require('compression');
 const db = require("./config/db");
 const vaultsApy = require("./services/vaults/apy/handler");
 const userStatistics = require("./services/user/vaults/statistics/handler");
@@ -12,10 +13,13 @@ const vaultPerformance = require("./services/vaults/performance/handler");
 const stakeVIP = require("./services/staking/xdvg/handler");
 const stakePool = require("./services/staking/handler");
 const stakeXDvg = require("./services/staking/vipdvg/handler");
-const reimbursementAddresses = require("./services/reimbursement/handler")
+const reimbursementAddresses = require("./services/reimbursement/handler");
 const stakeDaoStakes = require("./services/staking/dao-stake/handler");
 const specialEvent = require("./services/user/special-event/handler");
 const reimburse = require("./services/user/reimburse/handler");
+const allFarmers = require("./services/vaults/all/handler");
+const vaultAssetDistribution = require("./services/vaults/distribution/handler");
+const performanceApy = require("./services/vaults/performance-apy/handler");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 8080;
@@ -45,6 +49,7 @@ async function init() {
     jobs.saveABIPools();
     jobs.saveVipApr();
     jobs.savePerformance();
+    jobs.saveTokenPrice();
   });
 
   app.use(cors());
@@ -54,24 +59,33 @@ async function init() {
     })
   );
   app.use(bodyParser.json());
+  app.use(compression())
 
   app.get("/vaults/apy", (req, res) => vaultsApy.handler(res));
-  app.get("/user/:userAddress/vaults/statistics", (req, res) =>
-    userStatistics.handler(req, res)
-  );
-  app.get("/user/:userAddress/vaults/transactions", (req, res) =>
-    userTransactions.handler(req, res)
-  );
+  app.get("/vaults/:network/all", (req, res) => allFarmers.handler(req, res));
   app.get("/vaults/price/:farmer/:days", (req, res) =>
     vaultsPrice.handleHistoricialPrice(req, res)
   );
+  app.get("/vaults/price/:network/all/:days", (req, res) => {
+    vaultsPrice.handleAllHistoricialPrice(req, res)
+  });
+  app.get("/vaults/performance-apy/:strategy/:days", (req, res) => performanceApy.handler(req, res));
   app.get("/vaults/historical-apy/:contractAddress/:days", (req, res) =>
     vaultHistoricalAPYSave.handleHistoricialAPY(req, res)
   );
+  app.get("/vaults/historical-apy/:network/all/:days", (req, res) => {
+    vaultHistoricalAPYSave.handleAllHistoricalAPY(req, res)
+  });
   app.get("/vaults/tvl/total", (req, res) => vaultsTvl.totalHandle(req, res));
   app.get("/vaults/tvl/:farmer", (req, res) => vaultsTvl.tvlHandle(req, res));
-  app.get("/vaults/category", (req, res) =>
-    vaultCategory.getVaultCategory(req, res)
+  app.get("/vaults/tvl/find/all", (req, res) => vaultsTvl.getAllTVLHandler(req, res));
+  app.get("/vaults/category", (req, res) => vaultCategory.getVaultCategory(req, res));
+  app.get("/vaults/:farmerId/distribution", (req, res) => vaultAssetDistribution.handler(req, res));
+  app.get("/user/:userAddress/:network/vaults/statistics", (req, res) =>
+    userStatistics.handler(req, res)
+  );
+  app.get("/user/:userAddress/:network/vaults/transactions", (req, res) =>
+    userTransactions.handler(req, res)
   );
   app.get("/staking/get-vip-tokens", (req, res) =>
     stakeVIP.getVipDVGToken(req, res)
@@ -105,7 +119,7 @@ async function init() {
   app.get("/reimbursement-addresses/dvg/:address", (req, res) =>
     reimbursementAddresses.handler(req, res)
   );
-  
+
   app.get("/vaults/pnl/:farmer/:days", (req, res) =>
     vaultPerformance.pnlHandle(req, res)
   );
@@ -117,7 +131,7 @@ async function init() {
     stakePool.snapshotEmergency(req, res)
   );
 
-  app.get('/user/reimburse-address/:address', (req, res) => 
+  app.get('/user/reimburse-address/:address', (req, res) =>
     reimburse.getReimburseAddress(req, res)
   );
 
