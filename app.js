@@ -10,6 +10,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 
 const db = require("./config/db");
+const jobs = require("./jobs/task");
 const port = process.env.PORT || 8080;
 
 const userRouter = require("./routes/userRoute");
