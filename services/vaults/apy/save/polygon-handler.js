@@ -39,8 +39,7 @@ const getApyForVault = async (vault) => {
         if(apy === 0) {
             // Use back previous value if apy = 0
             const mpApyObj = await apyDb.getApy("daoMPT");
-            console.log(`MP Apy Obj ${mpApyObj.moneyPrinterApy}, timestamp: ${mpApyObj.timestamp}`);
-            apy = mpApyObj.moneyPrinterApy;
+            apy = mpApyObj ? mpApyObj.moneyPrinterApy : 0;
         }
         
         return {
