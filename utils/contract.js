@@ -68,12 +68,30 @@ module.exports.getPolygonCurrentBlockNumber = async() => {
     }
 }
 
+// Get Ethereum Block By Timeline
+module.exports.getEthereumBlockByTimeline = async(timeline) => {
+    try {
+        return (await ethereumBlocks.getDate(timeline));
+    } catch (err) {
+        console.log('Error in getEthereumBlockByTimeline()', err);
+    }
+}
+
 // Get ethereum block number by timeline
 module.exports.getEthereumBlockNumberByTimeline = async(timeline) => {
     try {
         return (await ethereumBlocks.getDate(timeline)).block;
     } catch (err) {
         console.log('Error in getEthereumCurrentBlockNumber()', err);
+    }
+}
+
+// Get Polygon Block By Timeline
+module.exports.getPolygonBlockByTimeline = async(timeline) => {
+    try {
+        return (await polygonBlocks.getDate(timeline));
+    } catch (err) {
+        console.log('Error in getPolygonBlockByTimeline()', err);
     }
 }
 
@@ -91,6 +109,77 @@ module.exports.getContractsFromDomain = () => {
     return (process.env.PRODUCTION !== null && process.env.PRODUCTION != "")
       ? mainContracts
       : testContracts;
+}
+
+// Get First Block for every period stated within start and end, for ethereum only
+module.exports.getEveryEthereum = async (duration, start, end, every, after) => {
+    try {
+        return await ethereumBlocks.getEvery(
+            duration,
+            start, 
+            end,
+            every, 
+            after
+        );
+    } catch (err) {
+        console.error(`Error in getEveryEthereum(): `, err);
+    }
+}
+
+// Get First Block for every period stated within start and end, for Polygon only
+module.exports.getEveryPolygon = async (duration, start, end, every, after) => {
+    try {
+        return await polygonBlocks.getEvery(
+            duration,
+            start, 
+            end,
+            every, 
+            after
+        );
+    } catch (err) {
+        console.error(`Error in getEveryPolygon(): `, err);
+    }
+}
+
+// Get block information (Ethereum)
+module.exports.getEthereumBlockInfo = async (blockNumber) => {
+    try {
+        if(!blockNumber) {
+            return null;
+        }
+        return await web3.eth.getBlock(blockNumber);
+    } catch (err) {
+        console.log("Error in getEthereumBlockInfo(): ", err);
+    }
+}
+
+// Get block information (Polygon)
+module.exports.getPolygonBlockInfo = async (blockNumber) => {
+    try {
+        if(!blockNumber) {
+            return null;
+        }
+        return await polygonWeb3.eth.getBlock(blockNumber);
+    } catch (err) {
+        console.log("Error in getEthereumBlockInfo(): ", err);
+    }
+}
+
+// Get block information by network 
+module.exports.getBlockInformation = async (blockNumber, network) => {
+    try {
+        if(!network || !blockNumber) {
+            return null;
+        }
+        if(network === constant.ETHEREUM) {
+            return await this.getEthereumBlockInfo(blockNumber);
+        }
+        if(network === constant.POLYGON) {
+            return await this.getPolygonBlockInfo(blockNumber);
+        }
+    } catch (err) {
+        console.log("Error in getBlockInformation(): ", err);
+    }
 }
 
 // Get contract's total supply 
@@ -119,3 +208,5 @@ module.exports.decimals = async(contract) => {
         console.error("Error in contract helper decimals(): ", err);
     }
 }
+
+
