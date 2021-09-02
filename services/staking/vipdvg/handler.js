@@ -134,12 +134,8 @@ module.exports.getxDVGStake = async(req, res) => {
 
         const xDVGInfo = contracts["vipDVG"];
         const dvgInfo = contracts["DVG"];
-
-        // Create contract object
-        const xDVGContract = await getContract(xDVGInfo);
-        const dvgContract = await getContract(dvgInfo);
          
-        const result = await getVipTokenInfo(dvgContract, xDVGContract, xDVGInfo, dvgInfo.tokenId);
+        const result = await getVipTokenInfo(dvgInfo, xDVGInfo);
         const finalResult = {
             aprOneDay: result.aprOneDay,
             aprOneWeek: result.aprOneWeek,
@@ -171,17 +167,9 @@ module.exports.getxDVDStake = async (req, res) => {
 
         const xDVDInfo = contracts["vipDVD"];
         const dvdInfo = contracts["DVD"];
-
-        // Create contract object
-        const xDVDContract = await getContract(xDVDInfo);
-        const dvdContract = await getContract(dvdInfo);
          
-        const result = await getVipTokenInfo(dvdContract, xDVDContract, xDVDInfo, dvdInfo.tokenId);
+        const result = await getVipTokenInfo(dvdInfo, xDVDInfo);
         const finalResult = {
-            aprOneDay: result.aprOneDay,
-            aprOneWeek: result.aprOneWeek,
-            aprOneMonth: result.aprOneMonth,
-            aprOneYear: result.aprOneYear,
             apr: result.apr,
             dvdPrice: result.tokenPrice,
             xDVDPrice: result.vipTokenPrice,
