@@ -59,14 +59,7 @@ const getVipDvgAPR = async(days) => {
 
 const getVipDvdAPR = async() => {
     try {
-        const aprResult = await calculateVipDvdApr();
-        const {
-            apr,
-            lastUpdatedBlock,
-            lastUpdatedBlockTimestamp
-        } = aprResult;
-
-        return aprResult;
+        return await calculateVipDvdApr();
     } catch (err) {
         console.error(`Error in getVipDvdAPR():`, err);
     }

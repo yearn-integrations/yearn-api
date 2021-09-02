@@ -113,7 +113,7 @@ const getStakedDVDInXDVD = async(contracts) => {
         );
     
         // If latestRecord block number found, use the block number, else start from uni bot / dvd dist bot inception block.
-        if(latestRecord[0] && latestRecord[0].blockNumber) {
+        if(latestRecord && latestRecord[0] && latestRecord[0].blockNumber) {
             blockNumber = latestRecord[0].blockNumber;
         } else {
             const uniBotStartBlock = contracts.bot.unibot.startBlock;
@@ -193,7 +193,7 @@ const calculateVipDvdApr = async () => {
         / (${distributedMonth} * ${totalStakedDvdInXDvd}) * 100`);
 
     const result = {
-        ...apr,
+        apr,
         lastUpdatedBlock: stakeDvdResult.lastUpdatedBlock,
         lastUpdatedBlockTimestamp: stakeDvdResult.lastUpdatedBlockTimestamp
     };
