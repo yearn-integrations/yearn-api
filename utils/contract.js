@@ -182,4 +182,16 @@ module.exports.getBlockInformation = async (blockNumber, network) => {
     }
 }
 
+// Convert Wei value to ether value
+module.exports.fromWei = async(value) => {
+    try {
+        if(!value) {
+            return null;
+        }
+        return await web3.utils.fromWei(value, "ether");
+    } catch(err) {
+        console.log("Error in fromWei(): ", err);
+    }
+}
+
 
