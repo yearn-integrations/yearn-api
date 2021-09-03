@@ -584,7 +584,6 @@ const readVault = async (vault, contracts) => {
 
 module.exports.handler = async () => {
   try {
-    await delay(jobDelayTime.saveVaultApy);
     const oneDayAgo = moment().subtract(1, "days").valueOf();
     const threeDaysAgo = moment().subtract(3, "days").valueOf();
     const oneWeekAgo = moment().subtract(1, "weeks").valueOf();
