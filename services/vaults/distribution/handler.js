@@ -6,7 +6,7 @@ const dateTimeHelper = require("../../../utils/dateTime");
 const constant = require("../../../utils/constant");
 const tokenDb = require("../../../models/token.model");
 
-let delayTime = 5000;
+let delayTime = 10000;
 let tokens = {};
 
 const getStrategyUnderlyingAssets = (strategyId) => {
@@ -95,14 +95,30 @@ const saveAssetsPrice = async() => {
                 dateTimeHelper.subtractDay(1, new Date())
             )
         );
-       
+        const todayDate = new Date().getTime() // today date in timestamp
+
+        const tokenIds = assets.map(a => a.tokenId);
+        const todayCoingeckoPrices = await tokenHelper.findTokenPrice(tokenIds, "usd");
+
         for(let i = 0; i < assets.length; i++) {
             const asset = assets[i];
-    
-            const todayPrice = await tokenHelper.getTokenPriceInUSD(asset.tokenId);
-            delay(delayTime);
-            const yesterdayPrice = await tokenHelper.getTokenHistoricalPriceInUSD(asset.tokenId, yesterdayDate);
+
+            const todayPrice = todayCoingeckoPrices[asset.tokenId].usd;
+            let yesterdayPrice;
+
+            // check if cronjob is run on same day, apply only on token cronjob which is not run for first time
+            if(asset.timestamp !== undefined) {
+                isCronjobRunOnSameDay = dateTimeHelper.isSame(todayDate, asset.timestamp, "day");
+                yesterdayPrice = (isCronjobRunOnSameDay)
+                    ? asset.oneDayPrice // pick today's yesterday price
+                    : asset.currentPrice; // yesterday's current price has become today's yesterday price
+            }
            
+            if(yesterdayPrice === undefined || yesterdayPrice === null) {
+                await delay(delayTime);
+                yesterdayPrice =  await tokenHelper.getTokenHistoricalPriceInUSD(asset.tokenId, yesterdayDate);
+            }
+          
             asset.currentPrice = todayPrice;
             asset.oneDayPrice = yesterdayPrice;
             asset.changePercentage = calculateChangePercentage(yesterdayPrice, todayPrice);
@@ -115,7 +131,7 @@ const saveAssetsPrice = async() => {
 }
 
 module.exports.handler = async(req, res) => {
-    try {
+    try { 
         const farmer = req.params.farmerId === "" || req.params.farmerId === null
             ? "all"
             : req.params.farmerId;
