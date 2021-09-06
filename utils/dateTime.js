@@ -51,6 +51,11 @@ module.exports.formatDate = (date, format = null) => {
     }
 }
 
+module.exports.addDay = (addDays, date) => {
+    let selectedDate = checkDate(date);
+    return moment(selectedDate).subtract(addDays, "days");
+}
+
 module.exports.subtractDay = (subtractDays, date) => {
     let selectedDate = checkDate(date);
     return moment(selectedDate).subtract(subtractDays, "days");
@@ -74,5 +79,21 @@ module.exports.getStartOfDay = (momentDate) => {
         return momentDate.startOf("day");
     } catch(err) {
         console.err(`[dateTimeHelper] getStartOfDay(): `, err);
+    }
+}
+
+module.exports.isSame = (date1, date2, compareUnit) => {
+    try {
+        if(!date1 || !date2 || date1 === undefined || date2 === undefined) {
+            throw(`Missing date1 / date2 for comparison`);
+        }
+
+        const supportedUnit = ["year","month","week", "day", "hour", "minute", "second"];
+        if(compareUnit === "" || compareUnit === undefined || !supportedUnit.includes(compareUnit)) {
+            throw(`Invalid compare unit. Please use "year","month","week", "day", "hour", "minute", "second" `);
+        }
+        return moment(date1).isSame(moment(date2), compareUnit);
+    } catch (err) {
+        console.error(`Error in isSame(): `, err);
     }
 }

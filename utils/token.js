@@ -22,12 +22,12 @@ module.exports.getTokenHistoricalPriceInUSD = async(tokenId, date) => {
             throw(`Missing Date`);
         }
         const data = await CoinGeckoClient.coins.fetchHistory(tokenId, {date: date});
-
+      
         return (Object.keys(data.data).length !== 0) 
             ? data.data["market_data"]["current_price"]["usd"]
             : 1;
     } catch(err) {
-        console.error(`Error in getTokenHistoricalPriceInUSD(): `, err);
+        console.error(`Error in getTokenHistoricalPriceInUSD(), ${tokenId}: `, err);
     }
 }
 
