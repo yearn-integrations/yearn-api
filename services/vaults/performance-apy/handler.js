@@ -2,6 +2,8 @@ const contractHelper = require("../../../utils/contract");
 const dateTimeHelper = require("../../../utils/dateTime");
 const constant = require("../../../utils/constant");
 const { processPerformanceData } = require("../../vaults/performance/handler");
+const { getYearnAPY, getCompoundAPY } = require("../../vaults/apy/handler");
+const { calculatePerformance } = require("../../vaults/performance/handlerv2");
 
 const historicalApyDb = require("../../../models/historical-apy.model");
 const performanceDb = require("../../../models/performance.model");
@@ -133,6 +135,7 @@ module.exports.handler = async(req,res) => {
 
     let result = [];
     let historicalData = [];
+    let apy = 0;
 
     try {
         if(etfStrategies.includes(strategyId)) {
@@ -140,8 +143,19 @@ module.exports.handler = async(req,res) => {
                 strategyId,
                 startTime, 
             );
-
             historicalData = processPerformanceData(result);
+
+            // PNL 
+            if(result.length > 0) {
+                const lastDataIndex = result.length - 1;
+                const basePrice = result[0]["lp_token_price_usd"];
+    
+                apy = calculatePerformance(
+                    basePrice,
+                    result[lastDataIndex]["lp_token_price_usd"]
+                ) * 100;
+                
+            }
         } else {    
             const collectionName = `${strategyId}_historical-apy`;
             historicalData = await historicalApyDb.findWithTimePeriods(
@@ -149,15 +163,34 @@ module.exports.handler = async(req,res) => {
                 dateTimeHelper.getCurrentTimestamp(),
                 collectionName
             );
+
+            const {contractType} = contracts.farmer[strategyId];
+            switch(contractType) {
+                case "compound": 
+                    apy = await getCompoundAPY(strategyId);
+                    break;
+                case "yearn": 
+                    apy = await getYearnAPY(strategyId);
+                    break;
+                case "harvest":
+                    break;
+                default:
+                    break;
+            }
         }
 
         if(historicalData.length > 0) {
             result = processChartData(historicalData, strategyType, strategyId);
         }
+
+        const finalResult = {
+            chartData: result,
+            performanceHistory: apy
+        }
     
         res.status(200).json({
             message: "Success",
-            body: result
+            body: finalResult
         });
     } catch(err) {
         console.error(`[performance/apy] Error in handler(): `, err);

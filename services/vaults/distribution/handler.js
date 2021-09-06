@@ -1,18 +1,16 @@
+const delay = require("delay");
+
+const tokenHelper = require("../../../utils/token");
+const dateTimeHelper = require("../../../utils/dateTime");
+
 const constant = require("../../../utils/constant");
 const tokenDb = require("../../../models/token.model");
-const moment = require("moment");
-const delay = require("delay");
-const { getTokenPrice } = require("../performance/handler");
 
 let delayTime = 5000;
 let tokens = {};
 
 const getStrategyUnderlyingAssets = (strategyId) => {
     return constant[`${strategyId.toUpperCase()}_ASSET_DISTRIBUTION`];
-}
-
-const getStartOfDay = (momentDate) => {
-    return momentDate.startOf("day").format("DD-MM-YYYY");
 }
 
 const calculateChangePercentage = (oldPrice, newPrice) => {
@@ -92,15 +90,18 @@ const saveAssetsPrice = async() => {
             throw "Token current price not found!";
         }
 
-        const todayDate = getStartOfDay(moment(new Date()));
-        const yesterdayDate = getStartOfDay(moment(new Date()).subtract(1, "day"));
-    
+        const yesterdayDate = await dateTimeHelper.formatDate(
+            dateTimeHelper.getStartOfDay(
+                dateTimeHelper.subtractDay(1, new Date())
+            )
+        );
+       
         for(let i = 0; i < assets.length; i++) {
             const asset = assets[i];
     
-            const todayPrice = await getTokenPrice(asset.tokenId, todayDate);
+            const todayPrice = await tokenHelper.getTokenPriceInUSD(asset.tokenId);
             delay(delayTime);
-            const yesterdayPrice = await getTokenPrice(asset.tokenId, yesterdayDate);
+            const yesterdayPrice = await tokenHelper.getTokenHistoricalPriceInUSD(asset.tokenId, yesterdayDate);
            
             asset.currentPrice = todayPrice;
             asset.oneDayPrice = yesterdayPrice;

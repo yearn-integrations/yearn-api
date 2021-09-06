@@ -232,7 +232,7 @@ const handler = async (req, res) => {
   
   const vaultsStatistics = await getVaultsStatistics(userAddress, network);
   res.status(200).json({
-    message: '',
+    message: 'Success',
     body: vaultsStatistics
   });
 };

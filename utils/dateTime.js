@@ -65,3 +65,14 @@ module.exports.subtractYear = (subtractYears, date) => {
     let selectedDate = checkDate(date);
     return moment(selectedDate).subtract(subtractYears, "years");
 }
+
+module.exports.getStartOfDay = (momentDate) => {
+    try {
+        if(!momentDate || momentDate === undefined) {
+            throw(`Missing Date Object`);
+        }
+        return momentDate.startOf("day");
+    } catch(err) {
+        console.err(`[dateTimeHelper] getStartOfDay(): `, err);
+    }
+}
