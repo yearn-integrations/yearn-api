@@ -114,3 +114,4 @@ module.exports.handler = handler;
 module.exports.getYearnAPY = getYearnAPY;
 module.exports.getCompoundAPY = getCompoundAPY;
 module.exports.getEarnAPR = getEarnAPR;
+module.exports.getVaultsApy = getVaultsApy;
