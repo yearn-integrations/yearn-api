@@ -75,7 +75,7 @@ const findAllPerformance = async () => {
             const pnl = calculatePerformance(
                 basePrice,
                 result[lastDataIndex]["lp_token_price_usd"]
-            );
+            ) * 100;
 
             returnResult[strategy] = pnl;
         }

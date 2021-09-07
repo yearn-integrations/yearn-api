@@ -423,7 +423,8 @@ const pnlHandle = async (req, res) => {
     const pnl = calculatePerformance(
       basePrice,
       result[lastDataIndex]["lp_token_price_usd"]
-    );
+    ) * 100;
+
     return res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
       body: pnl,
@@ -445,15 +446,15 @@ const processPerformanceData = (datas) => {
     data["lp_performance"] = calculatePerformance(
       basePrice,
       data["lp_token_price_usd"]
-    );
+    ) * 100;
     data["btc_performance"] = calculatePerformance(
       btcBasePrice,
       data["btc_price"]
-    );
+    ) * 100;
     data["eth_performance"] = calculatePerformance(
       ethBasePrice,
       data["eth_price"]
-    );
+    ) * 100;
   });
 
   return datas;
