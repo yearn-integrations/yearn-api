@@ -57,7 +57,7 @@ const getStatisticsInfo = (statistics, vaultAddress) => {
 
 const findAllPerformance = async () => {
     const etfTypeStrategies = constant.ETF_STRATEGIES;
-    const period = "7d";
+    const period = "30d";
     const startTime = dateTimeHelper.toTimestamp(
         dateTimeHelper.getStartTimeFromParameter(period)
     );
@@ -75,7 +75,7 @@ const findAllPerformance = async () => {
             const pnl = calculatePerformance(
                 basePrice,
                 result[lastDataIndex]["lp_token_price_usd"]
-            );
+            ) * 100;
 
             returnResult[strategy] = pnl;
         }
