@@ -4,6 +4,7 @@ const historicalDb = require('../../../../models/historical-apy.model');
 const Web3 = require("web3");
 const moment = require("moment");
 const delay = require("delay");
+const { jobDelayTime }  = require("../../../../constant/delayTimeConfig");
 const _ = require("lodash");
 const vaults = require("./vaults");
 const EthDater = require("./ethereum-block-by-date.js");
@@ -713,6 +714,8 @@ const getHarvestFarmerAPR = async (vaultData) => {
 
 module.exports.saveHandler = async () => {
   try {
+    await delay(jobDelayTime.saveHistoricalApy);
+
     const oneDayAgo = moment().subtract(1, "days").valueOf();
     const threeDaysAgo = moment().subtract(3, "days").valueOf();
     const oneWeekAgo = moment().subtract(1, "weeks").valueOf();

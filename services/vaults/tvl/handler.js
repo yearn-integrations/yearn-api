@@ -19,6 +19,8 @@ const {
   testContracts,
   mainContracts,
 } = require("../../../config/serverless/domain");
+const delay = require("delay");
+const { jobDelayTime } = require("../../../constant/delayTimeConfig");
 
 const getDecimals = async (contract) => {
   try {

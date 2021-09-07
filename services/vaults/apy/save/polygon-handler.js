@@ -15,6 +15,7 @@ let polygonBlockNumber = {
     current: 0,
     oneDay: 0,
 }
+const { jobDelayTime } = require("../../../../constant/delayTimeConfig");
 
 
 const getApyForVault = async (vault) => {

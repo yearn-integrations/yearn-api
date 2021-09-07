@@ -8,6 +8,7 @@ const vaultSave = require("../services/vaults/save/handler");
 const priceSave = require("../services/vaults/price/handler");
 const tvlSave = require("../services/vaults/tvl/handler");
 const stakeSave = require("../services/staking/dao-stake/handler");
+const daomineSave = require("../services/staking/daomine/handler");
 const poolSave = require("../services/staking/handler");
 const vipDVG = require("../services/staking/vipdvg/handler");
 const performanceSave = require("../services/vaults/performance/handler");
@@ -186,6 +187,21 @@ const saveStakedPoolsHandler = async() => {
   console.log(`[saveStakedPools] END: ${new Date().getTime()}`);
 }
 
+/** Store Historical Stake Pools for DAOmine v2 */
+const saveDAOmineHistoricalPools = async() => {
+  await daomineSave.saveDAOminePools();
+  cron.schedule(
+    "*/5 * * * *",
+    async () => {
+      console.log("[saveDAOmineHistoricalPools]", new Date().getTime());
+      await daomineSave.saveDAOminePools();
+    },
+    {
+      scheduled: true,
+    }
+  );
+}
+
 /** Store Stake Pools ABI */
 const saveABIPools = async () => {
   await delay(jobDelayTime.saveABIPools);
@@ -256,6 +272,7 @@ module.exports = {
   saveHistoricalAPY,
   savePolygonHistoricalAPY,
   saveHistoricalPools,
+  saveDAOmineHistoricalPools,
   saveABIPools,
   saveVipApr,
   savePerformance,

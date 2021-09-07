@@ -77,6 +77,25 @@ db.stake_pool.insertMany([
     }
 ]);
 
+db.daomine_pool.insertMany([
+    {
+        name: 'vipDVD',
+        label: 'vipDVD LP',
+        contract_address: '0x4bb18f377a9d2dd62a6af7d78f6e7673e0e0f648', // TODO: Update to mainnet address
+        status: 'A',
+        pid: '0',
+        category: 'Basic',
+        tokenId: 'xDVD', 
+        symbol: 'xDVD',
+        startBlock: 26524610,
+        deposit: true,
+        withdraw: true,
+        emergencyWithdraw: false,
+        compound: true,
+        harvest: true,
+    },
+]);
+
 // Testnet Contracts
 db.vault_categories.insertMany([
     { name: 'advance', contract_address: '0x6B150E9BD70E216775c8b73270E64e870a3110c1', symbol: 'yUSDT' },
@@ -156,6 +175,73 @@ db.stake_pool.insertMany([
         deposit: false,
         withdraw: true,
         emergencyWithdraw: true,
+    },
+]);
+
+db.daomine_pool.insertMany([
+    {
+        name: 'vipDVD',
+        label: 'vipDVD LP',
+        contract_address: '0x4bb18f377a9d2dd62a6af7d78f6e7673e0e0f648',
+        status: 'A',
+        pid: '0',
+        category: 'Basic',
+        tokenId: 'xDVD', 
+        symbol: 'xDVD',
+        startBlock: 26524610,
+        deposit: true,
+        withdraw: true,
+        emergencyWithdraw: false,
+        compound: true,
+        harvest: true,
+    },
+    {
+        name: 'daoCDV',
+        label: 'DAO Citadel LP',
+        contract_address: '0x626c25ca5b86277f395c0e40dbdf51f2a302ab43',
+        status: 'A',
+        pid: '2',
+        category: 'Expert',
+        tokenId: 'ethereum', 
+        symbol: 'daoCDV',
+        startBlock: 26670259,
+        deposit: true,
+        withdraw: true,
+        emergencyWithdraw: false,
+        compound: true,
+        harvest: true,
+    },
+    {
+        name: 'daoSTO',
+        label: 'DAO FAANG Stonk LP',
+        contract_address: '0xd6af81e5288be43137debf969d7f2c03482c8cc1',
+        status: 'A',
+        pid: '3',
+        category: 'Advance',
+        tokenId: 'tether', 
+        symbol: 'daoSTO',
+        startBlock: 26670264,
+        deposit: true,
+        withdraw: true,
+        emergencyWithdraw: false,
+        compound: true,
+        harvest: true,
+    },
+    {
+        name: 'ETH<->DVD',
+        label: 'Uniswap DVD-ETH LP',
+        contract_address: '0xf8098e1a33e5445322171c0acf785bd35def54fa',
+        status: 'A',
+        pid: '4',
+        category: 'Basic',
+        tokenId: 'ethDVD', 
+        symbol: 'ethDVD',
+        startBlock: 26678186,
+        deposit: true,
+        withdraw: true,
+        emergencyWithdraw: false,
+        compound: true,
+        harvest: true,
     },
 ]);
 

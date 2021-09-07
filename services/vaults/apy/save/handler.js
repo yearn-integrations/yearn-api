@@ -17,6 +17,7 @@ const archiveNodeWeb3 = new Web3(archiveNodeUrl);
 const infuraWeb3 = new Web3(infuraUrl);
 const blocks = new EthDater(archiveNodeWeb3, delayTime);
 const { testContracts, mainContracts } = require('../../../../config/serverless/domain');
+const { jobDelayTime } = require("../../../../constant/delayTimeConfig");
 
 let currentBlockNbr;
 let oneDayAgoBlock;
@@ -640,6 +641,7 @@ const getHarvestFarmerAPR = async (vaultData) => {
 
 module.exports.handler = async () => {
   try {
+    await delay(jobDelayTime.saveVaultApy);
     const oneDayAgo = moment().subtract(1, "days").valueOf();
     const threeDaysAgo = moment().subtract(3, "days").valueOf();
     const oneWeekAgo = moment().subtract(1, "weeks").valueOf();

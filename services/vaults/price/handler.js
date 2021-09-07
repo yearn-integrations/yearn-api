@@ -18,6 +18,7 @@ const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
 const archiveNodeWeb3 = new Web3(archiveNodeUrl);
 
 const contractHelper = require("../../../utils/contract");
+const { jobDelayTime } = require("../../../constant/delayTimeConfig");
 
 const getPriceFromChainLink = async () => {
   let contract, price = 0;
@@ -251,6 +252,7 @@ const getHistoricalPrice = async (startTime, collection) => {
 }
 
 module.exports.handler = async () => {
+  await delay(jobDelayTime.savePricePerFullShare);
   await getCurrentPrice();
 }
 

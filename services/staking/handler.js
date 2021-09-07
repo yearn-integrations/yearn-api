@@ -1,8 +1,10 @@
 const db = require("../../models/stake-pool.model");
+const daomineDb = require("../../models/daomine-pool.model");
 const snapshot = require("../../models/emergency-withdraw.model");
 const fetch = require("node-fetch");
 const delay = require("delay");
 const _ = require("lodash");
+const { jobDelayTime } = require("../../constant/delayTimeConfig");
 
 const delayTime = 500;
 
@@ -29,6 +31,7 @@ const getPoolInfo = async (pool) => {
 
 module.exports.savePoolInfo = async () => {
     try {
+        await delay(jobDelayTime.saveABIPools);
         const pools = await db.findAll();
         const poolSize = _.size(pools);
         for (idx = 0; idx < poolSize; idx++) {
@@ -46,6 +49,35 @@ module.exports.getPools = async (req, res) => {
     try {
         const pls = [];
         const pools = await db.findAll();
+        const poolSize = _.size(pools);
+        for (idx = 0; idx < poolSize; idx++) {
+            if (pools[idx].status === 'A') {
+                delete pools[idx]._id;
+                pls.push(pools[idx]);
+            }
+        }
+
+        res.status(200).json({
+            message: 'Successful Response',
+            body: {
+                pools: pls,
+            }
+        });
+    } catch (err) {
+        res.status(200).json({
+            message: err.message,
+            body: null
+        });
+    }
+
+    return;
+}
+
+
+module.exports.getDAOminePools = async (req, res) => {
+    try {
+        const pls = [];
+        const pools = await daomineDb.findAll();
         const poolSize = _.size(pools);
         for (idx = 0; idx < poolSize; idx++) {
             if (pools[idx].status === 'A') {

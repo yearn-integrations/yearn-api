@@ -254,12 +254,24 @@ const testContracts = {
     poolPercent: 0.51,
     network: constant.ETHEREUM,
   },
+  daoMine: {
+    address: "0x651bf479d19cccb9d8646e760a7c1befbcda7411",
+    abi: abi.daoMineContract,
+    startBlock: 26524610, // Start block from contract's START_BLOCK
+    poolPercent: 0.51,
+    network: constant.ETHEREUM,
+  },
   uniswap: {
     ethDVG: {
       address: "0x0A15e37442e2a41A3A51A9Eff7fE1DCE0E96f0bB",
       abi: abi.uniswapPairABIContract,
       network: constant.ETHEREUM,
     },
+    ethDVD: {
+      address: "0xf8098e1a33e5445322171c0acf785bd35def54fa",
+      abi: abi.uniswapPairABIContract,  
+      network: constant.ETHEREUM,
+    }
   },
   harvest: {
     hfDAI: {
@@ -294,6 +306,18 @@ const testContracts = {
       network: constant.POLYGON,
     },
   },
+  bot: {
+    unibot: {
+      abi: abi.uniBotContract,
+      address: "0x26950eee5209a41bb0ae0ae8335cc5a2752624ef",
+      startBlock: 26999775
+    },
+    dvdDistBot: {
+      abi: abi.dvdDistBotContract,
+      address: "0xcd3e01fdcf37d76f95f265001969695d00505d9f", 
+      startBlock: 26902654
+    }
+  }
 };
 
 const mainContracts = {
@@ -488,7 +512,7 @@ const mainContracts = {
     address: "0x77dcE26c03a9B833fc2D7C31C22Da4f42e9d9582",
     abi: abi.DVDABIContract,
     tokenId: "daoventures",
-    network: constant.ETHEREUM,
+    network: constant.ETHEREUM
   },
   vipDVD: {
     name: "vipDVD",
@@ -521,12 +545,24 @@ const mainContracts = {
     poolPercent: 0.51,
     network: constant.ETHEREUM,
   },
+  daoMine: {
+    address: "0x651bf479d19cccb9d8646e760a7c1befbcda7411", // TODO Update mainnet address
+    abi: abi.daoMineContract,
+    startBlock: 0, // Start block from contract's START_BLOCK
+    poolPercent: 0.51,
+    network: constant.ETHEREUM,
+  },
   uniswap: {
     ethDVG: {
       address: "0xd11aD84D720A5e7fA11c8412Af6C1cAA815a436d",
       abi: abi.uniswapPairABIContract,
       network: constant.ETHEREUM,
     },
+    ethDVD: {
+      address: "0xce9add58ec5a07cb643faf7418eb94c193672844",
+      abi: abi.uniswapPairABIContract,  
+      network: constant.ETHEREUM,
+    }
   },
   chainLink: {
     USDT_ETH: {
@@ -547,6 +583,18 @@ const mainContracts = {
       network: constant.POLYGON,
     },
   },
+  bot: {
+    unibot: {
+      abi: abi.uniBotContract,
+      address: "0x161793275aeb70030239a2e176669b73ac8fc41f",
+      startBlock: 12838474
+    },
+    dvdDistBot: {
+      abi: abi.dvdDistBotContract,
+      address: "0x118875dc986485fe53ed5b2cd6750a9150566c8f", 
+      startBlock: 13086520
+    }
+  }
 };
 
 const devEarnContract = "0xdb12e805d004698fc58f6e4fbdd876268df2dffe";

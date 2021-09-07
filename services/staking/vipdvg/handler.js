@@ -1,84 +1,24 @@
-const { testContracts, mainContracts } = require("../../../config/serverless/domain");
-
-const Web3 = require("web3");
-const CoinGecko = require("coingecko-api");
-const moment = require("moment");
-const delay = require("delay");
-const EthDater = require("../../vaults/apy/save/ethereum-block-by-date");
-const { delayTime } = require("../../vaults/apy/save/config");
 const db = require("../../../models/vip-apy.model");
-const CoinGeckoClient = new CoinGecko();
+const contractHelper = require("../../../utils/contract");
+const dateTimeHelper = require("../../../utils/dateTime");
+const tokenHelper = require("../../../utils/token");
 
-const infuraUrl = process.env.WEB3_ENDPOINT;
-const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT;
-const archiveNodeWeb3 = new Web3(archiveNodeUrl);
-const infuraWeb3 = new Web3(infuraUrl);
-const blocks = new EthDater(archiveNodeWeb3, delayTime);
-const DB_CONSTANT = 'daoVip';
+const {
+    calculateVipDvdApr,
+    calculateVipTokenApr,
+    calculateAprPerDay,
+    getVipTokenPrice,
+    getVipTokenTVL
+} = require("./calculation");
+
 
 const getContracts = () => {
-    return (process.env.PRODUCTION != null && process.env.PRODUCTION != "") 
-        ? mainContracts
-        : testContracts;
+    return contractHelper.getContractsFromDomain();
 }
 
-// Get contract
 const getContract = async (contractInfo) => {
     const { abi, address } = contractInfo;
-    const contract = new archiveNodeWeb3.eth.Contract(abi, address);
-    return contract;
-}
-
-// Get Token Price
-const getTokenPrice = async (coingecko_token_id) => {
-    let data;
-    try {
-        data = await CoinGeckoClient.simple.price({
-            ids: coingecko_token_id,
-            vs_currencies: ["usd"],
-        });
-        return data.data[coingecko_token_id]["usd"];
-    } catch (err) {
-        console.log("Error in getTokenPrice(): ", err);
-    }
-    return;
-}
-
-const getTokenBalanceOfVipToken = async(tokenContract, vipTokenAddress) => {
-    try {
-        const tokenBalanceOfVipToken = await tokenContract.methods.balanceOf(vipTokenAddress).call();
-        return tokenBalanceOfVipToken;
-    } catch (err) {
-        console.log("Error in getTokenBalanceOfVipToken(): ", err)
-    }
-}
-
-const getVipTokenPrice = async (vipTotalSupply, tokenBalOfVipToken, tokenPrice) => {
-    return (tokenBalOfVipToken * tokenPrice) / vipTotalSupply;
-}
-
-const getTotalSupply = async (contract) => {
-    try {
-      let totalSupply = await contract.methods.totalSupply().call();
-      return totalSupply;
-    } catch (err) {
-      // Catch error
-      console.log(err);
-    }
-};
-
-const getVipTokenTVL = async (vipTokenDecimals, vipTotalSupply, vipTokenPrice) => {
-    return (vipTotalSupply / (10 ** vipTokenDecimals)) * vipTokenPrice;
-};
-
-const calculateAPR = async (apr, days) => {
-    const aprPerDay = apr / days;
-    return {
-        aprOneDay: aprPerDay,
-        aprOneWeek: aprPerDay * 7,
-        aprOneMonth: aprPerDay * 30,
-        aprOneYear: aprPerDay * 365,
-    }
+    return await contractHelper.getContract(abi, address, null);
 }
 
 const getAPR = async (vipName) => {
@@ -93,76 +33,99 @@ const getAPR = async (vipName) => {
     return apr;
 }
 
-const getVipTokenAPR = async (tokenContract, vipTokenContract, days, tokenPriceId) => {
-    const tokenBalOfVipToken = await getTokenBalanceOfVipToken(tokenContract, vipTokenContract._address);
-    const vipTotalSupply = await getTotalSupply(vipTokenContract);
-
-    // const tokenPrice = await getTokenPrice(tokenPriceId);
-    // Get token usd price from Coingecko
-    const tokenPrice = (tokenPriceId === "daoventures") 
-        ? await getTokenPrice(tokenPriceId)
-        : 0.225 ; 
-
-    const vipTokenPrice = await getVipTokenPrice(vipTotalSupply, tokenBalOfVipToken, tokenPrice);
-
-    let apr = (vipTotalSupply * vipTokenPrice) / (tokenBalOfVipToken * tokenPrice);
-    console.log(`APR: (${vipTotalSupply} * ${vipTokenPrice}) / (${tokenBalOfVipToken} * ${tokenPrice})`);
-
-    if (isNaN(apr)) {
-        apr = 0;
-    }
-
-    const aprInfo = await calculateAPR(apr, days);
-    return { ...aprInfo, apr };
+const addAPR = async (result, name) => {
+    await db.add({...result, name });
+    return;
 }
 
-const getVipTokenInfo = async (tokenContract, vipTokenContract, vipContractInfo, tokenPriceId) => {
-    const vipTotalSupply = await getTotalSupply(vipTokenContract);
-    const tokenBalOfVipToken = await getTokenBalanceOfVipToken(tokenContract, vipTokenContract._address);
+const getVipDvgAPR = async(days) => {
+    try {
+        if(!days) {
+            throw (`Missing days for APR info calculation`);
+        }
+        const contracts = contractHelper.getContractsFromDomain();
+    
+        const tokenInfo = contracts.DVG;
+        const vipTokenInfo = contracts.vipDVG;
+    
+        const apr = await calculateVipTokenApr(tokenInfo, vipTokenInfo);
+        const aprInfo = await calculateAprPerDay(apr, days);
+    
+        return { ...aprInfo, apr };
+    } catch(err) {
+        console.error(`Error in getVipDvgAPR():`, err);
+    }
+}
 
-    // const tokenPrice = await getTokenPrice(tokenPriceId);
-    // Get token usd price from Coingecko
-    const tokenPrice = (tokenPriceId === "daoventures") 
-        ? await getTokenPrice(tokenPriceId)
-        : 0.225 ;
+const getVipDvdAPR = async() => {
+    try {
+        return await calculateVipDvdApr();
+    } catch (err) {
+        console.error(`Error in getVipDvdAPR():`, err);
+    }
+}
 
-    let vipTokenPrice = await getVipTokenPrice(vipTotalSupply, tokenBalOfVipToken, tokenPrice);
+const getVipTokenInfo = async(token, vipToken) => {
+    try {
+        if(!token || !vipToken) {
+            throw(`Missing token / vip token info`);
+            return;
+        }
+        const tokenContract = await contractHelper.getEthereumContract(token.abi, token.address);
+        const vipTokenContract = await contractHelper.getEthereumContract(vipToken.abi, vipToken.address);
 
-    const tvl = await getVipTokenTVL(vipContractInfo.decimals, vipTotalSupply, vipTokenPrice);
-    const apr = await getAPR(vipContractInfo.name);
-    return { ...apr, tokenPrice, tvl, vipTokenPrice: vipTokenPrice / tokenPrice};
+        const tokenPrice = await tokenHelper.getTokenPriceInUSD(token.tokenId);
+        const tokenBalanceOfVipToken = await contractHelper.balanceOf(tokenContract, vipToken.address);
+        const vipTotalSupply = await contractHelper.totalSupply(vipTokenContract);
+
+        const vipTokenPrice = await getVipTokenPrice(
+            vipTotalSupply,
+            tokenBalanceOfVipToken,
+            tokenPrice
+        );
+        const vipTokenTVL = await getVipTokenTVL(
+            vipToken.decimals, 
+            vipTotalSupply,
+            vipTokenPrice
+        );
+        const apr = await getAPR(vipToken.name);
+        
+        const result = {
+            ...apr,
+            tokenPrice,
+            vipTokenPrice: vipTokenPrice / tokenPrice,
+            tvl: vipTokenTVL
+        };
+        return result;
+    } catch (err) {
+        console.error(`Error in getVipTokenInfo(): `, err);
+    }
 }
 
 module.exports.getVipAPY = async () => {
     try {
         const contracts = getContracts();
-        
-        const tokenPairs = [
-            { token: "DVG", vipToken: "vipDVG" }, 
-            { token: "DVD", vipToken: "vipDVD" },
-        ];
 
-        const oneDayAgo = moment().subtract(1, "days").valueOf();
-        await delay(delayTime);
-        const oneDayAgoBlock = (await blocks.getDate(oneDayAgo)).block;
-        const currentBlockNbr = await infuraWeb3.eth.getBlockNumber();
-        const nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
-       
-        for(let i = 0 ; i < tokenPairs.length; i++) {
-            const tokenInfo = contracts[tokenPairs[i].token];
-            const vipTokenInfo = contracts[tokenPairs[i].vipToken];
+        const oneDayAgoBlock = await contractHelper.getEthereumBlockNumberByTimeline(
+            dateTimeHelper.toMillisecondsTimestamp(
+                dateTimeHelper.subtractDay(1, new Date())
+            )
+        );
+        const currentBlock = await contractHelper.getEthereumCurrentBlockNumber();
+        const numberOfBlockInDay = currentBlock - oneDayAgoBlock;
 
-            const tokenContract = await getContract(tokenInfo);
-            const vipTokenContract = await getContract(vipTokenInfo); 
+        // VIP DVG
+        const { lastMeasurement } = contracts.vipDVD;
+        const days = (currentBlock - lastMeasurement) / numberOfBlockInDay;
+        const vipDvgApr = await getVipDvgAPR(days);
+        await addAPR(vipDvgApr, `vipDVG`);
 
-            const days = (currentBlockNbr - vipTokenInfo.lastMeasurement) / nbrBlocksInDay;
-            let result = await getVipTokenAPR(tokenContract, vipTokenContract, days, tokenInfo.tokenId);
-            await db.add({
-                ...result,
-                name: tokenPairs[i].vipToken,
-            });
-        }
-    } catch (err) {}
+        // VIP DVD
+        const vipDvdApr = await getVipDvdAPR();
+        await addAPR(vipDvdApr, `vipDVD`);
+    } catch (err) {
+        console.error(`Error in getVipAPY(): `, err);
+    }
 }
 
 module.exports.getxDVGStake = async(req, res) => {
@@ -171,12 +134,8 @@ module.exports.getxDVGStake = async(req, res) => {
 
         const xDVGInfo = contracts["vipDVG"];
         const dvgInfo = contracts["DVG"];
-
-        // Create contract object
-        const xDVGContract = await getContract(xDVGInfo);
-        const dvgContract = await getContract(dvgInfo);
          
-        const result = await getVipTokenInfo(dvgContract, xDVGContract, xDVGInfo, dvgInfo.tokenId);
+        const result = await getVipTokenInfo(dvgInfo, xDVGInfo);
         const finalResult = {
             aprOneDay: result.aprOneDay,
             aprOneWeek: result.aprOneWeek,
@@ -208,17 +167,9 @@ module.exports.getxDVDStake = async (req, res) => {
 
         const xDVDInfo = contracts["vipDVD"];
         const dvdInfo = contracts["DVD"];
-
-        // Create contract object
-        const xDVDContract = await getContract(xDVDInfo);
-        const dvdContract = await getContract(dvdInfo);
          
-        const result = await getVipTokenInfo(dvdContract, xDVDContract, xDVDInfo, dvdInfo.tokenId);
+        const result = await getVipTokenInfo(dvdInfo, xDVDInfo);
         const finalResult = {
-            aprOneDay: result.aprOneDay,
-            aprOneWeek: result.aprOneWeek,
-            aprOneMonth: result.aprOneMonth,
-            aprOneYear: result.aprOneYear,
             apr: result.apr,
             dvdPrice: result.tokenPrice,
             xDVDPrice: result.vipTokenPrice,
@@ -238,3 +189,5 @@ module.exports.getxDVDStake = async (req, res) => {
     }
     return;
 }
+
+module.exports.getAPR = getAPR;
