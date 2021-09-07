@@ -57,7 +57,7 @@ const getStatisticsInfo = (statistics, vaultAddress) => {
 
 const findAllPerformance = async () => {
     const etfTypeStrategies = constant.ETF_STRATEGIES;
-    const period = "7d";
+    const period = "1y";
     const startTime = dateTimeHelper.toTimestamp(
         dateTimeHelper.getStartTimeFromParameter(period)
     );
