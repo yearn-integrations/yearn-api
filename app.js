@@ -12,10 +12,13 @@ const vaultPerformance = require("./services/vaults/performance/handler");
 const stakeVIP = require("./services/staking/xdvg/handler");
 const stakePool = require("./services/staking/handler");
 const stakeXDvg = require("./services/staking/vipdvg/handler");
-const reimbursementAddresses = require("./services/reimbursement/handler")
+const reimbursementAddresses = require("./services/reimbursement/handler");
 const stakeDaoStakes = require("./services/staking/dao-stake/handler");
 const specialEvent = require("./services/user/special-event/handler");
 const reimburse = require("./services/user/reimburse/handler");
+const referral = require("./services/referral/handler");
+const deposit = require("./services/referral/deposit/handler");
+const withdraw = require("./services/referral/deposit/handler");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 8080;
@@ -80,7 +83,7 @@ async function init() {
     stakeXDvg.getxDVGStake(req, res)
   );
   app.get("/staking/get-xdvd-stake", (req, res) => {
-    stakeXDvg.getxDVDStake(req, res)
+    stakeXDvg.getxDVDStake(req, res);
   });
   app.get("/event/verify", (req, res) =>
     specialEvent.handleVerifyEvent(req, res)
@@ -103,7 +106,7 @@ async function init() {
   app.get("/reimbursement-addresses/dvg/:address", (req, res) =>
     reimbursementAddresses.handler(req, res)
   );
-  
+
   app.get("/vaults/pnl/:farmer/:days", (req, res) =>
     vaultPerformance.pnlHandle(req, res)
   );
@@ -115,12 +118,24 @@ async function init() {
     stakePool.snapshotEmergency(req, res)
   );
 
-  app.get('/user/reimburse-address/:address', (req, res) => 
+  app.get("/user/reimburse-address/:address", (req, res) =>
     reimburse.getReimburseAddress(req, res)
   );
 
-  app.post('/user/reimburse-address/update', (req, res) => {
-    reimburse.updateReimburseAddressClaimAmount(req, res)
+  app.get("/user/:address/:referral", (req, res) => {
+    referral.addNewReferral(req, res);
+  });
+
+  app.get("/user/:referral", (req, res) => {
+    referral.checkReferral(req, res);
+  });
+
+  app.post("/user/:referral/:address", (req, res) => {
+    referral.addNewReferral(req, res);
+  });
+
+  app.post("/user/reimburse-address/update", (req, res) => {
+    reimburse.updateReimburseAddressClaimAmount(req, res);
   });
 
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));

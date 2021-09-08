@@ -11,9 +11,11 @@ const Api = require("../utils/api");
 
 let _db;
 const connectDB = async (callback) => {
-  var url = '';
-  if (process.env.MONGO_AUTH != '') {
-    url = `mongodb://${encodeURIComponent(MONGO_USERNAME)}:${encodeURIComponent(MONGO_PASSWORD)}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authMechanism=${AUTH_MECHANISM}`;
+  var url = "";
+  if (process.env.MONGO_AUTH != "") {
+    url = `mongodb://${encodeURIComponent(MONGO_USERNAME)}:${encodeURIComponent(
+      MONGO_PASSWORD
+    )}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authMechanism=${AUTH_MECHANISM}`;
   } else {
     url = `mongodb://${MONGO_HOSTNAME}`;
   }
