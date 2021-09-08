@@ -84,7 +84,7 @@ const processChartData = (apys, strategyType, strategyId) => {
       
         apyAttributes.map((a, index) => {
             // Add APY into data, etf strategies or yearn aprs require to multiply by 100 for percentage
-            const apy = (isEtfStrategies || a.attributeName === "aprs") 
+            const apy = (a.attributeName === "aprs") 
                 ? data[a.attributeName] * 100 
                 : data[a.attributeName];
             result[index][1].push([date, +parseFloat(apy).toFixed(4)]); // "+" apy as number instead of string
@@ -143,6 +143,7 @@ module.exports.handler = async(req,res) => {
                 strategyId,
                 startTime, 
             );
+
             historicalData = processPerformanceData(result);
 
             // PNL 
