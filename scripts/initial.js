@@ -278,4 +278,10 @@ db.tokens.insertMany([
     { tokenId: 'aave-dai', symbol: 'ADAI'},
     { tokenId: 'aave-usdc', symbol: 'AUSDC'},
     { tokenId: 'aave-usdt', symbol: 'AUSDT'},
+    { tokenId: 'tether', symbol: 'USDT'},
+    { tokenId: 'smooth-love-potion', symbol: 'SLP'},
+    { tokenId: 'illuvium', symbol: 'ILV'},
+    { tokenId: 'aavegotchi', symbol: 'GHST'},
+    { tokenId: 'revv', symbol: 'REVV'},
+    { tokenId: 'metaverse-index', symbol: 'MVI'},
 ]);

@@ -25,6 +25,12 @@ const TOKEN_COINGECKO_ID = {
     ADAI: "aave-dai",
     AUSDC: "aave-usdc",
     AUSDT: "aave-usdt",
+    // Remember to update on db
+    SLP: "smooth-love-potion",
+    ILV: "illuvium",
+    GHST: "aavegotchi",
+    REVV: "revv",
+    MVI: "metaverse-index"
 }
 
 const TOKEN_CHART_COLOR = {
@@ -94,12 +100,23 @@ const DAOMPT_ASSET_DISTRIBUTION = {
     AUSDT: { percent: 11.11, tokenId: TOKEN_COINGECKO_ID.AUSDT}, 
 }
 
+const DAOMVF_ASSET_DISTRIBUTION = {
+    ETH: { percent: 37.5, tokenId: TOKEN_COINGECKO_ID.ETH },
+    AXS: { percent: 10.0, tokenId: TOKEN_COINGECKO_ID.AXS },
+    SLP: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.SLP},
+    ILV: { percent: 10.0, tokenId: TOKEN_COINGECKO_ID.ILV},
+    GHST: { percent: 5.0, tokenId: TOKEN_COINGECKO_ID.GHST},
+    REVV: { percent: 5.0, tokenId: TOKEN_COINGECKO_ID.REVV},
+    MVI: { percent: 25.0, tokenId: TOKEN_COINGECKO_ID.MVI},
+}
+
 const CONTRACT_IDS = {
     DAOCDV: "daoCDV",
     DAOELO: "daoELO",
     DAOCUB: "daoCUB",
     DAOSTO: "daoSTO", 
-    DAOMPT: "daoMPT"
+    DAOMPT: "daoMPT",
+    DAOMVF: "daoMVF"
 }
 
 const ETF_STRATEGIES = [
@@ -108,6 +125,7 @@ const ETF_STRATEGIES = [
     CONTRACT_IDS.DAOCUB,
     CONTRACT_IDS.DAOELO,
     CONTRACT_IDS.DAOMPT,
+    CONTRACT_IDS.DAOMVF
 ];
 
 const STRATEGY_TYPE = {
@@ -119,6 +137,7 @@ const STRATEGY_TYPE = {
     FAANG: "daoFaang",
     HARVEST: "harvest",
     MONEYPRINTER: "moneyPrinter",
+    METAVERSE: "metaverse"
 }
 
 module.exports = {
@@ -147,6 +166,7 @@ module.exports = {
     DAOCUB_ASSET_DISTRIBUTION,
     DAOELO_ASSET_DISTRIBUTION,
     DAOMPT_ASSET_DISTRIBUTION,
+    DAOMVF_ASSET_DISTRIBUTION,
     
     TOKEN_COINGECKO_ID,
     ETF_STRATEGIES,
