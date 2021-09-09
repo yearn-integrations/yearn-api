@@ -71,6 +71,15 @@ const getMoneyPrinterPricePerFullShare = async (contract) => {
   return pricePerFullShare;
 }
 
+const getMetaversePricePerFullShare = async(contract) => {
+  let pricePerFullShare = 1;
+  try {
+    pricePerFullShare = await contract.methods.getPricePerFullShare().call();
+  } catch (ex) { }
+  await delay(delayTime);
+  return pricePerFullShare;
+}
+
 const getCurrentPrice = async () => {
   let contracts = contractHelper.getContractsFromDomain();
 
@@ -92,7 +101,8 @@ const getCurrentPrice = async () => {
           cubanPrice: 0,
           faangPrice: 0,
           moneyPrinterPrice: 0,
-          harvestPrice: 0
+          harvestPrice: 0,
+          metaversePrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'compound') {
         const compoundContract = await contractHelper.getEthereumContract(contracts.compund[key].abi, contracts.compund[key].address);
@@ -112,6 +122,7 @@ const getCurrentPrice = async () => {
           faangPrice: 0,
           moneyPrinterPrice: 0,
           harvestPrice: 0,
+          metaversePrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'citadel') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -126,6 +137,7 @@ const getCurrentPrice = async () => {
           faangPrice: 0,
           moneyPrinterPrice: 0,
           harvestPrice: 0,
+          metaversePrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'elon') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -139,6 +151,7 @@ const getCurrentPrice = async () => {
           cubanPrice: 0,
           faangPrice: 0,
           harvestPrice: 0,
+          metaversePrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'cuban') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -153,6 +166,22 @@ const getCurrentPrice = async () => {
           faangPrice: 0,
           moneyPrinterPrice: 0,
           harvestPrice: 0,
+          metaversePrice: 0
+        }).catch((err) => console.log('err', err));
+      } else if (contracts.farmer[key].contractType === 'metaverse') {
+        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getMetaversePricePerFullShare(contract);
+        await db.add(key + '_price', {
+          earnPrice: 0,
+          vaultPrice: 0,
+          compoundExchangeRate: 0,
+          citadelPrice: 0,
+          elonPrice: 0,
+          cubanPrice: 0,
+          faangPrice: 0,
+          moneyPrinterPrice: 0,
+          harvestPrice: 0,
+          metaversePrice: pricePerFullShare
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'daoFaang') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -167,6 +196,7 @@ const getCurrentPrice = async () => {
           faangPrice: pricePerFullShare,
           moneyPrinterPrice: 0,
           harvestPrice: 0,
+          metaversePrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'moneyPrinter') {
         const contract = await contractHelper.getPolygonContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -180,6 +210,7 @@ const getCurrentPrice = async () => {
           faangPrice: 0,
           moneyPrinterPrice: pricePerFullShare,
           harvestPrice: 0,
+          metaversePrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'harvest') {
         // Get vault contract and strategy contract
@@ -204,6 +235,7 @@ const getCurrentPrice = async () => {
           faangPrice: 0,
           moneyPrinterPrice: 0,
           harvestPrice: pricePerFullShare,
+          metaversePrice: 0
         })
       }
     } catch (err) {
@@ -216,7 +248,8 @@ const getCurrentPrice = async () => {
         cubanPrice: 0,
         faangPrice: 0,
         moneyPrinterPrice: 0,
-        harvestPrice: "0"
+        harvestPrice: "0",
+        metaversePrice: 0
       }).catch((err) => console.log('err', err));
     }
   }
@@ -287,6 +320,9 @@ module.exports.handleHistoricialPrice = async (req, res) => {
       case db.daoMPTFarmer:
         collection = db.daoMPTFarmer;
         break;
+      case db.daoMVFFarmer:
+          collection = db.daoMVFFarmer;
+          break;
       case db.hfDaiFarmer:
         collection = db.hfDaiFarmer;
         break;
