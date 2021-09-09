@@ -111,6 +111,7 @@ db.vault_categories.insertMany([
     { name: 'basic', network:"ethereum", contract_address: '0x35880615bb18da592ff0feb0940ade2c02249715', symbol: 'hfUSDT', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'basic', network:"ethereum", contract_address: '0x68b1c860300c4f7d577f08d8b3c3aee23887b280', symbol: 'hfUSDC', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'basic', network:"ethereum", contract_address: '0x6d7e8fa90c1ffdc019d691bafc18d6362fdeecd7', symbol: 'hfDAI', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
+    { name: 'basic', network:"ethereum", contract_address: '0xc11156425cf89fec05f04f6c748d39bcbf56afa5', symbol: 'daoMVF', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
 ]);
 
 db.xdvg_token.insert({
