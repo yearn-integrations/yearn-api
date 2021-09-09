@@ -60,4 +60,5 @@ module.exports = {
   hfUsdtFarmer: "hfUSDT_tvl",
   hfUsdcFarmer: "hfUSDC_tvl",  
   daoMPTFarmer: "daoMPT_tvl",
+  daoMVFFarmer: "daoMVF_tvl",
 };

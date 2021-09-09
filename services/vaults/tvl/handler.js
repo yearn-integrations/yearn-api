@@ -103,11 +103,15 @@ const getTVL = async (vault) => {
     strategyAddress
   } = vault;
   let tvl;
-
+  
   if (vault.contractType === 'citadel' || vault.contractType === 'elon' || vault.contractType === 'cuban') {
     const contract = await getContract(vault);
     const usdPool = await contract.methods.getAllPoolInUSD().call();
     tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
+  } else if (vault.contractType === "metaverse") {
+    const contract = await getContract(vault);
+    const usdPool = await contract.methods.getAllPoolInUSD().call();
+    tvl = usdPool / 10 ** 18; // Check from code, Pool In USD returns in 18 decimals
   } else if(vault.contractType === 'daoFaang'){
     const contract = await getContract(vault);
     const poolAmount = await contract.methods.getTotalValueInPool().call();
@@ -165,30 +169,31 @@ const getAllTVL = async () => {
   let vaults = contractHelper.getContractsFromDomain();
   let tvls = Array();
 
-  for (vault in vaults.farmer) {
-    try {
+  try {
+    // For Strategies
+    for (vault in vaults.farmer) {
       let _vault = vaults.farmer[vault];
       let tvl = await getTVL(_vault);
       tvls.push(tvl);
       await saveTVL(vault, tvl);
-    } catch(err) {
-      console.error(err);
     }
-  }
 
-  try {
+    // Vip Token DVG
     let tvl = await getVipTokenTVL(vaults.vipDVG, vaults.DVG);
     tvls.push(tvl);
     await saveTVL("xDVG", tvl);
 
+    // Vip Token DVD
     const vipDVDTVL = await getVipTokenTVL(vaults.vipDVD, vaults.DVD);
     tvls.push(vipDVDTVL);
     await saveTVL("xDVD", vipDVDTVL);
-  } catch (err) {
-    console.error(err);
-  }
 
-  return tvls;
+    return tvls;
+
+  } catch (err) {
+    console.error(`Error in getAllTVL():`,err);
+    return tvls;
+  }
 };
 
 // Get Total TVL
@@ -241,10 +246,17 @@ const findAllTVL = async (vaults) => {
 
 // Save All TVLs to database
 module.exports.saveAllTVLhandler = async () => {
-  await getTokenPrice();
-  const tvls = await getAllTVL();
-  const totalTvl = await getTotalTVL(tvls);
-  await saveTotalTVL(totalTvl);
+  try {
+    await getTokenPrice();
+    const tvls = await getAllTVL();
+    if(!tvls || tvls === undefined) {
+      throw(`TVLs is undefined`);
+    }
+    const totalTvl = await getTotalTVL(tvls);
+    await saveTotalTVL(totalTvl);
+  } catch (err) {
+    console.error(`Error in saveAllTVLhandler(): `, err);
+  }
   console.log(`[TVL] saveHistoricalTVL() completed`);
 };
 
@@ -306,6 +318,9 @@ module.exports.tvlHandle = async (req, res) => {
       break;
     case db.daoMPTFarmer: 
       collection = db.daoMPTFarmer;
+      break;
+    case db.daoMVFFarmer: 
+      collection = db.daoMVFFarmer;
       break;
     default:
       res.status(200).json({
