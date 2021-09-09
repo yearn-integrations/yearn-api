@@ -191,6 +191,27 @@ const getFaangPricePerFullShare = async (contract, block, inceptionBlockNbr) => 
   return pricePerFullShare;
 }
 
+const getMetaversePricePerFullShare = async(contract, block, inceptionBlockNumber) => {
+  const contractDidntExist = block < inceptionBlockNumber;
+  const inceptionBlock = block === inceptionBlockNumber;
+
+  if (inceptionBlock) {
+    return 1e18;
+  }
+  if (contractDidntExist) {
+    return 0;
+  }
+
+  let pricePerFullShare = 0;
+  try {
+    pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
+  } catch (err) {
+    console.error(`[apy/save/handler]Error in getMetaversePricePerFullShare(): `, err);
+  } finally {
+    return pricePerFullShare;
+  }
+}
+
 const getVirtualPrice = async (address, block) => {
   const poolContract = contractHelper.getEthereumContract(poolABI, address);
   const virtualPrice = await poolContract.methods
@@ -411,6 +432,33 @@ const getApyForVault = async (vault, contracts) => {
       faangApy: 0,
     };
 
+  } else if (vault.isMetaverse) {
+    const contract = await contractHelper.getEthereumContract(abi, address);
+    
+    let pricePerFullShareCurrent = await getMetaversePricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    let pricePerFullShareOneDayAgo = await getMetaversePricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
+    pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
+
+    // APY Calculation
+    const n = 365 / 2; // Assume 2 days to trigger invest function
+    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+    const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+    return {
+      apyInceptionSample: 0,
+      apyOneDaySample: 0,
+      apyThreeDaySample: 0,
+      apyOneWeekSample: 0,
+      apyOneMonthSample: 0,
+      apyLoanscan: 0,
+      compoundApy: 0,
+      citadelApy: 0,
+      elonApy: 0,
+      cubanApy: 0,
+      faangApy: 0,
+      metaverseApy: apy
+    }
   } else {
     // Yearn Vault
     const pool = _.find(pools, { symbol });
@@ -630,3 +678,4 @@ module.exports.getElonPricePerFullShare = getElonPricePerFullShare;
 module.exports.getCubanPricePerFullShare = getCubanPricePerFullShare;
 module.exports.getFaangPricePerFullShare = getFaangPricePerFullShare;
 module.exports.getHarvestFarmerAPR = getHarvestFarmerAPR;
+module.exports.getMetaversePricePerFullShare = getMetaversePricePerFullShare;
