@@ -97,104 +97,112 @@ const getVipTokenPrice = async (vipTotalSupply, tokenBalOfVipToken, tokenPrice) 
  * TVL = poolAmount * tokenPrice
  */
 const getTVL = async (vault) => {
+  let tvl = 0;
   const { 
     tokenId, 
     strategyABI, 
-    strategyAddress
+    strategyAddress,
+    address
   } = vault;
-  let tvl;
-  
-  if (vault.contractType === 'citadel' || vault.contractType === 'elon' || vault.contractType === 'cuban') {
-    const contract = await getContract(vault);
-    const usdPool = await contract.methods.getAllPoolInUSD().call();
-    tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
-  } else if (vault.contractType === "metaverse") {
-    const contract = await getContract(vault);
-    const usdPool = await contract.methods.getAllPoolInUSD().call();
-    tvl = usdPool / 10 ** 18; // Check from code, Pool In USD returns in 18 decimals
-  } else if(vault.contractType === 'daoFaang'){
-    const contract = await getContract(vault);
-    const poolAmount = await contract.methods.getTotalValueInPool().call();
-    const decimals = await contract.methods.decimals().call();
-    tvl = poolAmount / 10 ** decimals;
-  } else if (vault.contractType === "moneyPrinter") {
-    const contract = await getContract(vault);
-    const poolAmount = await contract.methods.getValueInPool().call();
-    const decimals = await contract.methods.decimals().call();
-    tvl = poolAmount / 10 ** decimals;
-  } else {
-    const strategy = { abi: strategyABI, address: strategyAddress, network: vault.network}
-    const strategyContract = await getContract(strategy);
 
-    const poolAmount = await getPoolAmount(strategyContract);
-    const tokenPrice = tokens[tokenId] ? tokens[tokenId] : 0.00;
-
-    let decimals = 0;
-    if(vault.contractType === 'harvest') {
-      const vaultContract = await getContract(vault);
-      decimals =  await getDecimals(vaultContract);
+  try {
+    if (vault.contractType === 'citadel' || vault.contractType === 'elon' || vault.contractType === 'cuban') {
+      const contract = await getContract(vault);
+      const usdPool = await contract.methods.getAllPoolInUSD().call();
+      tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
+    } else if (vault.contractType === "metaverse") {
+      const contract = await getContract(vault);
+      const usdPool = await contract.methods.getAllPoolInUSD().call();
+      tvl = usdPool / 10 ** 18; // Check from code, Pool In USD returns in 18 decimals
+    } else if(vault.contractType === 'daoFaang'){
+      const contract = await getContract(vault);
+      const poolAmount = await contract.methods.getTotalValueInPool().call();
+      const decimals = await contract.methods.decimals().call();
+      tvl = poolAmount / 10 ** decimals;
+    } else if (vault.contractType === "moneyPrinter") {
+      const contract = await getContract(vault);
+      const poolAmount = await contract.methods.getValueInPool().call();
+      const decimals = await contract.methods.decimals().call();
+      tvl = poolAmount / 10 ** decimals;
     } else {
-      decimals = await getDecimals(strategyContract);
-    }
-
-    tvl = (poolAmount / 10 ** decimals) * tokenPrice;
-  }
+      const strategy = { abi: strategyABI, address: strategyAddress, network: vault.network}
+      const strategyContract = await getContract(strategy);
   
-  return tvl;
+      const poolAmount = await getPoolAmount(strategyContract);
+      const tokenPrice = tokens[tokenId] ? tokens[tokenId] : 0.00;
+  
+      let decimals = 0;
+      if(vault.contractType === 'harvest') {
+        const vaultContract = await getContract(vault);
+        decimals =  await getDecimals(vaultContract);
+      } else {
+        decimals = await getDecimals(strategyContract);
+      }
+  
+      tvl = (poolAmount / 10 ** decimals) * tokenPrice;
+    }
+  } catch (err) {
+    console.error(`Error in getTVL(), while getting TVL for ${address}: `);
+    console.error(err);
+  } finally {
+    return tvl;
+  }
 };
 
 const getVipTokenTVL = async (vipTokenVault, tokenVault) => {
-  const { decimals } = vipTokenVault;
-  const { tokenId } = tokenVault;
-  let tvl;
+  let tvl = 0;
+
+  try {
+    const { decimals } = vipTokenVault;
+    const { tokenId } = tokenVault;
+    let tvl;
+    
+    const vipTokenContract = await getContract(vipTokenVault);
+    const tokenContract = await getContract(tokenVault);
   
-  const vipTokenContract = await getContract(vipTokenVault);
-  const tokenContract = await getContract(tokenVault);
+    const vipTotalSupply = await getTotalSupply(vipTokenContract);
+    const tokenBalOfVipToken = await getBalance(tokenContract, vipTokenContract._address);
+  
+    const tokenPrice = (tokenId === "daoventures") 
+          ? tokens["daoventures"]
+          : 0.225 ;
+  
+    const vipTokenPrice = await getVipTokenPrice(vipTotalSupply, tokenBalOfVipToken, tokenPrice);
+    tvl = (vipTotalSupply / 10 ** decimals) * vipTokenPrice;
 
-  const vipTotalSupply = await getTotalSupply(vipTokenContract);
-  const tokenBalOfVipToken = await getBalance(tokenContract, vipTokenContract._address);
-
-  const tokenPrice = (tokenId === "daoventures") 
-        ? tokens["daoventures"]
-        : 0.225 ;
-
-  const vipTokenPrice = await getVipTokenPrice(vipTotalSupply, tokenBalOfVipToken, tokenPrice);
-  tvl = (vipTotalSupply / 10 ** decimals) * vipTokenPrice;
-
-  return tvl;
+  } catch (err) {
+    console.error(`Error in getVipTokenTVL() , while getting TVL for ${vipTokenVault.address} :`);
+    console.error(err);
+  } finally {
+    return tvl;
+  }
 };
 
 // Get and Save all TVL of all Vaults
 const getAllTVL = async () => {
   let vaults = contractHelper.getContractsFromDomain();
-  let tvls = Array();
+  let tvls = [];
 
-  try {
-    // For Strategies
-    for (vault in vaults.farmer) {
-      let _vault = vaults.farmer[vault];
-      let tvl = await getTVL(_vault);
-      tvls.push(tvl);
-      await saveTVL(vault, tvl);
-    }
-
-    // Vip Token DVG
-    let tvl = await getVipTokenTVL(vaults.vipDVG, vaults.DVG);
+  // For Strategies
+  for (vault in vaults.farmer) {
+    let _vault = vaults.farmer[vault];
+    let tvl = await getTVL(_vault);
     tvls.push(tvl);
-    await saveTVL("xDVG", tvl);
-
-    // Vip Token DVD
-    const vipDVDTVL = await getVipTokenTVL(vaults.vipDVD, vaults.DVD);
-    tvls.push(vipDVDTVL);
-    await saveTVL("xDVD", vipDVDTVL);
-
-    return tvls;
-
-  } catch (err) {
-    console.error(`Error in getAllTVL():`,err);
-    return tvls;
+    await saveTVL(vault, tvl);
   }
-};
+
+  // Vip Token DVG
+  let tvl = await getVipTokenTVL(vaults.vipDVG, vaults.DVG);
+  tvls.push(tvl);
+  await saveTVL("xDVG", tvl);
+
+  // Vip Token DVD
+  const vipDVDTVL = await getVipTokenTVL(vaults.vipDVD, vaults.DVD);
+  tvls.push(vipDVDTVL);
+  await saveTVL("xDVD", vipDVDTVL);
+
+  return tvls;
+}
 
 // Get Total TVL
 const getTotalTVL = async (tvls) => {
@@ -253,11 +261,11 @@ module.exports.saveAllTVLhandler = async () => {
       throw(`TVLs is undefined`);
     }
     const totalTvl = await getTotalTVL(tvls);
+    console.log(`Total Tvl ${totalTvl}`);
     await saveTotalTVL(totalTvl);
   } catch (err) {
-    console.error(`Error in saveAllTVLhandler(): `, err);
+    console.error(`Error in  saveAllTVLhandler(): `, err);
   }
-  console.log(`[TVL] saveHistoricalTVL() completed`);
 };
 
 /* HANDLERS */
