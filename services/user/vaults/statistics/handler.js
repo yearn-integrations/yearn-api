@@ -79,9 +79,9 @@ const getDepositedAmount = async(type, depositedShares, vaultContract, strategyC
       depositedAmount = (depositedShares * poolInUSD) / totalSupply;
       depositedAmount = new BigNumber(depositedAmount);
     } else if (type === 'metaverse') {
+      const totalSupply = await vaultContract.methods.totalSupply().call();
       let poolInUSD = await vaultContract.methods.getAllPoolInUSD().call(); // Default returned in 18 decimals, divide 12 to make it in 6 decimals.
-      const totalSupply = await vaultContract.methods.getTotalSupply().call();
-
+    
       depositedAmount = (depositedShares * (poolInUSD / (10 ** 12))) / totalSupply;
       depositedAmount = new BigNumber(depositedAmount);
     }
