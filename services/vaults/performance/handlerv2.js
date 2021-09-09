@@ -41,17 +41,22 @@ const getTokenPrice = async(tokenId, date) => {
 }
 
 const getTotalSupply = async(etf, vault, block) => {
+    let pool = 0;
     try {
         if(etf === "daoMPT") {
-          return await vault.methods.totalSupply().call(undefined, block);
+          pool = await vault.methods.totalSupply().call(undefined, block);
         }
-        return await vault.totalSupply({ blockTag: block });
+        
+        pool = await vault.totalSupply({ blockTag: block });
     } catch (err) {
-        console.error(`[performance/handlerv2] getTotalSupply(): `, err);
+        console.error(`[performance/handlerv2] getTotalSupply() for${etf}: `, err);
+    } finally {
+      return pool;
     }
 }
 
 const getTotalPool = async(etf, vault, block) => {
+  let pool = 0;
     try {
         if(etf === "daoSTO") {
           return await vault.getTotalValueInPool({ blockTag: block });
@@ -59,21 +64,25 @@ const getTotalPool = async(etf, vault, block) => {
         if(etf === "daoMPT") {
           return await vault.methods.getValueInPool().call(undefined, 16318498);
         }
-        // daoELO, daoCDV, daoCUB using this
-        return await vault.getAllPoolInUSD({ blockTag: block });
+        // daoELO, daoCDV, daoCUB, daoMVF using this
+        pool = await vault.getAllPoolInUSD({ blockTag: block });
     } catch (err) {
-        console.error(`[performance/handlerv2] getTotalPool(): `, err);
+      console.log(`[performance/handlerv2] getTotalPool() for ${etf}: `)
+      console.error(err);
+    } finally {
+      return pool;
     }
 }
 
 const calcLPTokenPriceUSD = (etf, totalSupply, totalPool, network) => {
-    if (totalSupply == 0) {
+    if (totalSupply == 0 || totalPool === 0) {
         return 0;
     }
 
     let lpPrice;
     if(network === constant.ETHEREUM) {
-       // These strategies having total pool value in 6 decimals, need to magnify the value
+      // These strategies having total pool value in 6 decimals, need to magnify the value
+      // daoMVF pool in 18 decimal
       const etfs = ["daoCDV", "daoELO", "daoCUB"];
       let newTotalPool = etfs.includes(etf)
           ? totalPool.mul(ethers.BigNumber.from("1000000000000"))
