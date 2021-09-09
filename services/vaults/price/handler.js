@@ -72,12 +72,14 @@ const getMoneyPrinterPricePerFullShare = async (contract) => {
 }
 
 const getMetaversePricePerFullShare = async(contract) => {
-  let pricePerFullShare = 1;
+  let pricePerFullShare = 0;
   try {
     pricePerFullShare = await contract.methods.getPricePerFullShare().call();
-  } catch (ex) { }
-  await delay(delayTime);
-  return pricePerFullShare;
+  } catch (ex) {
+    console.error(`[price/handler] Error in getMetaversePricePerFullShare(): `, ex);
+  } finally {
+    return pricePerFullShare;
+  }
 }
 
 const getCurrentPrice = async () => {
