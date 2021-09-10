@@ -122,16 +122,29 @@ async function init() {
     reimburse.getReimburseAddress(req, res)
   );
 
-  app.get("/user/:address/:referral", (req, res) => {
-    referral.addNewReferral(req, res);
-  });
-
+  /*
   app.get("/user/:referral", (req, res) => {
     referral.checkReferral(req, res);
+  });
+*/
+  app.get("/user/getreferrals", (req, res) => {
+    referral.seeAllReferrals(req, res);
   });
 
   app.post("/user/:referral/:address", (req, res) => {
     referral.addNewReferral(req, res);
+  });
+
+  app.post("/user/:address/:amount/:referrer", (req, res) => {
+    deposit.addDepositAmount(req, res);
+  });
+
+  app.get("/user/getdeposits", (req, res) => {
+    deposit.getAll(req, res);
+  });
+
+  app.get("/user/:id", (req, res) => {
+    deposit.getTransaction(req, res);
   });
 
   app.post("/user/reimburse-address/update", (req, res) => {

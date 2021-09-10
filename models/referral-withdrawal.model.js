@@ -7,6 +7,13 @@ const findAll = async () => {
   return await db.collection(collection).find({}).toArray();
 };
 
+const findOne = async (params) => {
+  const db = mongo.getDB();
+  return await db.collection(collection).findOne({
+    address: params,
+  });
+};
+
 const getTransaction = async (transactionID) => {
   const db = mongo.getDB();
   return await db.collection(collection).findOne({
@@ -20,6 +27,7 @@ const withdrawAmount = async (params) => {
 
 module.exports = {
   findAll,
+  findOne,
   getTransaction,
   withdrawAmount,
 };

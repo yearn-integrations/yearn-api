@@ -45,7 +45,40 @@ module.exports.checkReferral = async (req, res) => {
   }
 };
 
+module.exports.getAll = async (req, res) => {
+  try {
+    const result = await db.findAll();
+    res.status(200).json({
+      message: "Successful Response",
+      body: result,
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
+      body: null,
+    });
+    return;
+  }
+};
+
+module.exports.getTransaction = async (req, res) => {
+  try {
+    const result = await db.getTransaction(req.params.id);
+    res.status(200).json({
+      message: "Successful Response",
+      body: result,
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
+      body: null,
+    });
+    return;
+  }
+};
+
 module.exports.addDepositAmount = async (req, res) => {
+  /*
   try {
     if (
       !req.body ||
@@ -72,21 +105,21 @@ module.exports.addDepositAmount = async (req, res) => {
         });
       }
     }
-
-    var today = new Date();
-    var datetime =
-      today.getFullYear() +
-      "-" +
-      (today.getMonth() + 1) +
-      "-" +
-      today.getDate() +
-      "-" +
-      today.getHours() +
-      ":" +
-      today.getMinutes() +
-      ":" +
-      today.getSeconds();
-
+*/
+  var today = new Date();
+  var datetime =
+    today.getFullYear() +
+    "-" +
+    (today.getMonth() + 1) +
+    "-" +
+    today.getDate() +
+    "-" +
+    today.getHours() +
+    ":" +
+    today.getMinutes() +
+    ":" +
+    today.getSeconds();
+  try {
     await db.depositAmount({
       referrer: req.body.referrer,
       amount: req.body.amount,
