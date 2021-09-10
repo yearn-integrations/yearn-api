@@ -201,7 +201,11 @@ const getApyForVault = async (vault, contracts) => {
     // APY Calculation
     const n = 365 / 2; // Assume 2 days to trigger invest function
     const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-    const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+    let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+    if(apy === Infinity) {
+      apy = 0;
+    }
 
     return {
       apyInceptionSample: 0,
@@ -216,7 +220,7 @@ const getApyForVault = async (vault, contracts) => {
       cubanApy: apy,
       faangApy: 0,
       moneyPrinterApy: 0,
-      metaverseApy: 0
+      metaverseApy: apy
     }
   } else if (vault.isHarvest) {
     // Harvest Vault
