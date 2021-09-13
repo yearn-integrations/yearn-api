@@ -8,9 +8,12 @@ const vaultSave = require("../services/vaults/save/handler");
 const priceSave = require("../services/vaults/price/handler");
 const tvlSave = require("../services/vaults/tvl/handler");
 const stakeSave = require("../services/staking/dao-stake/handler");
+const daomineSave = require("../services/staking/daomine/handler");
 const poolSave = require("../services/staking/handler");
 const vipDVG = require("../services/staking/vipdvg/handler");
-const performanceSave = require("../services/vaults/performance/handler");
+// const performanceSave = require("../services/vaults/performance/handler");
+const performanceSave = require("../services/vaults/performance/handlerv2"); 
+const tokenSave = require("../services/vaults/distribution/handler");
 
 const jobDelayTime = { 
   saveHistoricalApy: 3 * 60 * 1000, // 3 mins in milliseconds
@@ -186,6 +189,21 @@ const saveStakedPoolsHandler = async() => {
   console.log(`[saveStakedPools] END: ${new Date().getTime()}`);
 }
 
+/** Store Historical Stake Pools for DAOmine v2 */
+const saveDAOmineHistoricalPools = async() => {
+  await daomineSave.saveDAOminePools();
+  cron.schedule(
+    "*/5 * * * *",
+    async () => {
+      console.log("[saveDAOmineHistoricalPools]", new Date().getTime());
+      await daomineSave.saveDAOminePools();
+    },
+    {
+      scheduled: true,
+    }
+  );
+}
+
 /** Store Stake Pools ABI */
 const saveABIPools = async () => {
   await delay(jobDelayTime.saveABIPools);
@@ -229,16 +247,18 @@ const saveVipAprHandler = async() => {
 /** Store Performance */
 const savePerformance = async () => {
   currentDateTime = new Date().getTime();
-  console.log("[savePerformance first]", currentDateTime);
+  console.log(`[savePerformance] first, START: ${new Date().getTime()}`);
   await performanceSave.savePerformance(null);
+  console.log(`[savePerformance] first, END: ${new Date().getTime()}`);
   cron.schedule(
     "*/5 * * * *",
     // "0 0 * * *",
     // "* * * * *",
     async () => {
       currentDateTime = new Date().getTime();
-      console.log("[savePerformance job]", currentDateTime);
+      console.log(`[savePerformance] START: ${new Date().getTime()}`);
       await performanceSave.savePerformance(currentDateTime);
+      console.log(`[savePerformance] END: ${new Date().getTime()}`);
     },
     {
       scheduled: true,
@@ -246,6 +266,25 @@ const savePerformance = async () => {
     }
   );
 };
+
+const saveTokenPrice = async() => {
+  await saveTokenPriceHandler();
+  cron.schedule(
+    "0 0 * * *",
+    async () => {
+      await saveTokenPriceHandler();
+    },
+    {
+      scheduled: true,
+      // timezone: "Etc/UTC", // UTC +0
+    }
+  );
+}
+const saveTokenPriceHandler = async() => {
+  console.log(`[saveTokenPrice] START: ${new Date().getTime()}`);
+  await tokenSave.saveAssetsPrice();
+  console.log(`[saveTokenPrice] END: ${new Date().getTime()}`);
+}
 
 module.exports = {
   saveHistoricalTVL,
@@ -256,7 +295,9 @@ module.exports = {
   saveHistoricalAPY,
   savePolygonHistoricalAPY,
   saveHistoricalPools,
+  saveDAOmineHistoricalPools,
   saveABIPools,
   saveVipApr,
   savePerformance,
+  saveTokenPrice
 };

@@ -5,13 +5,15 @@ const findAll = async (collection) => {
   return await db.collection(collection).find({}).toArray();
 };
 
-const findWithTimePeriods = async (startTime, endTime, collection) => {
+const findWithTimePeriods = async (startTime, endTime, collection, descending) => {
   const db = mongo.getDB();
   return await db.collection(collection).find({
     timestamp: {
       $gte: startTime * 1000,
       $lte: endTime
     }
+  }).sort({
+    timestamp: descending !== undefined ? -1 : 1
   }).toArray();
 }
 

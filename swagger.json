@@ -17,6 +17,147 @@
         "responses": {}
       }
     },
+    "/vaults/{network}/all": {
+      "get": {
+        "tags": ["Vaults"],
+        "description": "User information by strategies.",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "network",
+            "in": "path",
+            "description": "Network to be query. Example: 'ethereum', 'polygon",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/vaults/price/{farmer}/{days}": {
+      "get": {
+        "tags": ["Vaults"],
+        "description": "Price history of the vault",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "farmer",
+            "in": "path",
+            "description": "Vault ID with '_price'",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "days",
+            "in": "path",
+            "description": "Number of days. Only available for '30d', '7d', '1d'.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/vaults/price/{network}/all/{days}": {
+      "get": {
+        "tags": ["Vaults"],
+        "description": "Price history of the vault",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "network",
+            "in": "path",
+            "description": "Network. Example: 'ethereum', 'polygon'",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "days",
+            "in": "path",
+            "description": "Number of days. Only available for '30d', '7d', '1d'.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/vaults/performance-apy/{strategy}/{days}": {
+      "get": {
+        "tags": [
+          "Vaults"
+        ],
+        "description": "PNL / Historical APY Chart Data for Vault",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "strategy",
+            "in": "path",
+            "description": "Vault ID. Example: 'daoCDV', 'daoMPT'",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "days",
+            "in": "path",
+            "description": "Number of days. Only available for '1y', '6m', '30d', '7d', '1d'.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/vaults/historical-apy/{contractAddress}/{days}": {
+      "get": {
+        "tags": ["Vaults"],
+        "description": "APY history of the vaults",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "contractAddress",
+            "in": "path",
+            "description": "Vault Address",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "days",
+            "in": "path",
+            "description": "Number of days. Only available for '30d', '7d', '1d'.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/vaults/historical-apy/{network}/all/{days}": {
+      "get": {
+        "tags": ["Vaults"],
+        "description": "APY history of the vaults",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "network",
+            "in": "path",
+            "description": "Network. Example: 'ethereum', 'polygon' ",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "days",
+            "in": "path",
+            "description": "Number of days. Only available for '30d', '7d', '1d'.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    }, 
     "/user/{userAddress}/vaults/statistics": {
       "get": {
         "tags": ["Users"],
@@ -51,51 +192,11 @@
         "responses": {}
       }
     },
-    "/vaults/price/{farmer}/{days}": {
+    "/vaults/tvl/total": {
       "get": {
         "tags": ["Vaults"],
-        "description": "Price history of the vault",
+        "description": "Total TVL of all the existing vaults",
         "produces": ["application/json"],
-        "parameters": [
-          {
-            "name": "farmer",
-            "in": "path",
-            "description": "Vault ID with '_price'",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "days",
-            "in": "path",
-            "description": "Number of days. Only available for '30d', '7d', '1d'.",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-    "/vaults/historical-apy/{contractAddress}/{days}": {
-      "get": {
-        "tags": ["Vaults"],
-        "description": "APY history of the vaults",
-        "produces": ["application/json"],
-        "parameters": [
-          {
-            "name": "contractAddress",
-            "in": "path",
-            "description": "Vault Address",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "days",
-            "in": "path",
-            "description": "Number of days. Only available for '30d', '7d', '1d'.",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {}
       }
     },
@@ -116,11 +217,12 @@
         "responses": {}
       }
     },
-    "/vaults/tvl/total": {
+    "/vaults/tvl/find/all": {
       "get": {
         "tags": ["Vaults"],
-        "description": "Total TVL of all the existing vaults",
+        "description": "TVL of the vaults",
         "produces": ["application/json"],
+        "parameters": [],
         "responses": {}
       }
     },
@@ -129,6 +231,23 @@
         "tags": ["Vaults"],
         "description": "Get All Vault Categories",
         "produces": ["application/json"],
+        "responses": {}
+      }
+    },
+    "/vaults/{farmerId}/distribution" : {
+      "get": {
+        "tags": ["Vaults"],
+        "description": "Asset distribution for vault.",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "farmerId",
+            "in": "path",
+            "description": "Vault ID. Example: 'daoCDV', 'daoMPT'",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -230,6 +349,18 @@
         "responses": {}
       }
     },
+    "/staking/get-daomine-pools": {
+      "get": {
+          "tags": [
+              "Stake"
+          ],
+          "description": "Stake Pools v2 Information",
+          "produces": [
+              "application/json"
+          ],
+          "responses": {}
+      }
+  },
     "/staking/get-xdvg-stake": {
       "get": {
         "tags": ["Stake"],

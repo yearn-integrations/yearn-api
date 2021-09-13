@@ -15,16 +15,17 @@ let polygonBlockNumber = {
     current: 0,
     oneDay: 0,
 }
+const { jobDelayTime } = require("../../../../constant/delayTimeConfig");
 
 
 const getApyForVault = async (vault) => {
     const { lastMeasurement: inceptionBlockNumber } = vault;
+    
+    const contracts = await contractHelper.getContractsFromDomain();
 
     // Money Printer vault
     if(vault.isMoneyPrinter) {
-        const contractInfo = (process.env.PRODUCTION != '') 
-            ? mainContracts.farmer['daoMPT'] 
-            : testContracts.farmer['daoMPT'];
+        const contractInfo = contracts.farmer["daoMPT"];
         const contract = await contractHelper.getPolygonContract(contractInfo.abi, contractInfo.address);
 
         let pricePerFullShareCurrent = await getMoneyPrinterPricePerFullShare(contract, polygonBlockNumber.current, inceptionBlockNumber);
@@ -39,8 +40,7 @@ const getApyForVault = async (vault) => {
         if(apy === 0) {
             // Use back previous value if apy = 0
             const mpApyObj = await apyDb.getApy("daoMPT");
-            console.log(`MP Apy Obj ${mpApyObj.moneyPrinterApy}, timestamp: ${mpApyObj.timestamp}`);
-            apy = mpApyObj.moneyPrinterApy;
+            apy = mpApyObj ? mpApyObj.moneyPrinterApy : 0;
         }
         
         return {
