@@ -13,6 +13,24 @@ module.exports.getTokenPriceInUSD = async(tokenId) => {
     }
 }
 
+module.exports.getTokenHistoricalPriceInUSD = async(tokenId, date) => {
+    try {
+        if(!tokenId || tokenId === undefined) {
+            throw(`Missing token ID`);
+        }
+        if(!date || date === undefined) {
+            throw(`Missing Date`);
+        }
+        const data = await CoinGeckoClient.coins.fetchHistory(tokenId, {date: date});
+      
+        return (Object.keys(data.data).length !== 0) 
+            ? data.data["market_data"]["current_price"]["usd"]
+            : 1;
+    } catch(err) {
+        console.error(`Error in getTokenHistoricalPriceInUSD(), ${tokenId}: `, err);
+    }
+}
+
 module.exports.findTokenPrice = async(tokenIds, currencies) => {
     try {
         if( !tokenIds || 

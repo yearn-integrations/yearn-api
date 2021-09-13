@@ -182,30 +182,15 @@ module.exports.getBlockInformation = async (blockNumber, network) => {
     }
 }
 
-// Get contract's total supply 
-module.exports.totalSupply = async(contract) => {
-    try{
-        return await contract.methods.totalSupply().call();
-    } catch (err) {
-        console.error("Error in contract helper totalSupply(): ", err);
-    }
-}
-
-// Get contract balance of address 
-module.exports.balanceOf = async(contract, address) => {
-    try{
-        return await contract.methods.balanceOf(address).call();
-    } catch (err) {
-        console.error("Error in contract helper balanceOf(): ", err);
-    }
-}
-
-// Get contract's decimal
-module.exports.decimals = async(contract) => {
+// Convert Wei value to ether value
+module.exports.fromWei = async(value) => {
     try {
-        return await contract.methods.decimals().call();
-    } catch (err) {
-        console.error("Error in contract helper decimals(): ", err);
+        if(!value) {
+            return null;
+        }
+        return await web3.utils.fromWei(value, "ether");
+    } catch(err) {
+        console.log("Error in fromWei(): ", err);
     }
 }
 

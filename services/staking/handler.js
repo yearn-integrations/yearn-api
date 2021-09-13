@@ -29,6 +29,15 @@ const getPoolInfo = async (pool) => {
     return pool;
 }
 
+
+const findAllPool = async() => {
+    try {
+        return await db.findAll();
+    } catch (err) {
+        console.error("Error in findAllPool(): ", err);
+    }
+}
+ 
 module.exports.savePoolInfo = async () => {
     try {
         await delay(jobDelayTime.saveABIPools);
@@ -141,4 +150,6 @@ module.exports.snapshotEmergency = async (req, res) => {
 
     return;
 }
+
+module.exports.findAllPool = findAllPool;
 

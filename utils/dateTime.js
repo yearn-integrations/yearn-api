@@ -34,14 +34,8 @@ module.exports.getCurrentTimestamp = () => {
     return new Date().getTime();
 }
 
-// The number of seconds since the Unix Epoch.
 module.exports.toTimestamp = (date) => {
     return date ? date.unix() : null;
-}
-
-// The number of milliseconds since Unix Epoch.
-module.exports.toMillisecondsTimestamp = (date) => {
-    return date ? date.valueOf() : null;
 }
 
 module.exports.formatDateForTimestamp = (timestamp) => {
@@ -57,6 +51,11 @@ module.exports.formatDate = (date, format = null) => {
     }
 }
 
+module.exports.addDay = (addDays, date) => {
+    let selectedDate = checkDate(date);
+    return moment(selectedDate).subtract(addDays, "days");
+}
+
 module.exports.subtractDay = (subtractDays, date) => {
     let selectedDate = checkDate(date);
     return moment(selectedDate).subtract(subtractDays, "days");
@@ -70,4 +69,31 @@ module.exports.subtractMonth = (subtractMonths, date) => {
 module.exports.subtractYear = (subtractYears, date) => {
     let selectedDate = checkDate(date);
     return moment(selectedDate).subtract(subtractYears, "years");
+}
+
+module.exports.getStartOfDay = (momentDate) => {
+    try {
+        if(!momentDate || momentDate === undefined) {
+            throw(`Missing Date Object`);
+        }
+        return momentDate.startOf("day");
+    } catch(err) {
+        console.err(`[dateTimeHelper] getStartOfDay(): `, err);
+    }
+}
+
+module.exports.isSame = (date1, date2, compareUnit) => {
+    try {
+        if(!date1 || !date2 || date1 === undefined || date2 === undefined) {
+            throw(`Missing date1 / date2 for comparison`);
+        }
+
+        const supportedUnit = ["year","month","week", "day", "hour", "minute", "second"];
+        if(compareUnit === "" || compareUnit === undefined || !supportedUnit.includes(compareUnit)) {
+            throw(`Invalid compare unit. Please use "year","month","week", "day", "hour", "minute", "second" `);
+        }
+        return moment(date1).isSame(moment(date2), compareUnit);
+    } catch (err) {
+        console.error(`Error in isSame(): `, err);
+    }
 }

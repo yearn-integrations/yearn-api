@@ -61,7 +61,9 @@ const getApyForVault = async (vault) => {
         // If APY is 0, then take the previous value
         if(apy === 0) {
             const mpHistoricalApy = await historicalDb.getLatestNonZeroMoneyPrinterHistoricalAPY();
-            apy = mpHistoricalApy[0].moneyPrinterApy
+            apy = mpHistoricalApy.length > 0 
+                ? mpHistoricalApy[0].moneyPrinterApy
+                : 0;
         }
     
         return {
