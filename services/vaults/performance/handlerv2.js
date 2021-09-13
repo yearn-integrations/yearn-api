@@ -57,21 +57,21 @@ const getTotalSupply = async(etf, vault, block) => {
 
 const getTotalPool = async(etf, vault, block) => {
   let pool = 0;
-    try {
-        if(etf === "daoSTO") {
-          pool = await vault.getTotalValueInPool({ blockTag: block });
-        } else if(etf === "daoMPT") {
-          pool = await vault.methods.getValueInPool().call(undefined, block);
-        } else {
-          // daoELO, daoCDV, daoCUB, daoMVF using this
-          pool = await vault.getAllPoolInUSD({ blockTag: block });
-        }
-    } catch (err) {
-      console.log(`[performance/handlerv2] getTotalPool() for ${etf}: `)
-      console.error(err);
-    } finally {
-      return pool;
-    }
+  try {
+      if(etf === "daoSTO") {
+        pool = await vault.getTotalValueInPool({ blockTag: block });
+      } else if(etf === "daoMPT") {
+        pool = await vault.methods.getValueInPool().call(undefined, block);
+      } else {
+        // daoELO, daoCDV, daoCUB, daoMVF using this
+        pool = await vault.getAllPoolInUSD({ blockTag: block });
+      }
+  } catch (err) {
+    console.log(`[performance/handlerv2] getTotalPool() for ${etf}: `)
+    console.error(err);
+  } finally {
+    return pool;
+  }
 }
 
 const calcLPTokenPriceUSD = (etf, totalSupply, totalPool, network) => {
