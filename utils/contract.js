@@ -194,4 +194,32 @@ module.exports.fromWei = async(value) => {
     }
 }
 
+module.exports.totalSupply = async(contract) => {
+    let totalSupply = 0;
+    try { 
+        totalSupply = await contract.methods.totalSupply().call();
+    } catch(err) {
+        console.error("Error in totalSupply(): ", err);
+    } finally {
+        return totalSupply;
+    }
+}
+
+module.exports.balanceOf = async(contract, address) => {
+    let balanceOf = 0;
+    try {
+        if(!contract || contract === undefined) {
+            throw(`Missing contract`);
+        }
+        if(!address || address === "" || address === undefined) {
+            throw(`Missing address`);
+        }
+        balanceOf = await contract.methods.balanceOf(address).call();
+    } catch (err) {
+        console.error(`Error in balanceOf(): `, err);
+    } finally {
+        return balanceOf;
+    }
+}
+
 
