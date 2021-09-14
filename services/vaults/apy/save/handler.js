@@ -13,10 +13,6 @@ const contractHelper = require("../../../../utils/contract");
 
 let currentBlockNbr;
 let oneDayAgoBlock;
-let threeDaysAgoBlock;
-let oneWeekAgoBlock;
-let oneMonthAgoBlock;
-let nbrBlocksInDay;
 
 const pools = [
   {
@@ -255,31 +251,7 @@ const getApyForVault = async (vault, contracts) => {
     symbol,
   } = vault;
   
-  // Compound Vault
-  if (vault.isCompound) {
-    const symbol = Object.keys(contracts.farmer).find((key) =>
-    contracts.farmer[key].address.toLowerCase() === vault.vaultContractAddress.toLowerCase());
-
-    // cToken
-    const { abi: cTokenAbi, address: cTokenAddress } = contracts.compund[symbol];
-    const cToken = await contractHelper.getEthereumContract(cTokenAbi, cTokenAddress);
-    
-    const compoundApy = await getCompoundSupplyApy(cToken);
-
-    return {
-      apyInceptionSample: 0,
-      apyOneDaySample: 0,
-      apyThreeDaySample: 0,
-      apyOneWeekSample: 0,
-      apyOneMonthSample: 0,
-      apyLoanscan: 0,
-      compoundApy,
-      citadelApy: 0,
-      elonApy: 0,
-      cubanApy: 0,
-      faangApy: 0,
-    };
-  } else if (vault.isCitadel) {
+  if (vault.isCitadel) {
     // Citadel Vault
     const contract = await contractHelper.getEthereumContract(abi, address);
 
@@ -381,57 +353,6 @@ const getApyForVault = async (vault, contracts) => {
       cubanApy: 0,
       faangApy: apy,
     }
-  } else if (vault.isHarvest) {
-    // Harvest Vault
-    const vaultContract = await contractHelper.getEthereumContract(abi, address);
-    const strategyContract = await contractHelper.getEthereumContract(vault.strategyABI, vault.strategyContractAddress);
-
-    // Get current price per full share
-    const pool = strategyContract.methods.pool().call();
-    const totalSupply = vaultContract.methods.totalSupply().call();
-    const currentPricePerFullShare = pool / totalSupply;
-
-    const dataRequiredForCalculation = {
-      vaultContract,
-      strategyContract,
-      currentPricePerFullShare,
-      lastMeasurement: vault.lastMeasurement,
-      blockNumber: 0
-    };
-
-     // APR based on one day sample
-     dataRequiredForCalculation.blockNumber = oneDayAgoBlock;
-     const aprOneDaySample = await getHarvestFarmerAPR(dataRequiredForCalculation);
- 
-     // APR based on three day sample 
-     dataRequiredForCalculation.blockNumber = threeDaysAgoBlock;
-     const aprThreeDaySample = await getHarvestFarmerAPR(dataRequiredForCalculation);
- 
-     // APR based on one week sample 
-     dataRequiredForCalculation.blockNumber = oneWeekAgoBlock;
-     const aprOneWeekSample = await getHarvestFarmerAPR(dataRequiredForCalculation);
- 
-     // APR based on one month sample
-     dataRequiredForCalculation.blockNumber = oneMonthAgoBlock;
-     const aprOneMonthSample = await getHarvestFarmerAPR(dataRequiredForCalculation);
-
-    const aprData = {
-      aprOneDaySample,
-      aprThreeDaySample,
-      aprOneWeekSample,
-      aprOneMonthSample
-    }
-
-    return {
-      ...aprData,
-      apyLoanscan: 0,
-      compoundApy: 0,
-      citadelApy: 0,
-      elonApy: 0,
-      cubanApy: 0,
-      faangApy: 0,
-    };
-
   } else if (vault.isMetaverse) {
     const contract = await contractHelper.getEthereumContract(abi, address);
     
@@ -463,137 +384,212 @@ const getApyForVault = async (vault, contracts) => {
       faangApy: 0,
       metaverseApy: apy
     }
-  } else {
-    // Yearn Vault
-    const pool = _.find(pools, { symbol });
-    var vaultContract = await contractHelper.getEthereumContract(abi, address);
-
-    const pricePerFullShareInception = await getPricePerFullShare(
-      vaultContract,
-      inceptionBlockNbr,
-      inceptionBlockNbr
-    );
-
-    const pricePerFullShareCurrent = await getPricePerFullShare(
-      vaultContract,
-      currentBlockNbr,
-      inceptionBlockNbr
-    );
-
-    const pricePerFullShareOneDayAgo = await getPricePerFullShare(
-      vaultContract,
-      oneDayAgoBlock,
-      inceptionBlockNbr
-    );
-
-    const pricePerFullShareThreeDaysAgo = await getPricePerFullShare(
-      vaultContract,
-      threeDaysAgoBlock,
-      inceptionBlockNbr
-    );
-
-    const pricePerFullShareOneWeekAgo = await getPricePerFullShare(
-      vaultContract,
-      oneWeekAgoBlock,
-      inceptionBlockNbr
-    );
-
-    const pricePerFullShareOneMonthAgo = await getPricePerFullShare(
-      vaultContract,
-      oneMonthAgoBlock,
-      inceptionBlockNbr
-    );
-
-    const apyInceptionSample = getApy(
-      pricePerFullShareInception,
-      pricePerFullShareCurrent,
-      inceptionBlockNbr,
-      currentBlockNbr,
-      nbrBlocksInDay
-    );
-
-    const apyOneDaySample =
-      (getApy(
-        pricePerFullShareOneDayAgo,
-        pricePerFullShareCurrent,
-        oneDayAgoBlock,
-        currentBlockNbr,
-        nbrBlocksInDay
-      )) || apyInceptionSample;
-
-    const apyThreeDaySample =
-      (getApy(
-        pricePerFullShareThreeDaysAgo,
-        pricePerFullShareCurrent,
-        threeDaysAgoBlock,
-        currentBlockNbr,
-        nbrBlocksInDay
-      )) || apyInceptionSample;
-
-    const apyOneWeekSample =
-      (getApy(
-        pricePerFullShareOneWeekAgo,
-        pricePerFullShareCurrent,
-        oneWeekAgoBlock,
-        currentBlockNbr,
-        nbrBlocksInDay
-      )) || apyInceptionSample;
-
-    const apyOneMonthSample =
-      (getApy(
-        pricePerFullShareOneMonthAgo,
-        pricePerFullShareCurrent,
-        oneMonthAgoBlock,
-        currentBlockNbr,
-        nbrBlocksInDay
-      )) || apyInceptionSample;
-
-    let apyLoanscan = 0;
-
-    const apyData = {
-      apyInceptionSample,
-      apyOneDaySample,
-      apyThreeDaySample,
-      apyOneWeekSample,
-      apyOneMonthSample,
-    };
-
-    if (pool) {
-      const poolAddress = pool.address;
-      const virtualPriceCurrent = await getVirtualPrice(
-        poolAddress,
-        currentBlockNbr
-      );
-      const virtualPriceOneDayAgo = await getVirtualPrice(
-        poolAddress,
-        oneDayAgoBlock
-      );
-
-      const poolApy = await getApy(
-        virtualPriceOneDayAgo,
-        virtualPriceCurrent,
-        oneDayAgoBlock,
-        currentBlockNbr,
-        nbrBlocksInDay
-      );
-
-      const poolPct = poolApy / 100;
-      const vaultPct = apyOneDaySample / 100;
-      apyLoanscan = ((1 + poolPct) * (1 + vaultPct) - 1) * 100;
-
-      return { ...apyData, poolApy, apyLoanscan };
-    }
-
-    return {
-      ...apyData,
-      apyLoanscan,
-      compoundApy: 0,
-      citadelApy: 0,
-      elonApy: 0,
-      cubanApy: 0,
-      faangApy: 0,
-    };
   }
+  // } else if (vault.isCompound) {
+  //   const symbol = Object.keys(contracts.farmer).find((key) =>
+  //   contracts.farmer[key].address.toLowerCase() === vault.vaultContractAddress.toLowerCase());
+
+  //   // cToken
+  //   const { abi: cTokenAbi, address: cTokenAddress } = contracts.compund[symbol];
+  //   const cToken = await contractHelper.getEthereumContract(cTokenAbi, cTokenAddress);
+    
+  //   const compoundApy = await getCompoundSupplyApy(cToken);
+
+  //   return {
+  //     apyInceptionSample: 0,
+  //     apyOneDaySample: 0,
+  //     apyThreeDaySample: 0,
+  //     apyOneWeekSample: 0,
+  //     apyOneMonthSample: 0,
+  //     apyLoanscan: 0,
+  //     compoundApy,
+  //     citadelApy: 0,
+  //     elonApy: 0,
+  //     cubanApy: 0,
+  //     faangApy: 0,
+  //   };
+  // } else if (vault.isHarvest) {
+  //   // Harvest Vault
+  //   const vaultContract = await contractHelper.getEthereumContract(abi, address);
+  //   const strategyContract = await contractHelper.getEthereumContract(vault.strategyABI, vault.strategyContractAddress);
+
+  //   // Get current price per full share
+  //   const pool = strategyContract.methods.pool().call();
+  //   const totalSupply = vaultContract.methods.totalSupply().call();
+  //   const currentPricePerFullShare = pool / totalSupply;
+
+  //   const dataRequiredForCalculation = {
+  //     vaultContract,
+  //     strategyContract,
+  //     currentPricePerFullShare,
+  //     lastMeasurement: vault.lastMeasurement,
+  //     blockNumber: 0
+  //   };
+
+  //    // APR based on one day sample
+  //    dataRequiredForCalculation.blockNumber = oneDayAgoBlock;
+  //    const aprOneDaySample = await getHarvestFarmerAPR(dataRequiredForCalculation);
+ 
+  //    // APR based on three day sample 
+  //    dataRequiredForCalculation.blockNumber = threeDaysAgoBlock;
+  //    const aprThreeDaySample = await getHarvestFarmerAPR(dataRequiredForCalculation);
+ 
+  //    // APR based on one week sample 
+  //    dataRequiredForCalculation.blockNumber = oneWeekAgoBlock;
+  //    const aprOneWeekSample = await getHarvestFarmerAPR(dataRequiredForCalculation);
+ 
+  //    // APR based on one month sample
+  //    dataRequiredForCalculation.blockNumber = oneMonthAgoBlock;
+  //    const aprOneMonthSample = await getHarvestFarmerAPR(dataRequiredForCalculation);
+
+  //   const aprData = {
+  //     aprOneDaySample,
+  //     aprThreeDaySample,
+  //     aprOneWeekSample,
+  //     aprOneMonthSample
+  //   }
+
+  //   return {
+  //     ...aprData,
+  //     apyLoanscan: 0,
+  //     compoundApy: 0,
+  //     citadelApy: 0,
+  //     elonApy: 0,
+  //     cubanApy: 0,
+  //     faangApy: 0,
+  //   };
+
+  // } else {
+  //   // Yearn Vault
+  //   const pool = _.find(pools, { symbol });
+  //   var vaultContract = await contractHelper.getEthereumContract(abi, address);
+
+  //   const pricePerFullShareInception = await getPricePerFullShare(
+  //     vaultContract,
+  //     inceptionBlockNbr,
+  //     inceptionBlockNbr
+  //   );
+
+  //   const pricePerFullShareCurrent = await getPricePerFullShare(
+  //     vaultContract,
+  //     currentBlockNbr,
+  //     inceptionBlockNbr
+  //   );
+
+  //   const pricePerFullShareOneDayAgo = await getPricePerFullShare(
+  //     vaultContract,
+  //     oneDayAgoBlock,
+  //     inceptionBlockNbr
+  //   );
+
+  //   const pricePerFullShareThreeDaysAgo = await getPricePerFullShare(
+  //     vaultContract,
+  //     threeDaysAgoBlock,
+  //     inceptionBlockNbr
+  //   );
+
+  //   const pricePerFullShareOneWeekAgo = await getPricePerFullShare(
+  //     vaultContract,
+  //     oneWeekAgoBlock,
+  //     inceptionBlockNbr
+  //   );
+
+  //   const pricePerFullShareOneMonthAgo = await getPricePerFullShare(
+  //     vaultContract,
+  //     oneMonthAgoBlock,
+  //     inceptionBlockNbr
+  //   );
+
+  //   const apyInceptionSample = getApy(
+  //     pricePerFullShareInception,
+  //     pricePerFullShareCurrent,
+  //     inceptionBlockNbr,
+  //     currentBlockNbr,
+  //     nbrBlocksInDay
+  //   );
+
+  //   const apyOneDaySample =
+  //     (getApy(
+  //       pricePerFullShareOneDayAgo,
+  //       pricePerFullShareCurrent,
+  //       oneDayAgoBlock,
+  //       currentBlockNbr,
+  //       nbrBlocksInDay
+  //     )) || apyInceptionSample;
+
+  //   const apyThreeDaySample =
+  //     (getApy(
+  //       pricePerFullShareThreeDaysAgo,
+  //       pricePerFullShareCurrent,
+  //       threeDaysAgoBlock,
+  //       currentBlockNbr,
+  //       nbrBlocksInDay
+  //     )) || apyInceptionSample;
+
+  //   const apyOneWeekSample =
+  //     (getApy(
+  //       pricePerFullShareOneWeekAgo,
+  //       pricePerFullShareCurrent,
+  //       oneWeekAgoBlock,
+  //       currentBlockNbr,
+  //       nbrBlocksInDay
+  //     )) || apyInceptionSample;
+
+  //   const apyOneMonthSample =
+  //     (getApy(
+  //       pricePerFullShareOneMonthAgo,
+  //       pricePerFullShareCurrent,
+  //       oneMonthAgoBlock,
+  //       currentBlockNbr,
+  //       nbrBlocksInDay
+  //     )) || apyInceptionSample;
+
+  //   let apyLoanscan = 0;
+
+  //   const apyData = {
+  //     apyInceptionSample,
+  //     apyOneDaySample,
+  //     apyThreeDaySample,
+  //     apyOneWeekSample,
+  //     apyOneMonthSample,
+  //   };
+
+  //   if (pool) {
+  //     const poolAddress = pool.address;
+  //     const virtualPriceCurrent = await getVirtualPrice(
+  //       poolAddress,
+  //       currentBlockNbr
+  //     );
+  //     const virtualPriceOneDayAgo = await getVirtualPrice(
+  //       poolAddress,
+  //       oneDayAgoBlock
+  //     );
+
+  //     const poolApy = await getApy(
+  //       virtualPriceOneDayAgo,
+  //       virtualPriceCurrent,
+  //       oneDayAgoBlock,
+  //       currentBlockNbr,
+  //       nbrBlocksInDay
+  //     );
+
+  //     const poolPct = poolApy / 100;
+  //     const vaultPct = apyOneDaySample / 100;
+  //     apyLoanscan = ((1 + poolPct) * (1 + vaultPct) - 1) * 100;
+
+  //     return { ...apyData, poolApy, apyLoanscan };
+  //   }
+
+  //   return {
+  //     ...apyData,
+  //     apyLoanscan,
+  //     compoundApy: 0,
+  //     citadelApy: 0,
+  //     elonApy: 0,
+  //     cubanApy: 0,
+  //     faangApy: 0,
+  //   };
+  // }
 };
 
 const readVault = async (vault, contracts) => {
@@ -646,12 +642,6 @@ module.exports.handler = async () => {
     console.log(`[Ethereum] Current Block Number: ${currentBlockNbr}`);
     oneDayAgoBlock = await contractHelper.getEthereumBlockNumberByTimeline(oneDayAgo);
     console.log(`[Ethereum] 1d ago Block Number: ${oneDayAgoBlock}`);
-    threeDaysAgoBlock = await contractHelper.getEthereumBlockNumberByTimeline(threeDaysAgo);
-    console.log(`[Ethereum] 3d ago Block Number: ${threeDaysAgoBlock}`);
-    oneWeekAgoBlock = await contractHelper.getEthereumBlockNumberByTimeline(oneWeekAgo);
-    console.log(`[Ethereum] 1w ago Block Number: ${oneWeekAgoBlock}`);
-    oneMonthAgoBlock = await contractHelper.getEthereumBlockNumberByTimeline(oneMonthAgo);
-    console.log(`[Ethereum] 1m ago Block Number: ${oneMonthAgoBlock}`);
 
     nbrBlocksInDay = currentBlockNbr - oneDayAgoBlock;
     console.log("Done fetching historical blocks");
