@@ -257,13 +257,13 @@ const testContracts = {
       network: constant.POLYGON,
     },
     daoMVF: {
-      address: '0xc11156425cf89fec05f04f6c748d39bcbf56afa5',
+      address: '0xccea249aa4f105e1a48e50895fa619af61dc07e0',
       abi: abi.metaverseVaultContract,
-      strategyAddress: '0x84F8D0Aab5fC412B920c222068415043d7508a78',
+      strategyAddress: '0x16ff7c51bf31f870904e6a864d20068568c2f0c3',
       strategyABI: abi.metaverseStrategyContract,
       contractType: "metaverse",
       tokenId: ["tether", "usd-coin", "dai"],
-      inceptionBlock: 27067389,
+      inceptionBlock: 27185171,
       pnl:[
         {db: "lp", tokenId: ""},
         {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
