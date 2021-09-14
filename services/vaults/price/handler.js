@@ -86,47 +86,9 @@ const getCurrentPrice = async () => {
   let contracts = contractHelper.getContractsFromDomain();
 
   for (const key of Object.keys(contracts.farmer)) {
+    console.log(`Key ${key}`);
     try {
-      if (contracts.farmer[key].contractType === 'yearn') {
-        const earnContract = await contractHelper.getEthereumContract(contracts.earn[key].abi, contracts.earn[key].address);
-        const vaultContract = await contractHelper.getEthereumContract(contracts.vault[key].abi, contracts.vault[key].address);
-
-        const earnPricePerFullShare = await getPricePerFullShare(earnContract);
-        const vaultPricePerFullShare = await getPricePerFullShare(vaultContract);
-
-        await db.add(key + '_price', {
-          earnPrice: earnPricePerFullShare,
-          vaultPrice: vaultPricePerFullShare,
-          compoundExchangeRate: 0,
-          citadelPrice: 0,
-          elonPrice: 0,
-          cubanPrice: 0,
-          faangPrice: 0,
-          moneyPrinterPrice: 0,
-          harvestPrice: 0,
-          metaversePrice: 0
-        }).catch((err) => console.log('err', err));
-      } else if (contracts.farmer[key].contractType === 'compound') {
-        const compoundContract = await contractHelper.getEthereumContract(contracts.compund[key].abi, contracts.compund[key].address);
-        const getCash = await compoundContract.methods.getCash().call();
-        const totalBorrows = await compoundContract.methods.totalBorrows().call();
-        const totalReserves = await compoundContract.methods.totalReserves().call();
-        const totalSupply = await compoundContract.methods.totalSupply().call();
-        const exchangeRate = (getCash + totalBorrows - totalReserves) / totalSupply;
-
-        await db.add(key + '_price', {
-          earnPrice: 0,
-          vaultPrice: 0,
-          compoundExchangeRate: exchangeRate,
-          citadelPrice: 0,
-          elonPrice: 0,
-          cubanPrice: 0,
-          faangPrice: 0,
-          moneyPrinterPrice: 0,
-          harvestPrice: 0,
-          metaversePrice: 0
-        }).catch((err) => console.log('err', err));
-      } else if (contracts.farmer[key].contractType === 'citadel') {
+      if (contracts.farmer[key].contractType === 'citadel') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
         const pricePerFullShare = await getCitadelPricePerFullShare(contract);
         await db.add(key + '_price', {
@@ -214,32 +176,7 @@ const getCurrentPrice = async () => {
           harvestPrice: 0,
           metaversePrice: 0
         }).catch((err) => console.log('err', err));
-      } else if (contracts.farmer[key].contractType === 'harvest') {
-        // Get vault contract and strategy contract
-        const vaultContract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const strategyContract = await contractHelper.getEthereumContract(contracts.farmer[key].strategyABI, contracts.farmer[key].strategyAddress);
-
-        // Get pool
-        const pool = await strategyContract.methods.pool().call();
-
-        // Get total supply
-        const totalSupply = await vaultContract.methods.totalSupply().call();
-
-        // Calculate price per full share
-        const pricePerFullShare = pool / totalSupply;
-        await db.add(key + '_price', {
-          earnPrice: 0,
-          vaultPrice: 0,
-          compoundExchangeRate: 0,
-          citadelPrice: 0,
-          elonPrice: 0,
-          cubanPrice: 0,
-          faangPrice: 0,
-          moneyPrinterPrice: 0,
-          harvestPrice: pricePerFullShare,
-          metaversePrice: 0
-        })
-      }
+      } 
     } catch (err) {
       await db.add(key + '_price', {
         earnPrice: "0",
@@ -286,27 +223,6 @@ module.exports.handleHistoricialPrice = async (req, res) => {
   } else {
     let collection = '';
     switch (req.params.farmer) {
-      case db.usdtFarmer:
-        collection = db.usdtFarmer;
-        break;
-      case db.usdcFarmer:
-        collection = db.usdcFarmer;
-        break;
-      case db.daiFarmer:
-        collection = db.daiFarmer;
-        break;
-      case db.tusdFarmer:
-        collection = db.tusdFarmer;
-        break;
-      case db.cUsdtFarmer:
-        collection = db.cUsdtFarmer;
-        break;
-      case db.cUsdcFarmer:
-        collection = db.cUsdcFarmer;
-        break;
-      case db.cDaiFarmer:
-        collection = db.cDaiFarmer;
-        break;
       case db.daoCDVFarmer:
         collection = db.daoCDVFarmer;
         break;
@@ -325,15 +241,6 @@ module.exports.handleHistoricialPrice = async (req, res) => {
       case db.daoMVFFarmer:
           collection = db.daoMVFFarmer;
           break;
-      case db.hfDaiFarmer:
-        collection = db.hfDaiFarmer;
-        break;
-      case db.hfUsdcFarmer:
-        collection = db.hfUsdcFarmer;
-        break;
-      case db.hfUsdtFarmer:
-        collection = db.hfUsdtFarmer;
-        break;
       default:
         res.status(200).json({
           message: 'Invalid Farmer',
