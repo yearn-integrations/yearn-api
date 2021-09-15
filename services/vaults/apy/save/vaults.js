@@ -309,7 +309,7 @@ const testVaults = [
     description: "DAO Vault Metaverse for 3 stablecoins",
     vaultSymbol: "daoMVF",
     erc20address: ["0x07de306ff27a2b630b1141956844eb1552b956b5", "0xb7a4f3e9097c08da09517b5ab877f7a917224ede", "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa"],
-    vaultContractAddress: "0xa4ebc7f70618bb47984a21417f2b726e93def9ee",
+    vaultContractAddress: "0xcbb69e3621ce4eb0d99b60f0e0430dcd5f52fc95",
     vaultContractABI: abi.metaverseVaultContract,
     balance: 0,
     vaultBalance: 0,
