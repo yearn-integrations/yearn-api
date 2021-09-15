@@ -257,9 +257,9 @@ const testContracts = {
       network: constant.POLYGON,
     },
     daoMVF: {
-      address: '0xccea249aa4f105e1a48e50895fa619af61dc07e0',
+      address: '0xa4ebc7f70618bb47984a21417f2b726e93def9ee',
       abi: abi.metaverseVaultContract,
-      strategyAddress: '0x16ff7c51bf31f870904e6a864d20068568c2f0c3',
+      strategyAddress: '0xf4655e971cc76b6daa78b4615dc2be4446e67e53',
       strategyABI: abi.metaverseStrategyContract,
       contractType: "metaverse",
       tokenId: ["tether", "usd-coin", "dai"],
