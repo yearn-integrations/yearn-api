@@ -12,13 +12,14 @@ const poolSave = require("../services/staking/handler");
 const vipDVG = require("../services/staking/vipdvg/handler");
 const performanceSave = require("../services/vaults/performance/handler");
 
-const jobDelayTime = { 
+const jobDelayTime = {
   saveHistoricalApy: 3 * 60 * 1000, // 3 mins in milliseconds
-  savePricePerFullShare: 6 * 60 * 1000, // 5 mins in milliseconds
+  savePricePerFullShare: 6 * 60 * 1000, // 6 mins in milliseconds
   saveHistoricalTVL: 7 * 60 * 1000, // 7 mins
   saveVaultApy: 15 * 60 * 1000, // 15 mins
   saveABIPools: 18 * 60 * 1000, // 18 mins
   savePolygonVaultAPY: 3 * 60 * 1000, // 3 mins in milliseconds;
+  saveReferralStatus: 6 * 60 * 1000, // 6 mins in milliseconds
 };
 
 /** Save Vault **/
@@ -35,11 +36,11 @@ const saveVault = async () => {
     }
   );
 };
-const saveVaultHandler = async() => {
+const saveVaultHandler = async () => {
   console.log(`[saveVault] START: ${new Date().getTime()}`);
   await vaultSave.handler();
   console.log(`[saveVault] END: ${new Date().getTime()}`);
-}
+};
 
 /** Save Vault APY */
 const saveVaultAPY = async () => {
@@ -57,16 +58,16 @@ const saveVaultAPY = async () => {
     }
   );
 };
-const saveVaultAPYHandler = async() => {
+const saveVaultAPYHandler = async () => {
   console.log(`[saveVaultAPY] START: ${new Date().getTime()}`);
   await vaultHandlerSave.handler();
   console.log(`[saveVaultAPY] END: ${new Date().getTime()}`);
-}
+};
 
 /** Save Vault APY */
-const savePolygonVaultAPY = async() => {
+const savePolygonVaultAPY = async () => {
   await delay(jobDelayTime.savePolygonVaultAPY);
-  await savePolygonVaultAPYHandler();;
+  await savePolygonVaultAPYHandler();
 
   cron.schedule(
     "0 0 0 * * *",
@@ -78,12 +79,12 @@ const savePolygonVaultAPY = async() => {
       timezone: "Etc/UTC", // UTC +0
     }
   );
-}
-const savePolygonVaultAPYHandler = async() => {
+};
+const savePolygonVaultAPYHandler = async () => {
   console.log(`[saveVaultAPY Polygon] START: ${new Date().getTime()}`);
   await vaultPolygonHandlerSave.saveHandler();
   console.log(`[saveVaultAPY Polygon] END: ${new Date().getTime()}`);
-}
+};
 
 /** Store getPricePerFullShare */
 const savePricePerFullShare = async () => {
@@ -100,17 +101,17 @@ const savePricePerFullShare = async () => {
     }
   );
 };
-const savePricePerFullShareHandler = async() => {
+const savePricePerFullShareHandler = async () => {
   console.log(`[savePricePerFullShare] START: ${new Date().getTime()}`);
   await priceSave.handler();
   console.log(`[savePricePerFullShare] END: ${new Date().getTime()}`);
-}
+};
 
 /** Store Historical APY */
 const saveHistoricalAPY = async () => {
   await delay(jobDelayTime.saveHistoricalApy);
   await saveHistoricalApyHandler();
-  
+
   cron.schedule(
     "*/5 * * * *",
     async () => {
@@ -121,11 +122,11 @@ const saveHistoricalAPY = async () => {
     }
   );
 };
-const saveHistoricalApyHandler = async() => {
+const saveHistoricalApyHandler = async () => {
   console.log(`[saveHistoricalAPY] START: ${new Date().getTime()}`);
   await vaultApySave.saveHandler();
   console.log(`[saveHistoricalAPY] END: ${new Date().getTime()}`);
-}
+};
 
 /** Store Historical APY For Polygon */
 const savePolygonHistoricalAPY = async () => {
@@ -139,12 +140,12 @@ const savePolygonHistoricalAPY = async () => {
       scheduled: true,
     }
   );
-}
+};
 const savePolygonHistoricalAPYHandler = async () => {
   console.log(`[savePolygonHistoricalAPY] START: ${new Date().getTime()}`);
   await vaultPolygonApySave.saveHandler();
   console.log(`[savePolygonHistoricalAPY] END: ${new Date().getTime()}`);
-}
+};
 
 /** Store Historical TVL */
 const saveHistoricalTVL = async () => {
@@ -161,11 +162,11 @@ const saveHistoricalTVL = async () => {
     }
   );
 };
-const saveHistoricalTVLHandler = async() => {
+const saveHistoricalTVLHandler = async () => {
   console.log(`[saveTVL] START: ${new Date().getTime()}`);
   await tvlSave.saveAllTVLhandler();
   console.log(`[saveTVL] END: ${new Date().getTime()}`);
-}
+};
 
 /** Store Historical Stake Pools */
 const saveHistoricalPools = async () => {
@@ -180,11 +181,11 @@ const saveHistoricalPools = async () => {
     }
   );
 };
-const saveStakedPoolsHandler = async() => {
+const saveStakedPoolsHandler = async () => {
   console.log(`[saveStakedPools] START: ${new Date().getTime()}`);
   await stakeSave.saveStakedPools();
   console.log(`[saveStakedPools] END: ${new Date().getTime()}`);
-}
+};
 
 /** Store Stake Pools ABI */
 const saveABIPools = async () => {
@@ -201,11 +202,11 @@ const saveABIPools = async () => {
     }
   );
 };
-const saveABIPoolsHandler = async() => {
+const saveABIPoolsHandler = async () => {
   console.log(`[savePoolInfo] START: ${new Date().getTime()}`);
   await poolSave.savePoolInfo();
   console.log(`[savePoolInfo] END: ${new Date().getTime()}`);
-}
+};
 
 /** Store DAOVIP APR */
 const saveVipApr = async () => {
@@ -220,11 +221,11 @@ const saveVipApr = async () => {
     }
   );
 };
-const saveVipAprHandler = async() => {
+const saveVipAprHandler = async () => {
   console.log(`[saveVipApr] START: ${new Date().getTime()}`);
   await vipDVG.getVipAPY();
   console.log(`[saveVipApr] END: ${new Date().getTime()}`);
-}
+};
 
 /** Store Performance */
 const savePerformance = async () => {

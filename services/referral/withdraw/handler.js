@@ -1,29 +1,14 @@
 const db = require("../../../models/referral-withdrawal.model");
-
-module.exports.getAddress = async (req, res) => {
-  try {
-    const addressInfo = await db.findOne(req.params.address.toLowerCase());
-
-    if (addressInfo != null) {
-      delete addressInfo._id;
-    }
-
-    res.status(200).json({
-      message: "Successful Response",
-      body: addressInfo,
-    });
-  } catch (err) {
-    res.status(200).json({
-      message: err.message,
-      body: null,
-    });
-  }
-  return;
-};
+const moment = require("moment");
 
 module.exports.addWithdrawalAmount = async (req, res) => {
   try {
-    if (!req.body || !req.body.address || !req.body.amount) {
+    if (
+      !req.body ||
+      !req.body.address ||
+      !req.body.amount ||
+      !req.body.transactionId
+    ) {
       if (!req.body.address) {
         res.status(200).json({
           message: "Missing user address.",
@@ -36,37 +21,50 @@ module.exports.addWithdrawalAmount = async (req, res) => {
           body: null,
         });
       }
+      if (!req.body.transactionId) {
+        res.status(200).json({
+          message: "Missing Transaction ID.",
+          body: null,
+        });
+      }
+    } else {
+      const now = moment().format("MMMM Do YYYY, h:mm:ss a");
+      await db.withdrawAmount({
+        _id: req.body.transactionId,
+        amount: req.body.amount,
+        address: req.body.address,
+        timestamp: now,
+        status: "pending",
+      });
+
+      res.status(200).json({
+        message: "Withdraw Success!",
+        body: null,
+      });
+      return;
     }
-
-    var today = new Date();
-    var datetime =
-      today.getFullYear() +
-      "-" +
-      (today.getMonth() + 1) +
-      "-" +
-      today.getDate() +
-      "-" +
-      today.getHours() +
-      ":" +
-      today.getMinutes() +
-      ":" +
-      today.getSeconds();
-
-    await db.withdrawAmount({
-      referrer: req.body.referrer,
-      amount: req.body.amount,
-      address: req.body.address,
-      timestamp: datetime,
-    });
-
-    res.status(200).json({
-      message: "Withdrawal Success!",
-      body: null,
-    });
-
-    return;
   } catch (err) {
     res.status(200).json({
+      message: err.message,
+      body: null,
+    });
+    return;
+  }
+};
+
+module.exports.getAll = async (req, res) => {
+  try {
+    let f = {};
+    if (req.query) {
+      f = req.query;
+    }
+    const result = await db.findAll(f);
+    res.status(200).json({
+      message: "Successful Response",
+      body: result,
+    });
+  } catch (err) {
+    res.status(400).json({
       message: err.message,
       body: null,
     });

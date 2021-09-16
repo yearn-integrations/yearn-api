@@ -3,9 +3,9 @@ const collection = "Referral-Deposit";
 //const subgraphUrl = process.env.SUBGRAPH_ENDPOINT;
 //const polygonSubgraphUrl = process.env.POLYGON_SUBGRAPH_ENDPOINT;
 
-const findAll = async () => {
+const findAll = async (query) => {
   const db = mongo.getDB();
-  return await db.collection(collection).find({}).toArray();
+  return await db.collection(collection).find(query).toArray();
 };
 
 const findOne = async (params) => {

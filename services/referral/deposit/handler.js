@@ -1,53 +1,19 @@
 const db = require("../../../models/referral-deposit.model");
 const dbReferral = require("../../../models/referrals.model");
+const moment = require("moment");
 
-module.exports.getAddress = async (req, res) => {
-  try {
-    const addressInfo = await db.findOne(req.params.address.toLowerCase());
-
-    if (addressInfo != null) {
-      delete addressInfo._id;
-    }
-
-    res.status(200).json({
-      message: "Successful Response",
-      body: addressInfo,
-    });
-  } catch (err) {
-    res.status(400).json({
-      message: err.message,
-      body: null,
-    });
-  }
-
-  return;
-};
-
-module.exports.checkReferral = async (req, res) => {
-  try {
-    const referralInfo = await dbReferral.findOne(
-      req.params.referral.toLowerCase()
-    );
-
-    if (referralInfo != null) {
-      delete referralInfo._id;
-    }
-
-    res.status(200).json({
-      message: "Successful Response",
-      body: referralInfo,
-    });
-  } catch (err) {
-    res.status(400).json({
-      message: err.message,
-      body: null,
-    });
-  }
+isValidReferral = async (referral) => {
+  const referralInfo = await dbReferral.checkReferral(referral);
+  return referralInfo;
 };
 
 module.exports.getAll = async (req, res) => {
   try {
-    const result = await db.findAll();
+    let f = {};
+    if (req.query) {
+      f = req.query;
+    }
+    const result = await db.findAll(f);
     res.status(200).json({
       message: "Successful Response",
       body: result,
@@ -63,7 +29,7 @@ module.exports.getAll = async (req, res) => {
 
 module.exports.getTransaction = async (req, res) => {
   try {
-    const result = await db.getTransaction(req.params.id);
+    const result = await db.getTransaction(req.body.id);
     res.status(200).json({
       message: "Successful Response",
       body: result,
@@ -78,13 +44,13 @@ module.exports.getTransaction = async (req, res) => {
 };
 
 module.exports.addDepositAmount = async (req, res) => {
-  /*
   try {
     if (
       !req.body ||
       !req.body.address ||
       !req.body.amount ||
-      !req.body.referrer
+      !req.body.referral ||
+      !req.body.transactionId
     ) {
       if (!req.body.address) {
         res.status(200).json({
@@ -98,46 +64,47 @@ module.exports.addDepositAmount = async (req, res) => {
           body: null,
         });
       }
-      if (!req.body.referrer) {
+      if (!req.body.referral) {
         res.status(200).json({
           message: "Missing referral link.",
           body: null,
         });
       }
+      if (!req.body.transactionId) {
+        res.status(200).json({
+          message: "Missing Transaction ID.",
+          body: null,
+        });
+      }
+    } else {
+      const result = await isValidReferral(req.body.referral);
+      if (result) {
+        const now = moment().format("MMMM Do YYYY, h:mm:ss a");
+        await db.depositAmount({
+          _id: req.body.transactionId,
+          referral: req.body.referral,
+          amount: req.body.amount,
+          address: req.body.address,
+          timestamp: now,
+          status: "pending",
+        });
+
+        res.status(200).json({
+          message: "Deposit Success!",
+          body: null,
+        });
+        return;
+      } else {
+        res.status(200).json({
+          message: "Referral link invalid",
+        });
+        return;
+      }
     }
-*/
-  var today = new Date();
-  var datetime =
-    today.getFullYear() +
-    "-" +
-    (today.getMonth() + 1) +
-    "-" +
-    today.getDate() +
-    "-" +
-    today.getHours() +
-    ":" +
-    today.getMinutes() +
-    ":" +
-    today.getSeconds();
-  try {
-    await db.depositAmount({
-      referrer: req.body.referrer,
-      amount: req.body.amount,
-      address: req.body.address,
-      timestamp: datetime,
-    });
-
-    res.status(200).json({
-      message: "Deposit Success!",
-      body: null,
-    });
-
-    return;
   } catch (err) {
     res.status(200).json({
       message: err.message,
       body: null,
     });
-    return;
   }
 };

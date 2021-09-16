@@ -18,7 +18,7 @@ const specialEvent = require("./services/user/special-event/handler");
 const reimburse = require("./services/user/reimburse/handler");
 const referral = require("./services/referral/handler");
 const deposit = require("./services/referral/deposit/handler");
-const withdraw = require("./services/referral/deposit/handler");
+const withdraw = require("./services/referral/withdraw/handler");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 8080;
@@ -35,7 +35,7 @@ async function init() {
 
   db.connectDB(async (err) => {
     if (err) throw err;
-
+    /*
     jobs.saveVault();
     jobs.saveVaultAPY();
     jobs.savePolygonVaultAPY();
@@ -47,6 +47,7 @@ async function init() {
     jobs.saveABIPools();
     jobs.saveVipApr();
     jobs.savePerformance();
+    */
   });
 
   app.use(cors());
@@ -122,29 +123,28 @@ async function init() {
     reimburse.getReimburseAddress(req, res)
   );
 
-  /*
-  app.get("/user/:referral", (req, res) => {
-    referral.checkReferral(req, res);
-  });
-*/
   app.get("/user/getreferrals", (req, res) => {
     referral.seeAllReferrals(req, res);
   });
 
-  app.post("/user/:referral/:address", (req, res) => {
+  app.post("/user/addreferral", (req, res) => {
     referral.addNewReferral(req, res);
   });
 
-  app.post("/user/:address/:amount/:referrer", (req, res) => {
+  app.post("/user/adddeposit", (req, res) => {
     deposit.addDepositAmount(req, res);
   });
 
-  app.get("/user/getdeposits", (req, res) => {
+  app.get("/user/deposits", (req, res) => {
     deposit.getAll(req, res);
   });
 
-  app.get("/user/:id", (req, res) => {
-    deposit.getTransaction(req, res);
+  app.post("/user/addwithdrawal", (req, res) => {
+    withdraw.addWithdrawalAmount(req, res);
+  });
+
+  app.get("/user/withdrawals", (req, res) => {
+    withdraw.getAll(req, res);
   });
 
   app.post("/user/reimburse-address/update", (req, res) => {
@@ -157,3 +157,28 @@ async function init() {
 }
 
 init();
+
+/* 
+  localhost:2002/student/:name/:course
+  
+  PUT localhost:2002/student/:studentId
+  req.body = {
+    name: "",
+    batch: ""
+  }
+  req.params = {studentId: ""}
+  
+  req.params: {
+    name: "Omkar",
+    course: "AI"
+  }
+
+  localhost:2002/student/:name/:course?i20=1
+  req.query = {
+    i20: 1
+  }
+
+  req.body = {
+    ...
+  }  
+*/
