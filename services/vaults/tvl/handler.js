@@ -5,7 +5,6 @@ const CoinGecko = require("coingecko-api");
 const CoinGeckoClient = new CoinGecko();
 
 const contractHelper = require('../../../utils/contract');
-const constant = require("../../../utils/constant");
 
 let tokens = {
   "tether": 0.00,
@@ -99,9 +98,6 @@ const getVipTokenPrice = async (vipTotalSupply, tokenBalOfVipToken, tokenPrice) 
 const getTVL = async (vault) => {
   let tvl = 0;
   const { 
-    tokenId, 
-    strategyABI, 
-    strategyAddress,
     address
   } = vault;
 
@@ -124,22 +120,6 @@ const getTVL = async (vault) => {
       const poolAmount = await contract.methods.getValueInPool().call();
       const decimals = await contract.methods.decimals().call();
       tvl = poolAmount / 10 ** decimals;
-    } else {
-      const strategy = { abi: strategyABI, address: strategyAddress, network: vault.network}
-      const strategyContract = await getContract(strategy);
-  
-      const poolAmount = await getPoolAmount(strategyContract);
-      const tokenPrice = tokens[tokenId] ? tokens[tokenId] : 0.00;
-  
-      let decimals = 0;
-      if(vault.contractType === 'harvest') {
-        const vaultContract = await getContract(vault);
-        decimals =  await getDecimals(vaultContract);
-      } else {
-        decimals = await getDecimals(strategyContract);
-      }
-  
-      tvl = (poolAmount / 10 ** decimals) * tokenPrice;
     }
   } catch (err) {
     console.error(`Error in getTVL(), while getting TVL for ${address}: `);
@@ -282,27 +262,6 @@ module.exports.tvlHandle = async (req, res) => {
   let collection = "";
 
   switch (req.params.farmer) {
-    case db.usdtFarmer:
-      collection = db.usdtFarmer;
-      break;
-    case db.usdcFarmer:
-      collection = db.usdcFarmer;
-      break;
-    case db.daiFarmer:
-      collection = db.daiFarmer;
-      break;
-    case db.tusdFarmer:
-      collection = db.tusdFarmer;
-      break;
-    case db.cUsdtFarmer:
-      collection = db.cUsdtFarmer;
-      break;
-    case db.cUsdcFarmer:
-      collection = db.cUsdcFarmer;
-      break;
-    case db.cDaiFarmer:
-      collection = db.cDaiFarmer;
-      break;
     case db.daoCDVFarmer:
       collection = db.daoCDVFarmer;
       break;
@@ -314,15 +273,6 @@ module.exports.tvlHandle = async (req, res) => {
       break;
     case db.daoSTOFarmer:
       collection = db.daoSTOFarmer;
-      break;
-    case db.hfDaiFarmer:
-      collection = db.hfDaiFarmer;
-      break;
-    case db.hfUsdtFarmer:
-      collection = db.hfUsdtFarmer;
-      break;
-    case db.hfUsdcFarmer:
-      collection = db.hfUsdcFarmer;
       break;
     case db.daoMPTFarmer: 
       collection = db.daoMPTFarmer;
