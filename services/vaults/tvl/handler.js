@@ -135,7 +135,6 @@ const getVipTokenTVL = async (vipTokenVault, tokenVault) => {
   try {
     const { decimals } = vipTokenVault;
     const { tokenId } = tokenVault;
-    let tvl;
     
     const vipTokenContract = await getContract(vipTokenVault);
     const tokenContract = await getContract(tokenVault);
@@ -240,6 +239,7 @@ module.exports.saveAllTVLhandler = async () => {
     if(!tvls || tvls === undefined) {
       throw(`TVLs is undefined`);
     }
+
     const totalTvl = await getTotalTVL(tvls);
     console.log(`Total Tvl ${totalTvl}`);
     await saveTotalTVL(totalTvl);
