@@ -143,6 +143,11 @@ module.exports.handler = async(req,res) => {
     let historicalData = [];
     let apy = 0;
 
+    let finalResult = {
+        chartData: result,
+        performanceHistory: apy
+    }
+
     try {
         if(etfStrategies.includes(strategyId)) {
             const result = await performanceDb.findPerformanceWithTimePeriods(
@@ -190,7 +195,7 @@ module.exports.handler = async(req,res) => {
             result = processChartData(historicalData, strategyType, strategyId);
         }
 
-        const finalResult = {
+        finalResult = {
             chartData: result,
             performanceHistory: apy
         }
@@ -201,5 +206,9 @@ module.exports.handler = async(req,res) => {
         });
     } catch(err) {
         console.error(`[performance/apy] Error in handler(): `, err);
+        res.status(200).json({
+            message: "Some error occur in backend.",
+            body: finalResult
+        });
     }
 }
