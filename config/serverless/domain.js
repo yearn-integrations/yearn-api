@@ -553,7 +553,7 @@ const mainContracts = {
       strategyABI: abi.metaverseStrategyContractMainnet,
       contractType: "metaverse",
       tokenId: ["tether", "usd-coin", "dai"],
-      inceptionBlock: 17566349,
+      inceptionBlock: 13239874,
       pnl:[
         {db: "lp", tokenId: ""},
         {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
