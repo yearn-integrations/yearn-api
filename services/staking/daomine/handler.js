@@ -164,6 +164,16 @@ module.exports.saveDAOminePools = async () => {
 
         // Get DAOmine 
         const daoMineContractInfo = contracts["daoMine"];
+        if(daoMineContractInfo.address === undefined || daoMineContractInfo.address === "") {
+            throw `Missing DAOmine address`;
+        }
+        if(daoMineContractInfo.abi === undefined) {
+            throw `Missing DAOmine ABI`;
+        }
+        if(daoMineContractInfo.startBlock === 0) {
+            throw `DAOmine start block is zero. Please check domain.js`;
+        }
+
         const daoMineContract = await getContract(daoMineContractInfo);
         const totalPoolWeight = await getTotalPoolWeight(daoMineContract);
         const daoMine = {  
@@ -172,7 +182,7 @@ module.exports.saveDAOminePools = async () => {
             startBlock: daoMineContractInfo.startBlock,
             poolPercent: daoMineContractInfo.poolPercent
         };
-       
+
         // Find all pools
         const pools = await db.findAll();
         const poolSize = _.size(pools);
@@ -228,7 +238,7 @@ module.exports.saveDAOminePools = async () => {
             }
         }
     } catch (err) {
-        console.error(err);
+        console.error(`Error in saveDAOminePools(): `,err);
     }
     return;
 }

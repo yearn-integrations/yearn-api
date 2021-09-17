@@ -75,13 +75,14 @@ const getTotalPool = async(etf, vault, block) => {
 }
 
 const calcLPTokenPriceUSD = (etf, totalSupply, totalPool, network) => {
-    if (totalSupply == 0) {
+    if (totalSupply == 0 || totalPool === 0) {
         return 0;
     }
 
     let lpPrice;
     if(network === constant.ETHEREUM) {
-       // These strategies having total pool value in 6 decimals, need to magnify the value
+      // These strategies having total pool value in 6 decimals, need to magnify the value
+      // daoMVF pool in 18 decimal
       const etfs = ["daoCDV", "daoELO", "daoCUB"];
       let newTotalPool = etfs.includes(etf)
           ? totalPool.mul(ethers.BigNumber.from("1000000000000"))
@@ -129,10 +130,19 @@ const getSearchRange = async (firstBlock, lastBlock, network) => {
 }
 
 const getUnixTime = async (block, network) => {
-  const blockInfo = (network === constant.ETHEREUM) 
-  ? (await provider.getBlock(block))
-  : (await contractHelper.getPolygonBlockInfo(block))
-  return blockInfo.timestamp;
+  let timestamp = 0;
+
+  try {
+    const blockInfo = (network === constant.ETHEREUM) 
+    ? (await provider.getBlock(block))
+    : (await contractHelper.getPolygonBlockInfo(block))
+   
+    timestamp =  blockInfo.timestamp;
+  } catch(err) {
+    console.error(`[Performance/handlerv2] Error in getUnixTime(): `, err);
+  } finally {
+    return timestamp;
+  }
 }
 
 const getNextUpdateBlock = async (dateTime, network) => {

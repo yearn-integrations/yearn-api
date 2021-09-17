@@ -38,6 +38,15 @@ module.exports.toTimestamp = (date) => {
     return date ? date.unix() : null;
 }
 
+module.exports.toMillisecondsTimestamp = (date) => {
+    try {
+        let selectedDate = checkDate(date);
+        return moment(selectedDate).valueOf();
+    } catch(err) {
+        console.error(`[dateTimeHelper] toMilliTimestamp(): `,err);
+    }
+}
+
 module.exports.formatDateForTimestamp = (timestamp) => {
     return moment.unix(timestamp).format(DATE_FORMAT);
 }

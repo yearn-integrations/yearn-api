@@ -1,20 +1,11 @@
 // Mainnet Contracts
 db.vault_categories.insertMany([
-    { name: 'advance', contract_address: '0x4f0c1c9ba6b9ccd0bed6166e86b672ac8ee621f7', symbol: 'yUSDT',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'advance', contract_address: '0x9f0230fbdc0379e5fefacca89be03a42fec5fb6e', symbol: 'yUSDC',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''  },
-    { name: 'advance', contract_address: '0x2bfc2da293c911e5ffec4d2a2946a599bc4ae770', symbol: 'yDAI',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''  },
-    { name: 'advance', contract_address: '0x2c8de02ad4312069355b94fb936efe6cfe0c8ff6', symbol: 'yTUSD',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''  },
-    { name: 'basic', contract_address: '0xeece6ad323a93d4b021bdaac587dcc04b5cf0a78', symbol: 'cUSDT',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''  },
-    { name: 'basic', contract_address: '0xd1d7f950899c0269a7f2aad5e854cdc3a1350ba9', symbol: 'cUSDC',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''  },
-    { name: 'basic', contract_address: '0x43c20638c3914eca3c96e9cac8ebe7d652be45c6', symbol: 'cDAI',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''  },
-    { name: 'expert', contract_address: '0x8fe826cc1225b03aa06477ad5af745aed5fe7066', symbol: 'daoCDV',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''  },
-    { name: 'degen', contract_address: '0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8', symbol: 'daoELO',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''  },
-    { name: 'degen', contract_address: '0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd', symbol: 'daoCUB' ,deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'advance', contract_address: '0x742a85daf742ca0213b06fdae449434e0448691e', symbol: 'daoSTO',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'basic', contract_address: '0x2cc1507e6e3c844eeb77db90d193489f1ddfb299', symbol: 'hfUSDT' ,deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'basic', contract_address: '0xd0f0858578c7780f2d65f6d81bc7ddbe166367cc', symbol: 'hfUSDC',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'basic', contract_address: '0xe4e6ce7c1d9ff44db27f622accbb0753c2f48955', symbol: 'hfDAI',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'advance', contract_address: '0x3db93e95c9881bc7d9f2c845ce12e97130ebf5f2', symbol: 'daoMPT',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
+    { name: 'expert', network:"ethereum", contract_address: '0x8fe826cc1225b03aa06477ad5af745aed5fe7066', symbol: 'daoCDV',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''  },
+    { name: 'degen', network:"ethereum", contract_address: '0x2d9a136cf87d599628bcbdfb6c4fe75acd2a0aa8', symbol: 'daoELO',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''  },
+    { name: 'degen', network:"ethereum", contract_address: '0x2ad9f8d4c24652ea9f8a954f7e1fdb50a3be1dfd', symbol: 'daoCUB' ,deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
+    { name: 'advance', network:"ethereum", contract_address: '0x742a85daf742ca0213b06fdae449434e0448691e', symbol: 'daoSTO',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
+    { name: 'advance', network:"polygon", contract_address: '0x3db93e95c9881bc7d9f2c845ce12e97130ebf5f2', symbol: 'daoMPT',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
+    { name: 'basic', network:"ethereum", contract_address: '0x5b3ae8b672a753906b1592d44741f71fbd05ba8c', symbol: 'daoMVF', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
 ]);
 
 
@@ -98,20 +89,12 @@ db.daomine_pool.insertMany([
 
 // Testnet Contracts
 db.vault_categories.insertMany([
-    { name: 'advance', network:"ethereum",  contract_address: '0x6b150e9bd70e216775c8b73270e64e870a3110c1', symbol: 'yUSDT', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'advance', network:"ethereum", contract_address: '0x6e15e283dc430eca010ade8b11b5b377902d6e56', symbol: 'yUSDC', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'advance', network:"ethereum", contract_address: '0x2428bfd238a3632552b343297c504f60283009ed', symbol: 'yDAI', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'advance', network:"ethereum", contract_address: '0xeccb98c36bfc8c49c6065d1cd90bcf1c6f02d4ad', symbol: 'yTUSD', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'basic', network:"ethereum", contract_address: '0x5d102e0bdf2037899e1ff2e8cc50987108533c52', symbol: 'cUSDT', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'basic', network:"ethereum", contract_address: '0x05ab7659e6ef9ba1a5f790b402fd1688f01b003e', symbol: 'cUSDC', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'basic', network:"ethereum", contract_address: '0x47e565b1e23cda3d6bb69e7ae398b884f5addc7d', symbol: 'cDAI', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'degen', network:"ethereum", contract_address: '0x626c25ca5b86277f395c0e40dbdf51f2a302ab43', symbol: 'daoCDV', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
+    { name: 'expert', network:"ethereum", contract_address: '0x626c25ca5b86277f395c0e40dbdf51f2a302ab43', symbol: 'daoCDV', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
     { name: 'degen', network:"ethereum", contract_address: '0xf03fa8553379d872b4e2bafbc679409fb82604c2', symbol: 'daoELO', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' }, 
     { name: 'degen', network:"ethereum", contract_address: '0x5c304a6cb105e1bff9805ca5cf072f1d2c3beac5', symbol: 'daoCUB', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' }, 
     { name: 'advance', network:"ethereum", contract_address: '0xd6af81e5288be43137debf969d7f2c03482c8cc1', symbol: 'daoSTO', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
-    { name: 'basic', network:"ethereum", contract_address: '0x35880615bb18da592ff0feb0940ade2c02249715', symbol: 'hfUSDT', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
-    { name: 'basic', network:"ethereum", contract_address: '0x68b1c860300c4f7d577f08d8b3c3aee23887b280', symbol: 'hfUSDC', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
-    { name: 'basic', network:"ethereum", contract_address: '0x6d7e8fa90c1ffdc019d691bafc18d6362fdeecd7', symbol: 'hfDAI', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
+    { name: 'advance', network:"ethereum", contract_address: '0x4f0bc6bd6beb231087781336bacd5613527ac63c', symbol: 'daoMPT', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
+    { name: 'expert', network:"ethereum", contract_address: '0xccea249aa4f105e1a48e50895fa619af61dc07e0', symbol: 'daoMVF', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
 ]);
 
 db.xdvg_token.insert({
@@ -279,4 +262,10 @@ db.tokens.insertMany([
     { tokenId: 'aave-dai', symbol: 'ADAI'},
     { tokenId: 'aave-usdc', symbol: 'AUSDC'},
     { tokenId: 'aave-usdt', symbol: 'AUSDT'},
+    { tokenId: 'tether', symbol: 'USDT'},
+    { tokenId: 'smooth-love-potion', symbol: 'SLP'},
+    { tokenId: 'illuvium', symbol: 'ILV'},
+    { tokenId: 'aavegotchi', symbol: 'GHST'},
+    { tokenId: 'revv', symbol: 'REVV'},
+    { tokenId: 'metaverse-index', symbol: 'MVI'},
 ]);
