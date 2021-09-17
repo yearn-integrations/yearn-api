@@ -130,10 +130,19 @@ const getSearchRange = async (firstBlock, lastBlock, network) => {
 }
 
 const getUnixTime = async (block, network) => {
-  const blockInfo = (network === constant.ETHEREUM) 
-  ? (await provider.getBlock(block))
-  : (await contractHelper.getPolygonBlockInfo(block))
-  return blockInfo.timestamp;
+  let timestamp = 0;
+
+  try {
+    const blockInfo = (network === constant.ETHEREUM) 
+    ? (await provider.getBlock(block))
+    : (await contractHelper.getPolygonBlockInfo(block))
+   
+    timestamp =  blockInfo.timestamp;
+  } catch(err) {
+    console.error(`[Performance/handlerv2] Error in getUnixTime(): `, err);
+  } finally {
+    return timestamp;
+  }
 }
 
 const getNextUpdateBlock = async (dateTime, network) => {
