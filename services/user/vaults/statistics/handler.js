@@ -43,7 +43,55 @@ const getTotalSupply = async (contract) => {
   return totalSupply;
 };
 
-// Get USDT <-> USD Price
+const getDepositedAmount = async(type, depositedShares, vaultContract, strategyContract) => {
+  let depositedAmount = new BigNumber(0);
+
+  try {
+    if (type === 'yearn') {
+      const earnDepositAmount = await strategyContract.methods.getEarnDepositBalance(userAddress).call();
+      const vaultDepositAmount = await strategyContract.methods.getVaultDepositBalance(userAddress).call();
+      depositedAmount = new BigNumber(earnDepositAmount).plus(vaultDepositAmount);
+    } else if (type === 'compound') {
+      depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
+      depositedAmount = new BigNumber(depositedAmount);
+    } else if (type === 'citadel' || type === 'elon' || type === 'cuban') {
+      const pool = await vaultContract.methods.getAllPoolInUSD().call();
+      const totalSupply = await vaultContract.methods.totalSupply().call(); 
+      depositedAmount = (depositedShares * pool) / totalSupply;
+      depositedAmount = new BigNumber(depositedAmount);
+    } else if (type === 'harvest') {
+      depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
+      depositedAmount = new BigNumber(depositedAmount);
+    } else if (type === 'daoFaang') {
+      const usdtToUsdPrice = await chainLinkHelper.getEthereumUSDTUSDPrice();
+      const pool = await vaultContract.methods.getTotalValueInPool().call(); 
+      const totalSupply = await vaultContract.methods.totalSupply().call(); 
+      const poolInUSD = (pool * usdtToUsdPrice) / (10 ** 20); // The reason to divide 20: pool in 18 , price feed in 8 , ( 18 + 8 ) / 20 =  6 decimals
+    
+      depositedAmount = (depositedShares * poolInUSD) / totalSupply;
+      depositedAmount = new BigNumber(depositedAmount);
+    } else if (type === 'moneyPrinter') {
+      const usdtToUsdPrice = await chainLinkHelper.getPolygonUSDTUSDPrice();
+      const pool = await vaultContract.methods.getValueInPool().call(); 
+      const totalSupply = await vaultContract.methods.totalSupply().call();
+      const poolInUSD = (pool * usdtToUsdPrice) / (10 ** 20); // The reason to divide 20: pool in 18 , price feed in 8 , ( 18 + 8 ) / 20 =  6 decimals
+    
+      depositedAmount = (depositedShares * poolInUSD) / totalSupply;
+      depositedAmount = new BigNumber(depositedAmount);
+    } else if (type === 'metaverse') {
+      const totalSupply = await vaultContract.methods.totalSupply().call();
+      let poolInUSD = await vaultContract.methods.getAllPoolInUSD().call(); // Default returned in 18 decimals, divide 12 to make it in 6 decimals.
+    
+      depositedAmount = (depositedShares * (poolInUSD / (10 ** 12))) / totalSupply;
+      depositedAmount = new BigNumber(depositedAmount);
+    }
+  } catch(err) {
+    console.log(`Error in getDepositedAmount() for ${vault._address}: `);
+    console.error(err);
+  } finally{
+    return depositedAmount;
+  }
+}
 
 const getVaultStatistics = async (contractAddress, transactions, userAddress) => {
   const findVault = (vault) => {
@@ -70,41 +118,12 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
   const strategyContract = await contractHelper.getContract(vault.strategyABI, vault.strategyAddress, vault.network);
 
   const depositedShares = await getDepositedShares(vaultContract, userAddress);
-
-  let depositedAmount = new BigNumber(0);
-  if (type === 'yearn') {
-    const earnDepositAmount = await strategyContract.methods.getEarnDepositBalance(userAddress).call();
-    const vaultDepositAmount = await strategyContract.methods.getVaultDepositBalance(userAddress).call();
-    depositedAmount = new BigNumber(earnDepositAmount)
-      .plus(vaultDepositAmount);
-  } else if (type === 'compound') {
-    depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
-    depositedAmount = new BigNumber(depositedAmount);
-  } else if (type === 'citadel' || type === 'elon' || type === 'cuban') {
-    const pool = await vaultContract.methods.getAllPoolInUSD().call();
-    const totalSupply = await vaultContract.methods.totalSupply().call(); 
-    depositedAmount = (depositedShares * pool) / totalSupply;
-    depositedAmount = new BigNumber(depositedAmount);
-  } else if (type === 'harvest') {
-    depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
-    depositedAmount = new BigNumber(depositedAmount);
-  } else if (type === 'daoFaang') {
-    const usdtToUsdPrice = await chainLinkHelper.getEthereumUSDTUSDPrice();
-    const pool = await vaultContract.methods.getTotalValueInPool().call(); 
-    const totalSupply = await vaultContract.methods.totalSupply().call(); 
-    const poolInUSD = (pool * usdtToUsdPrice) / (10 ** 20); // The reason to divide 20: pool in 18 , price feed in 8 , ( 18 + 8 ) / 20 =  6 decimals
-  
-    depositedAmount = (depositedShares * poolInUSD) / totalSupply;
-    depositedAmount = new BigNumber(depositedAmount);
-  } else if (type === 'moneyPrinter') {
-    const usdtToUsdPrice = await chainLinkHelper.getPolygonUSDTUSDPrice();
-    const pool = await vaultContract.methods.getValueInPool().call(); 
-    const totalSupply = await vaultContract.methods.totalSupply().call();
-    const poolInUSD = (pool * usdtToUsdPrice) / (10 ** 20); // The reason to divide 20: pool in 18 , price feed in 8 , ( 18 + 8 ) / 20 =  6 decimals
-  
-    depositedAmount = (depositedShares * poolInUSD) / totalSupply;
-    depositedAmount = new BigNumber(depositedAmount);
-  }
+  let depositedAmount = await getDepositedAmount(
+    type,
+    depositedShares,
+    vaultContract,
+    strategyContract
+  );
 
   const {
     deposits,
@@ -153,7 +172,8 @@ const getVaultStatistics = async (contractAddress, transactions, userAddress) =>
     "elon",
     "cuban",
     "daoFaang",
-    "moneyPrinter"
+    "moneyPrinter",
+    "metaverse"
   ];
 
   if(usdVaultsCategory.includes(type)) {

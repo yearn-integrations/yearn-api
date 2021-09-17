@@ -302,6 +302,27 @@ const testVaults = [
     price_id: "tether",
     isHarvest: true
   },
+  {
+    id: "daoMVF",
+    name: "DAO Vault Metaverse",
+    symbol: ["USDT","USDC","DAI"],
+    description: "DAO Vault Metaverse for 3 stablecoins",
+    vaultSymbol: "daoMVF",
+    erc20address: ["0x07de306ff27a2b630b1141956844eb1552b956b5", "0xb7a4f3e9097c08da09517b5ab877f7a917224ede", "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa"],
+    vaultContractAddress: "0xcbb69e3621ce4eb0d99b60f0e0430dcd5f52fc95",
+    vaultContractABI: abi.metaverseVaultContract,
+    balance: 0,
+    vaultBalance: 0,
+    decimals: 18,
+    deposit: true,
+    depositAll: true,
+    withdraw: true,
+    withdrawAll: true,
+    lastMeasurement: 27185171,
+    measurement: 1e18,
+    price_id: ["tether", "usd-coin", "dai"],
+    isMetaverse: true,
+  },
 ];
 
 const mainVaults = [
@@ -604,6 +625,27 @@ const mainVaults = [
     measurement: 1e18,
     price_id: "tether",
     isHarvest: true
+  },
+  {
+    id: "daoMVF",
+    name: "DAO Vault Metaverse",
+    symbol: ["USDT","USDC","DAI"],
+    description: "DAO Vault Metaverse for 3 stablecoins",
+    vaultSymbol: "daoMVF",
+    erc20address: ["0xdac17f958d2ee523a2206206994597c13d831ec7", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0x6b175474e89094c44da98b954eedeac495271d0f"],
+    vaultContractAddress: "0x5b3ae8b672a753906b1592d44741f71fbd05ba8c",
+    vaultContractABI: abi.metaverseVaultContractMainnet,
+    balance: 0,
+    vaultBalance: 0,
+    decimals: 18,
+    deposit: true,
+    depositAll: true,
+    withdraw: true,
+    withdrawAll: true,
+    lastMeasurement: 13239874,
+    measurement: 1e18,
+    price_id: ["tether", "usd-coin", "dai"],
+    isMetaverse: true,
   },
 ];
 

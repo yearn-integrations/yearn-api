@@ -256,6 +256,21 @@ const testContracts = {
       ],
       network: constant.POLYGON,
     },
+    daoMVF: {
+      address: '0xcbb69e3621ce4eb0d99b60f0e0430dcd5f52fc95',
+      abi: abi.metaverseVaultContract,
+      strategyAddress: '0xf4655e971cc76b6daa78b4615dc2be4446e67e53',
+      strategyABI: abi.metaverseStrategyContract,
+      contractType: "metaverse",
+      tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 27185171,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
+      network: constant.ETHEREUM,
+    },
   },
   DVD: {
     address: "0x6639c554a299d58284e36663f609a7d94526fec0",
@@ -542,6 +557,21 @@ const mainContracts = {
         {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
       ],
       network: constant.POLYGON,
+    },
+    daoMVF: {
+      address: '0x5b3ae8b672a753906b1592d44741f71fbd05ba8c',
+      abi: abi.metaverseVaultContractMainnet,
+      strategyAddress: '0xfa83ca66fdacc4028dab383de4adc8ab7db21ff2',
+      strategyABI: abi.metaverseStrategyContractMainnet,
+      contractType: "metaverse",
+      tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 17566349,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
+      network: constant.ETHEREUM,
     },
     hfDAI: {
       address: '0x2cc1507e6e3c844eeb77db90d193489f1ddfb299', 
