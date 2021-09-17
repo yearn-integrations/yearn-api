@@ -438,26 +438,35 @@ const pnlHandle = async (req, res) => {
 };
 
 const processPerformanceData = (datas) => {
-  const basePrice = datas[0]["lp_token_price_usd"];
-  const btcBasePrice = datas[0]["btc_price"];
-  const ethBasePrice = datas[0]["eth_price"];
+  if(!datas || datas === undefined || datas.length <= 0) {
+    throw(`Datas is undefined or empty in processPerformanceData.`);
+  }
 
-  datas.forEach((data) => {
-    data["lp_performance"] = calculatePerformance(
-      basePrice,
-      data["lp_token_price_usd"]
-    ) * 100;
-    data["btc_performance"] = calculatePerformance(
-      btcBasePrice,
-      data["btc_price"]
-    ) * 100;
-    data["eth_performance"] = calculatePerformance(
-      ethBasePrice,
-      data["eth_price"]
-    ) * 100;
-  });
-
-  return datas;
+  try {
+    const basePrice = datas[0]["lp_token_price_usd"];
+    const btcBasePrice = datas[0]["btc_price"];
+    const ethBasePrice = datas[0]["eth_price"];
+  
+    datas.forEach((data) => {
+      data["lp_performance"] = calculatePerformance(
+        basePrice,
+        data["lp_token_price_usd"]
+      ) * 100;
+      data["btc_performance"] = calculatePerformance(
+        btcBasePrice,
+        data["btc_price"]
+      ) * 100;
+      data["eth_performance"] = calculatePerformance(
+        ethBasePrice,
+        data["eth_price"]
+      ) * 100;
+    });
+  
+    return datas;
+  } catch (err) {
+    console.error(`Error in processPerformanceData(): `, err);
+    return datas;
+  } 
 }
 
 const performanceHandle = async (req, res) => {

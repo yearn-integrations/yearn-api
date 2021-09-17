@@ -132,7 +132,15 @@ const getMetaversePricePerFullShare = async(contract, block, inceptionBlockNumbe
 
   let pricePerFullShare = 0;
   try {
-    pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
+    // pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
+    const pool = await contract.methods.getAllPoolInUSD().call(undefined, block);
+    const totalSupply = await contract.methods.totalSupply().call(undefined, block);
+
+    if(parseInt(pool) === 0 || parseInt(totalSupply) === 0) {
+      pricePerFullShare = 0;
+    } else {
+      pricePerFullShare = pool / totalSupply;
+    }
   } catch (err) {
     console.error(`[apy/save/handler]Error in getMetaversePricePerFullShare(): `, err);
   } finally {
