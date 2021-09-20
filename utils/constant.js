@@ -110,13 +110,24 @@ const DAOMVF_ASSET_DISTRIBUTION = {
     MVI: { percent: 25.0, tokenId: TOKEN_COINGECKO_ID.MVI},
 }
 
+// Remember to update this according to actual propotion
+const DAOSTO2_ASSET_DISTRIBUTION = {
+    UST: { percent: 50, tokenId: TOKEN_COINGECKO_ID.UST },
+    MAAPL: { percent: 15, tokenId: TOKEN_COINGECKO_ID.MAAPL },
+    MGOOGL: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.MGOOGL },
+    MAMZN: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.MAMZN },
+    MFB: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.MFB},
+    MNFLX: { percent: 2.5, tokenId: TOKEN_COINGECKO_ID.MNFLX},
+};
+
 const CONTRACT_IDS = {
     DAOCDV: "daoCDV",
     DAOELO: "daoELO",
     DAOCUB: "daoCUB",
     DAOSTO: "daoSTO", 
     DAOMPT: "daoMPT",
-    DAOMVF: "daoMVF"
+    DAOMVF: "daoMVF",
+    DAOSTO2: "daoSTO2"
 }
 
 const ETF_STRATEGIES = [
@@ -125,7 +136,8 @@ const ETF_STRATEGIES = [
     CONTRACT_IDS.DAOCUB,
     CONTRACT_IDS.DAOELO,
     CONTRACT_IDS.DAOMPT,
-    CONTRACT_IDS.DAOMVF
+    CONTRACT_IDS.DAOMVF,
+    CONTRACT_IDS.DAOSTO2
 ];
 
 const STRATEGY_TYPE = {
@@ -137,7 +149,8 @@ const STRATEGY_TYPE = {
     FAANG: "daoFaang",
     HARVEST: "harvest",
     MONEYPRINTER: "moneyPrinter",
-    METAVERSE: "metaverse"
+    METAVERSE: "metaverse",
+    DAOSTONKS: "daoStonks",
 }
 
 module.exports = {
@@ -167,6 +180,7 @@ module.exports = {
     DAOELO_ASSET_DISTRIBUTION,
     DAOMPT_ASSET_DISTRIBUTION,
     DAOMVF_ASSET_DISTRIBUTION,
+    DAOSTO2_ASSET_DISTRIBUTION,
     
     TOKEN_COINGECKO_ID,
     ETF_STRATEGIES,
