@@ -18,6 +18,7 @@ const {
   getCubanPricePerFullShare,
   getFaangPricePerFullShare,
   getMetaversePricePerFullShare,
+  getCitadelV2PricePerFullShare
 } = require("./handler");
 
 let currentBlockNbr;
@@ -171,6 +172,39 @@ const getApyForVault = async (vault, contracts) => {
       moneyPrinterApy: 0,
       metaverseApy: apy
     }
+  } else if (vault.isCitadelV2) {
+    // Metaverse Vault
+    const contract = await contractHelper.getEthereumContract(abi, address);
+
+    let pricePerFullShareCurrent = await getCitadelV2PricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    let pricePerFullShareOneDayAgo = await getMetaversePricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
+    pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
+
+    // APY Calculation
+    const n = 365 / 2; // Assume 2 days to trigger invest function
+    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+    let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+    if(apy === Infinity) {
+      apy = 0;
+    }
+
+    return {
+      apyInceptionSample: 0,
+      apyOneDaySample: 0,
+      apyThreeDaySample: 0,
+      apyOneWeekSample: 0,
+      apyOneMonthSample: 0,
+      apyLoanscan: 0,
+      compoundApy: 0,
+      citadelApy: 0,
+      elonApy: 0,
+      cubanApy: apy,
+      faangApy: 0,
+      moneyPrinterApy: 0,
+      citadelv2Apy: apy
+    }
   }
 };
 
@@ -200,6 +234,10 @@ const getHistoricalAPY = async (startTime, contractAddress) => {
     case testContracts.farmer['daoMVF'].address:
     case mainContracts.farmer['daoMVF'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoMVFFarmer);
+      break;
+    case testContracts.farmer['daoCDV2'].address:
+    case mainContracts.farmer['daoCDV2'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoCDV2Farmer);
       break;
   }
 
