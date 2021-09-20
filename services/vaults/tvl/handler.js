@@ -285,6 +285,9 @@ module.exports.tvlHandle = async (req, res) => {
     case db.daoMVFFarmer: 
       collection = db.daoMVFFarmer;
       break;
+    case db.daoCDV2Farmer: 
+      collection = db.daoCDV2Farmer;
+      break;
     default:
       res.status(200).json({
         message: "Invalid Farmer",
