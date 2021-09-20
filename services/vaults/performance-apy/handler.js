@@ -160,8 +160,16 @@ module.exports.handler = async(req,res) => {
             // PNL 
             if(result.length > 0) {
                 const lastDataIndex = result.length - 1;
-                const basePrice = result[0]["lp_token_price_usd"];
-    
+                let basePrice = result[0]["lp_token_price_usd"];
+
+                if (parseFloat(basePrice) === 0) {
+                    // Looking for the next non-zero lp price
+                    const data = result.find(r => parseFloat(r["lp_token_price_usd"]) !== 0);
+                    basePrice = data !== undefined && data["lp_token_price_usd"]
+                        ? data["lp_token_price_usd"]
+                        : 0;
+                }
+
                 apy = calculatePerformance(
                     basePrice,
                     result[lastDataIndex]["lp_token_price_usd"]
