@@ -56,6 +56,12 @@ const getApyAttributeNameByStrategy = (strategyType) => {
                 { seriesName: "BTC", attributeName: "btc_performance" },
                 { seriesName: "ETH", attributeName: "eth_performance" },
             ];
+        case constant.STRATEGY_TYPE.CITADELV2: 
+            return [
+                { seriesName: "Citadel V2", attributeName: "lp_performance" },
+                { seriesName: "BTC", attributeName: "btc_performance" },
+                { seriesName: "ETH", attributeName: "eth_performance" },
+            ];
         default: 
             return [];
     }
