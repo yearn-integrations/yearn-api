@@ -171,6 +171,21 @@ const testContracts = {
       ],
       network: constant.ETHEREUM,
     },
+    daoCDV2: {
+      address: "0x6435b8fc860381a7088ccd745fc73f5c844e8bad",
+      abi: abi.citadelV2VaultContract,
+      strategyAddress: "0xa2b42a59ee0312a5f9d56dfad90ee6fa4a1be184",
+      strategyABI: abi.citadelV2StrategyContract,
+      contractType: "citadelv2",
+      tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 27165510,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
+      network: constant.ETHEREUM,
+    },
   },
   DVD: {
     address: "0x6639c554a299d58284e36663f609a7d94526fec0",
@@ -391,6 +406,21 @@ const mainContracts = {
       ],
       network: constant.ETHEREUM,
     },
+    // daoCDV2: {
+    //   address: "0x6435b8fc860381a7088ccd745fc73f5c844e8bad",
+    //   abi: abi.citadelV2VaultContract,
+    //   strategyAddress: "0xa2b42a59ee0312a5f9d56dfad90ee6fa4a1be184",
+    //   strategyABI: abi.citadelV2StrategyContract,
+    //   contractType: "citadelv2",
+    //   tokenId: ["tether", "usd-coin", "dai"],
+    //   inceptionBlock: 27165510,
+    //   pnl:[
+    //     {db: "lp", tokenId: ""},
+    //     {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+    //     {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+    //   ],
+    //   network: constant.ETHEREUM,
+    // },
   },
   compund: {
     cUSDT: {
