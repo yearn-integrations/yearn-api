@@ -234,7 +234,12 @@ const syncHistoricalPerformance = async (dateTime) => {
         const totalPool = await getTotalPool(etf, vault, date.block);
 
         currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
-        if (basePrice["lp"] === 0) {
+        
+        // base price = lp inception price. If not running cronjob for first time and
+        // strategy LP haven't get its first non-zero inception price
+        // and in this loop, current price > 0
+        // set current price as base price and inception for the strategy
+        if (basePrice["lp"] === 0 && currentPrice["lp"] > 0) {
           basePrice["lp"] = currentPrice["lp"];
           inceptionPrice["lp"] = basePrice["lp"];
         }
