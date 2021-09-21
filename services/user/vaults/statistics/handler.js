@@ -84,6 +84,12 @@ const getDepositedAmount = async(type, depositedShares, vaultContract, strategyC
     
       depositedAmount = (depositedShares * (poolInUSD / (10 ** 12))) / totalSupply;
       depositedAmount = new BigNumber(depositedAmount);
+    } else if (type === 'daoStonks') {
+      const totalSupply = await vaultContract.methods.totalSupply().call();
+      let poolInUSD = await vaultContract.methods.getAllPoolInUSD().call(); // Default returned in 18 decimals, divide 12 to make it in 6 decimals.
+    
+      depositedAmount = (depositedShares * (poolInUSD / (10 ** 12))) / totalSupply;
+      depositedAmount = new BigNumber(depositedAmount);
     }
   } catch(err) {
     console.log(`Error in getDepositedAmount() for ${vault._address}: `);
