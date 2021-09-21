@@ -106,10 +106,11 @@ const getTVL = async (vault) => {
       const contract = await getContract(vault);
       const usdPool = await contract.methods.getAllPoolInUSD().call();
       tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
-    } else if (vault.contractType === "metaverse") {
+    } else if (vault.contractType === "metaverse" || vault.contractType === "daoStonks") {
       const contract = await getContract(vault);
       const usdPool = await contract.methods.getAllPoolInUSD().call();
       tvl = usdPool / 10 ** 18; // Check from code, Pool In USD returns in 18 decimals
+      console.log(`TVL ${asset.strategyType} ${usdPool}`);
     } else if(vault.contractType === 'daoFaang'){
       const contract = await getContract(vault);
       const poolAmount = await contract.methods.getTotalValueInPool().call();
@@ -279,6 +280,9 @@ module.exports.tvlHandle = async (req, res) => {
       break;
     case db.daoMVFFarmer: 
       collection = db.daoMVFFarmer;
+      break;
+    case db.daoSTO2Farmer: 
+      collection = db.daoSTO2Farmer;
       break;
     default:
       res.status(200).json({
