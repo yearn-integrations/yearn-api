@@ -25,12 +25,13 @@ const TOKEN_COINGECKO_ID = {
     ADAI: "aave-dai",
     AUSDC: "aave-usdc",
     AUSDT: "aave-usdt",
-    // Remember to update on db
     SLP: "smooth-love-potion",
     ILV: "illuvium",
     GHST: "aavegotchi",
     REVV: "revv",
-    MVI: "metaverse-index"
+    MVI: "metaverse-index",
+    MMSFT: "mirrored-microsoft", // Remember to add this.
+    MTWTR: "mirrored-twitter", // Remember to add this.
 }
 
 const TOKEN_CHART_COLOR = {
@@ -112,12 +113,13 @@ const DAOMVF_ASSET_DISTRIBUTION = {
 
 // Remember to update this according to actual propotion
 const DAOSTO2_ASSET_DISTRIBUTION = {
-    UST: { percent: 50, tokenId: TOKEN_COINGECKO_ID.UST },
-    MAAPL: { percent: 15, tokenId: TOKEN_COINGECKO_ID.MAAPL },
-    MGOOGL: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.MGOOGL },
-    MAMZN: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.MAMZN },
-    MFB: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.MFB},
-    MNFLX: { percent: 2.5, tokenId: TOKEN_COINGECKO_ID.MNFLX},
+    MMSFT: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MMSFT },
+    MTWTR: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MTWTR},
+    MTSLA: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MTSLA },
+    MGOOGL: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MGOOGL },
+    MAMZN: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MAMZN },
+    MAAPL: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MAAPL },
+    MNFLX: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MNFLX},
 };
 
 const CONTRACT_IDS = {
@@ -131,12 +133,12 @@ const CONTRACT_IDS = {
 }
 
 const ETF_STRATEGIES = [
-    CONTRACT_IDS.DAOSTO,
-    CONTRACT_IDS.DAOCDV,
-    CONTRACT_IDS.DAOCUB,
-    CONTRACT_IDS.DAOELO,
-    CONTRACT_IDS.DAOMPT,
-    CONTRACT_IDS.DAOMVF,
+    // CONTRACT_IDS.DAOSTO,
+    // CONTRACT_IDS.DAOCDV,
+    // CONTRACT_IDS.DAOCUB,
+    // CONTRACT_IDS.DAOELO,
+    // CONTRACT_IDS.DAOMPT,
+    // CONTRACT_IDS.DAOMVF,
     CONTRACT_IDS.DAOSTO2
 ];
 

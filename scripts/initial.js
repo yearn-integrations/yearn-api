@@ -269,4 +269,6 @@ db.tokens.insertMany([
     { tokenId: 'aavegotchi', symbol: 'GHST'},
     { tokenId: 'revv', symbol: 'REVV'},
     { tokenId: 'metaverse-index', symbol: 'MVI'},
+    { tokenId: 'mirrored-microsoft', symbol: 'MMSFT'}, // TODO:Remember to add this for DaoStonks
+    { tokenId: 'mirrored-twitter', symbol: 'MTWTR'}, // TODO:Remember to add this for DaoStonks
 ]);
