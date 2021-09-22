@@ -162,6 +162,7 @@ const getCitadelV2PricePerFullShare = async(contract, block, inceptionBlockNumbe
   let pricePerFullShare = 0;
   try {
     pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
+    pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
   } catch (err) {
     console.error(`[apy/save/handler]Error in getMetaversePricePerFullShare(): `, err);
   } finally {
