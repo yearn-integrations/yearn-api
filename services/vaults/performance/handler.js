@@ -402,7 +402,7 @@ const pnlHandle = async (req, res) => {
         collection,
         dateTimeHelper.toTimestamp(startTime)
       );
-
+  
     if(!result || result.length <= 0) {
       return res.status(200).json({
         message: `Performance Data for ${req.params.farmer}`,
@@ -415,7 +415,7 @@ const pnlHandle = async (req, res) => {
       // If time period not stated, return latest lp performance data=
       return res.status(200).json({
         message: `Performance Data for ${req.params.farmer}`,
-        body: result[lastDataIndex]["lp_performance"],
+        body: result[lastDataIndex]["lp_performance"] * 100, // Result from database haven't times with 100% yet
       });
     }
 
@@ -445,38 +445,46 @@ const pnlHandle = async (req, res) => {
   }
 };
 
-const processPerformanceData = (datas) => {
+const processPerformanceData = (datas, sinceInception = false) => {
   if(!datas || datas === undefined || datas.length <= 0) {
     throw(`Datas is undefined or empty in processPerformanceData.`);
   }
 
   try {
-    let basePrice = datas[0]["lp_token_price_usd"];
-    const btcBasePrice = datas[0]["btc_price"];
-    const ethBasePrice = datas[0]["eth_price"];
-
-    datas.forEach((data) => {
-      // If base price is zero, to set base price as first non-zero lp price
-      if( parseFloat(basePrice) === 0 && 
-          parseFloat(data["lp_token_price_usd"]) !== 0
-      ) {
-        basePrice = data["lp_token_price_usd"];
-      }
-
-      data["lp_performance"] = calculatePerformance(
-        basePrice,
-        data["lp_token_price_usd"]
-      ) * 100;
-      data["btc_performance"] = calculatePerformance(
-        btcBasePrice,
-        data["btc_price"]
-      ) * 100;
-      data["eth_performance"] = calculatePerformance(
-        ethBasePrice,
-        data["eth_price"]
-      ) * 100;
-    });
-
+    // TODO: Change this to support tokens other than BTC and ETH
+    if(sinceInception) {
+      datas.forEach(data => {
+        data["lp_performance"] = data["lp_performance"] * 100;
+        data["btc_performance"] = data["btc_performance"] * 100;
+        data["eth_performance"] = data["eth_performance"] * 100;
+      });
+    } else {
+      let basePrice = datas[0]["lp_token_price_usd"];
+      const btcBasePrice = datas[0]["btc_price"];
+      const ethBasePrice = datas[0]["eth_price"];
+  
+      datas.forEach((data) => {
+        // If base price is zero, to set base price as first non-zero lp price
+        if( parseFloat(basePrice) === 0 && 
+            parseFloat(data["lp_token_price_usd"]) !== 0
+        ) {
+          basePrice = data["lp_token_price_usd"];
+        }
+  
+        data["lp_performance"] = calculatePerformance(
+          basePrice,
+          data["lp_token_price_usd"]
+        ) * 100;
+        data["btc_performance"] = calculatePerformance(
+          btcBasePrice,
+          data["btc_price"]
+        ) * 100;
+        data["eth_performance"] = calculatePerformance(
+          ethBasePrice,
+          data["eth_price"]
+        ) * 100;
+      });
+    }
     return datas;
   } catch (err) {
     console.error(`Error in processPerformanceData(): `, err);
@@ -522,7 +530,8 @@ const performanceHandle = async (req, res) => {
     const startTime = dateTimeHelper.getStartTimeFromParameter(req.params.days);
     const collection = req.params.farmer;
   
-    let result = (startTime == -1) 
+    const sinceInception = (startTime == -1);
+    let result = (sinceInception) 
       ? await historicalDb.findAll(collection)
       : await historicalDb.findPerformanceWithTimePeriods(collection, dateTimeHelper.toTimestamp(startTime));
 
@@ -533,9 +542,7 @@ const performanceHandle = async (req, res) => {
       })
     }
     
-    if(startTime !== -1) {
-      result = processPerformanceData(result); 
-    }
+    result = processPerformanceData(result, sinceInception);
 
     res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
