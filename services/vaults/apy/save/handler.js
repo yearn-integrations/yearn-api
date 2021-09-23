@@ -164,7 +164,7 @@ const getCitadelV2PricePerFullShare = async(contract, block, inceptionBlockNumbe
     pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
     pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
   } catch (err) {
-    console.error(`[apy/save/handler]Error in getMetaversePricePerFullShare(): `, err);
+    console.error(`[apy/save/handler]Error in getCitadelV2PricePerFullShare(): `, err);
   } finally {
     return pricePerFullShare;
   }
@@ -313,8 +313,8 @@ const getApyForVault = async (vault, contracts) => {
   } else if (vault.isCitadelV2) {
     const contract = await contractHelper.getEthereumContract(abi, address);
     
-    let pricePerFullShareCurrent = await getMetaversePricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    let pricePerFullShareOneDayAgo = await getMetaversePricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    let pricePerFullShareCurrent = await getCitadelV2PricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    let pricePerFullShareOneDayAgo = await getCitadelV2PricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
     pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
     pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
 
