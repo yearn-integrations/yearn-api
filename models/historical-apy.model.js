@@ -52,6 +52,7 @@ module.exports = {
   daoELOFarmer: 'daoELO_historical-apy',
   daoCUBFarmer: 'daoCUB_historical-apy',
   daoSTOFarmer: 'daoSTO_historical-apy',
+  daoSTO2Farmer: 'daoSTO2_historical-apy',
   daoMPTFarmer: 'daoMPT_historical-apy',
   daoMVFFarmer: 'daoMVF_historical-apy',
   daoCDV2Farmer: 'daoCDV2_historical-apy',
