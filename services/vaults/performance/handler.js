@@ -19,6 +19,7 @@ let url = process.env.ARCHIVENODE_ENDPOINT_2;
 
 const constant = require("../../../utils/constant");
 const dateTimeHelper = require("../../../utils/dateTime");
+const contractHelper = require("../../../utils/contract");
 
 // Using ethers.js0.26
 let provider = new ethers.providers.JsonRpcProvider(url);
@@ -420,7 +421,7 @@ const pnlHandle = async (req, res) => {
     }
 
     const pnl = await calculateStrategyPNL(result);
-    
+
     return res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
       body: pnl,
@@ -464,44 +465,57 @@ const calculateStrategyPNL = async(datas) => {
   }
 }
 
-const processPerformanceData = (datas, sinceInception = false) => {
-  if(!datas || datas === undefined || datas.length <= 0) {
-    throw(`Datas is undefined or empty in processPerformanceData.`);
-  }
-
+const processPerformanceData = (datas, strategyId, sinceInception = false) => {
   try {
-    // TODO: Change this to support tokens other than BTC and ETH
+    if(!datas || datas === undefined || datas.length <= 0) {
+      throw(`Datas is undefined or empty in processPerformanceData.`);
+    }
+    if(!strategyId || strategyId === undefined || strategyId === "") {
+      throw(`Strategy Type is not defined`);
+    }
+
+    const contracts = contractHelper.getContractsFromDomain();
+    const pnlSeries = contracts.farmer[strategyId].pnl;
+  
     if(sinceInception) {
       datas.forEach(data => {
-        data["lp_performance"] = data["lp_performance"] * 100;
-        data["btc_performance"] = data["btc_performance"] * 100;
-        data["eth_performance"] = data["eth_performance"] * 100;
+        pnlSeries.forEach(series => {
+          const seriesName = `${series.db}_performance`;
+          data[seriesName] = data[seriesName] * 100
+        });
       });
     } else {
-      let basePrice = datas[0]["lp_token_price_usd"];
-      const btcBasePrice = datas[0]["btc_price"];
-      const ethBasePrice = datas[0]["eth_price"];
-  
+      const firstData = datas[0];
+      const basePrices = {};
+      pnlSeries.forEach(series => {
+        const propertyName = (series.db === "lp") 
+          ? "lp_token_price_usd"
+          : `${series.db}_price`;
+        basePrices[series.db] = firstData[propertyName]
+          ? firstData[propertyName] 
+          : 0;
+      })
+
       datas.forEach((data) => {
         // If base price is zero, to set base price as first non-zero lp price
-        if( parseFloat(basePrice) === 0 && 
+        if( parseFloat(basePrices["lp"]) === 0 && 
             parseFloat(data["lp_token_price_usd"]) !== 0
         ) {
-          basePrice = data["lp_token_price_usd"];
+          basePrices["lp"] = data["lp_token_price_usd"];
         }
-  
-        data["lp_performance"] = calculatePerformance(
-          basePrice,
-          data["lp_token_price_usd"]
-        ) * 100;
-        data["btc_performance"] = calculatePerformance(
-          btcBasePrice,
-          data["btc_price"]
-        ) * 100;
-        data["eth_performance"] = calculatePerformance(
-          ethBasePrice,
-          data["eth_price"]
-        ) * 100;
+
+        pnlSeries.forEach(series => {
+          const seriesName = series.db;
+          const propertyName = (seriesName === "lp") 
+            ? "lp_token_price_usd"
+            : `${seriesName}_price`;
+          const performanceName = `${seriesName}_performance`;
+          
+          data[performanceName] = calculatePerformance(
+            basePrices[seriesName],
+            data[propertyName]
+          ) * 100
+        });
       });
     }
     return datas;
@@ -561,7 +575,7 @@ const performanceHandle = async (req, res) => {
       })
     }
     
-    result = processPerformanceData(result, sinceInception);
+    result = processPerformanceData(result, req.params.farmer, sinceInception);
 
     res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,

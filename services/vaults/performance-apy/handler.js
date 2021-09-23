@@ -155,7 +155,7 @@ module.exports.handler = async(req,res) => {
                 startTime, 
             );
 
-            historicalData = processPerformanceData(result);
+            historicalData = processPerformanceData(result, strategyId);
             apy = await calculateStrategyPNL(result);
         } else {    
             const collectionName = `${strategyId}_historical-apy`;
