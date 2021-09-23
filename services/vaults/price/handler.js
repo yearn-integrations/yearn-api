@@ -95,7 +95,7 @@ const getCitadelV2PricePerFullShare = async(contract) => {
     pricePerFullShare = await contract.methods.getPricePerFullShare().call();
     pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
   } catch (ex) {
-    console.error(`[price/handler] Error in getMetaversePricePerFullShare(): `, ex);
+    console.error(`[price/handler] Error in getCitadelV2PricePerFullShare(): `, ex);
   } finally {
     return pricePerFullShare;
   }
