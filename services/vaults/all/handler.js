@@ -6,6 +6,7 @@ const { findAllStrategiesAssetDistribution } = require("../distribution/handler"
 const { getVaultsStatistics } = require("../../user/vaults/statistics/handler");
 const { findAllHistoricalAPY } = require("../apy/save/historical-handle");
 const { calculatePerformance } = require("../performance/handlerv2");
+const { calculateStrategyPNL } = require("../performance/handler");
 const performanceDb = require("../../../models/performance.model");
 const contractHelper = require("../../../utils/contract");
 const dateTimeHelper = require("../../../utils/dateTime");
@@ -68,17 +69,9 @@ const findAllPerformance = async () => {
             strategy,
             startTime
         );
-        if(result.length > 0) {
-            const lastDataIndex = result.length - 1;
-            const basePrice = result[0]["lp_token_price_usd"];
 
-            const pnl = calculatePerformance(
-                basePrice,
-                result[lastDataIndex]["lp_token_price_usd"]
-            ) * 100;
-
-            returnResult[strategy] = pnl;
-        }
+        const pnl = await calculateStrategyPNL(result);
+        returnResult[strategy] = pnl;
     }
 
     return returnResult;
