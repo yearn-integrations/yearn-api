@@ -1,7 +1,7 @@
 const contractHelper = require("../../../utils/contract");
 const dateTimeHelper = require("../../../utils/dateTime");
 const constant = require("../../../utils/constant");
-const { processPerformanceData } = require("../../vaults/performance/handler");
+const { processPerformanceData, calculateStrategyPNL } = require("../../vaults/performance/handler");
 const { getYearnAPY, getCompoundAPY } = require("../../vaults/apy/handler");
 const { calculatePerformance } = require("../../vaults/performance/handlerv2");
 
@@ -156,26 +156,7 @@ module.exports.handler = async(req,res) => {
             );
 
             historicalData = processPerformanceData(result);
-
-            // PNL 
-            if(result.length > 0) {
-                const lastDataIndex = result.length - 1;
-                let basePrice = result[0]["lp_token_price_usd"];
-
-                if (parseFloat(basePrice) === 0) {
-                    // Looking for the next non-zero lp price
-                    const data = result.find(r => parseFloat(r["lp_token_price_usd"]) !== 0);
-                    basePrice = data !== undefined && data["lp_token_price_usd"]
-                        ? data["lp_token_price_usd"]
-                        : 0;
-                }
-
-                apy = calculatePerformance(
-                    basePrice,
-                    result[lastDataIndex]["lp_token_price_usd"]
-                ) * 100;
-                
-            }
+            apy = await calculateStrategyPNL(result);
         } else {    
             const collectionName = `${strategyId}_historical-apy`;
             historicalData = await historicalApyDb.findWithTimePeriods(

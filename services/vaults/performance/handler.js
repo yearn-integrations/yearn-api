@@ -419,20 +419,8 @@ const pnlHandle = async (req, res) => {
       });
     }
 
-    let basePrice = result[0]["lp_token_price_usd"];
-    if(parseFloat(basePrice) === 0) {
-      // Looking for the next non-zero lp price
-      const data = result.find(r => parseFloat(r["lp_token_price_usd"]) !== 0);
-      basePrice = data !== undefined && data["lp_token_price_usd"] 
-        ? data["lp_token_price_usd"]
-        : 0;
-    }
-
-    const pnl = calculatePerformance(
-      basePrice,
-      result[lastDataIndex]["lp_token_price_usd"]
-    ) * 100;
-
+    const pnl = await calculateStrategyPNL(result);
+    
     return res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
       body: pnl,
@@ -444,6 +432,37 @@ const pnlHandle = async (req, res) => {
     });
   }
 };
+
+const calculateStrategyPNL = async(datas) => {
+  let pnl = 0;
+
+  try {
+    if(!datas || datas === undefined || datas.length <= 0) {
+      throw(`Missing datas for calculation.`);
+    }
+
+    const lastDataIndex = datas.length - 1;
+    let basePrice = datas[0]["lp_token_price_usd"];
+
+    if(parseFloat(basePrice) === 0) {
+      // Looking for the next non-zero lp price in datas array
+      const data = datas.find(r => parseFloat(r["lp_token_price_usd"]) !== 0);
+      basePrice = data !== undefined && data["lp_token_price_usd"] 
+        ? data["lp_token_price_usd"]
+        : 0;
+    }
+  
+    pnl = calculatePerformance(
+      basePrice,
+      datas[lastDataIndex]["lp_token_price_usd"]
+    ) * 100;
+
+  } catch (err) {
+    console.error(`[performance/handler] Error in calculatePNL(): ${err}`);
+  } finally {
+    return pnl;
+  }
+}
 
 const processPerformanceData = (datas, sinceInception = false) => {
   if(!datas || datas === undefined || datas.length <= 0) {
@@ -557,10 +576,13 @@ const performanceHandle = async (req, res) => {
   }
 };
 
+
 module.exports = {
   savePerformance,
   pnlHandle,
   performanceHandle,
   getTokenPrice,
-  processPerformanceData
+  processPerformanceData,
+  calculateStrategyPNL
 }
+ 
