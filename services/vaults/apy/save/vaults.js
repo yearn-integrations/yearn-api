@@ -252,7 +252,7 @@ const mainVaults = [
     depositAll: true,
     withdraw: true,
     withdrawAll: true,
-    lastMeasurement: 27165510,
+    lastMeasurement: 27355937,
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isCitadelV2: true,

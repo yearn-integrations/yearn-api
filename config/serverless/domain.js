@@ -178,7 +178,7 @@ const testContracts = {
       strategyABI: abi.citadelV2StrategyContract,
       contractType: "citadelv2",
       tokenId: ["tether", "usd-coin", "dai"],
-      inceptionBlock: 27165510,
+      inceptionBlock: 27355937,
       pnl:[
         {db: "lp", tokenId: ""},
         {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
