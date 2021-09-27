@@ -114,7 +114,7 @@ const testVaults = [
     description: "DAO Vault Citadel V2 for 3 stablecoins",
     vaultSymbol: "daoCDV2",
     erc20address: ["0x07de306ff27a2b630b1141956844eb1552b956b5", "0xb7a4f3e9097c08da09517b5ab877f7a917224ede", "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa"],
-    vaultContractAddress: "0x6435b8fc860381a7088ccd745fc73f5c844e8bad",
+    vaultContractAddress: "0xc5719b5e85c30eb6a49d3c1b8058ae2435146c88",
     vaultContractABI: abi.citadelV2VaultContract,
     balance: 0,
     vaultBalance: 0,
