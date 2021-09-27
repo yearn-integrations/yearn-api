@@ -172,13 +172,13 @@ const testContracts = {
       network: constant.ETHEREUM,
     },
     daoCDV2: {
-      address: "0x6435b8fc860381a7088ccd745fc73f5c844e8bad",
+      address: "0xc5719b5e85c30eb6a49d3c1b8058ae2435146c88",
       abi: abi.citadelV2VaultContract,
       strategyAddress: "0xa2b42a59ee0312a5f9d56dfad90ee6fa4a1be184",
       strategyABI: abi.citadelV2StrategyContract,
       contractType: "citadelv2",
       tokenId: ["tether", "usd-coin", "dai"],
-      inceptionBlock: 27165510,
+      inceptionBlock: 27355937,
       pnl:[
         {db: "lp", tokenId: ""},
         {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
@@ -422,7 +422,7 @@ const mainContracts = {
       network: constant.ETHEREUM,
     },
     // daoCDV2: {
-    //   address: "0x6435b8fc860381a7088ccd745fc73f5c844e8bad",
+    //   address: "0xc5719b5e85c30eb6a49d3c1b8058ae2435146c88",
     //   abi: abi.citadelV2VaultContract,
     //   strategyAddress: "0xa2b42a59ee0312a5f9d56dfad90ee6fa4a1be184",
     //   strategyABI: abi.citadelV2StrategyContract,
