@@ -79,7 +79,7 @@ module.exports.addDepositAmount = async (req, res) => {
     } else {
       const result = await isValidReferral(req.body.referral);
       if (result) {
-        const now = moment().format("MMMM Do YYYY, h:mm:ss a");
+        const now = moment().valueOf();
         await db.depositAmount({
           _id: req.body.transactionId,
           referral: req.body.referral,

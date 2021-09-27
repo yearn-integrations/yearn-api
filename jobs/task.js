@@ -11,9 +11,11 @@ const stakeSave = require("../services/staking/dao-stake/handler");
 const poolSave = require("../services/staking/handler");
 const vipDVG = require("../services/staking/vipdvg/handler");
 const performanceSave = require("../services/vaults/performance/handler");
+const transactionValidator = require("../services/referral/validate/handler");
 
 const jobDelayTime = {
   saveHistoricalApy: 3 * 60 * 1000, // 3 mins in milliseconds
+  saveTransaction: 6 * 60 * 1000, // 6 mins in milliseconds
   savePricePerFullShare: 6 * 60 * 1000, // 6 mins in milliseconds
   saveHistoricalTVL: 7 * 60 * 1000, // 7 mins
   saveVaultApy: 15 * 60 * 1000, // 15 mins
@@ -147,6 +149,25 @@ const savePolygonHistoricalAPYHandler = async () => {
   console.log(`[savePolygonHistoricalAPY] END: ${new Date().getTime()}`);
 };
 
+//Blockchain Transaction Validator
+const saveTransaction = async () => {
+  await saveTransactionHandler();
+  cron.schedule(
+    async () => {
+      await saveTransactionHandler();
+    },
+    {
+      scheduled: true,
+    }
+  );
+};
+
+const saveTransactionHandler = async () => {
+  console.log(`[saveTransaction] START: ${new Date().getTime()}`);
+  await transactionValidator.validator();
+  console.log(`[saveTransaction] END: ${new Date().getTime()}`);
+};
+
 /** Store Historical TVL */
 const saveHistoricalTVL = async () => {
   await delay(jobDelayTime.saveHistoricalTVL);
@@ -260,4 +281,5 @@ module.exports = {
   saveABIPools,
   saveVipApr,
   savePerformance,
+  saveTransaction,
 };

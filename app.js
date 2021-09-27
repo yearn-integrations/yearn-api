@@ -35,7 +35,6 @@ async function init() {
 
   db.connectDB(async (err) => {
     if (err) throw err;
-    /*
     jobs.saveVault();
     jobs.saveVaultAPY();
     jobs.savePolygonVaultAPY();
@@ -47,7 +46,7 @@ async function init() {
     jobs.saveABIPools();
     jobs.saveVipApr();
     jobs.savePerformance();
-    */
+    jobs.saveTransaction();
   });
 
   app.use(cors());
@@ -157,28 +156,3 @@ async function init() {
 }
 
 init();
-
-/* 
-  localhost:2002/student/:name/:course
-  
-  PUT localhost:2002/student/:studentId
-  req.body = {
-    name: "",
-    batch: ""
-  }
-  req.params = {studentId: ""}
-  
-  req.params: {
-    name: "Omkar",
-    course: "AI"
-  }
-
-  localhost:2002/student/:name/:course?i20=1
-  req.query = {
-    i20: 1
-  }
-
-  req.body = {
-    ...
-  }  
-*/

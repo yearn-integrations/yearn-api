@@ -26,9 +26,30 @@ const withdrawAmount = async (params) => {
   return await db.collection(collection).insertOne(params);
 };
 
+const updateStatus = async (id, amount) => {
+  const db = mongo.getDB();
+  const result = await db.collection(collection).findOne({
+    _id: id,
+  });
+  if (result) {
+    return await db.collection(collection).updateOne(
+      {
+        _id: id,
+      },
+      {
+        $set: {
+          status: "success",
+          amount: amount,
+        },
+      }
+    );
+  }
+};
+
 module.exports = {
   findAll,
   findOne,
   getTransaction,
   withdrawAmount,
+  updateStatus,
 };

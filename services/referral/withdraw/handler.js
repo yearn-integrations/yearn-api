@@ -28,7 +28,7 @@ module.exports.addWithdrawalAmount = async (req, res) => {
         });
       }
     } else {
-      const now = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const now = moment().valueOf();
       await db.withdrawAmount({
         _id: req.body.transactionId,
         amount: req.body.amount,
