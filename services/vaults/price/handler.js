@@ -361,6 +361,9 @@ module.exports.handleHistoricialPrice = async (req, res) => {
       case db.daoSTO2Farmer:
         collection = db.daoSTO2Farmer;
         break;
+      case db.daoSAFUFarmer: 
+        collection = db.daoSAFUFarmer;
+        break;
       default:
         res.status(200).json({
           message: 'Invalid Farmer',
