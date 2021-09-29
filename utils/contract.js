@@ -83,6 +83,24 @@ module.exports.getPolygonCurrentBlockNumber = async() => {
     }
 }
 
+// Get current block number by network
+module.exports.getCurrentBlockNumberByNetwork = async(network) => {
+    try {
+        switch(network) {
+            case constant.ETHEREUM: 
+                return this.getEthereumCurrentBlockNumber();
+            case constant.POLYGON: 
+                return this.getPolygonCurrentBlockNumber();
+            case constant.BSC: 
+                return this.getBSCCurrentBlockNumber();
+            default: 
+                return 0;
+        }
+    } catch (err) {
+        console.log('Error in getCurrentBlockNumberByNetwork()', err);
+    }
+}
+
 // Get current block number for BSC
 module.exports.getBSCCurrentBlockNumber = async() => {
     try {
@@ -227,7 +245,7 @@ module.exports.getBscBlockInfo = async(blockNumber) => {
 }
 
 // Get block information by network 
-module.exports.getBlockInformation = async (blockNumber, network) => {
+module.exports.getBlockInformationByNetwork = async (blockNumber, network) => {
     try {
         if(!network || !blockNumber) {
             return null;
