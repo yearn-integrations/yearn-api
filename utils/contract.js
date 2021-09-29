@@ -138,6 +138,15 @@ module.exports.getPolygonBlockByTimeline = async(timeline) => {
     }
 }
 
+// Get BSC Block By Timeline
+module.exports.getBSCBlockByTimeline = async(timeline) => {
+    try {
+        return (await bscBlocks.getDate(timeline));
+    } catch (err) {
+        console.log('Error in getBSCBlockByTimeline()', err);
+    }
+}
+
 // Get Polygon block number by timeline
 module.exports.getPolygonBlockNumberByTimeline = async(timeline) => {
     try {
