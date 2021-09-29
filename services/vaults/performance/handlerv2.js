@@ -36,7 +36,7 @@ const getTokenPrice = async(tokenId, date) => {
             return 1;
         }
     } catch (err){
-        console.error(`[performance/handlerv2] getTokenPrice(): `, err);
+        console.error(`[performance/handlerv2] getTokenPrice() ${tokenId}: `, err);
     }
 }
 
@@ -175,7 +175,7 @@ const getNextUpdateBlock = async (dateTime, network) => {
     const block = await contractHelper.getPolygonBlockByTimeline(nearestDateTime);
     return [block];
   } else if (network === constant.BSC) {
-    const block = await contractHelper.getBscBlockNumberByTimeline(nearestDateTime);
+    const block = await contractHelper.getBSCBlockByTimeline(nearestDateTime);
     return [block];
   }
 }
@@ -289,7 +289,7 @@ const syncHistoricalPerformance = async (dateTime) => {
         await performanceDb.add(etf, data);
         console.log(`${etf} Data for ${date.date} saved to db.`);
       } catch (err) {
-        console.error(`Error in syncHistoricalPerformance(): `, err);
+        console.error(`Error in syncHistoricalPerformance() ${etf}: `, err);
       }
     }
   }
