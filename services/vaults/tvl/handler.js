@@ -108,7 +108,7 @@ const getTVL = async (vault) => {
       const contract = await getContract(vault);
       const usdPool = await contract.methods.getAllPoolInUSD().call();
       tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
-    } else if (vault.contractType === "metaverse" || vault.contractType === "daoStonks" || vault.contractType === "citadelv2") {
+    } else if (vault.contractType === "metaverse" || vault.contractType === "daoStonks" || vault.contractType === "citadelv2" || vault.contractType === "daoSafu") {
       const contract = await getContract(vault);
       const usdPool = await contract.methods.getAllPoolInUSD().call();
       tvl = usdPool / 10 ** 18; // Check from code, Pool In USD returns in 18 decimals
