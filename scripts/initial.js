@@ -278,3 +278,7 @@ db.tokens.insertMany([
 db.airdrop.insertMany([
     {address: "", amount: "", signature: ""}
 ]);
+
+db.airdrop_event.insertMany([
+    {address: "0xbcf5cef54bca1b0591ee487bac567e7182bf8c7d", active: true}
+]);

@@ -43,11 +43,11 @@ router.post("/reimburse-address/update", (req, res) => {
 })
 
 // Airdrop
-router.get("/airdrop/:address",(req, res) => {
+router.get("/airdrop/:airdropAddress/:address",(req, res) => {
     try{
         airdrop.getAirdropAddress(req, res);
     } catch(err) {
-        console.error(`Error while getting /airdrop/:address`, err);
+        console.error(`Error while getting /:airdropAddress/:address`, err);
     }
 });
 
