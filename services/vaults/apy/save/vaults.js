@@ -123,7 +123,7 @@ const testVaults = [
     depositAll: true,
     withdraw: true,
     withdrawAll: true,
-    lastMeasurement: 27263090,
+    lastMeasurement: 27387067,
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isDaoStonks: true,

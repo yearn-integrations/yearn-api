@@ -178,7 +178,7 @@ const testContracts = {
       strategyABI: abi.daoStonksStrategyContract,
       contractType: "daoStonks",
       tokenId: ["tether", "usd-coin", "dai"],
-      inceptionBlock: 27263090,
+      inceptionBlock: 27387067,
       pnl:[
         {db: "lp", tokenId: ""},
         {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
