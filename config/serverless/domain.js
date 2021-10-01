@@ -187,13 +187,13 @@ const testContracts = {
       network: constant.ETHEREUM,
     },
     daoSTO2: {
-      address: '0x7739933d775bf2ed5eaec76bc61c581a82e25b0c',
+      address: '0xb8e43526d2fee347f88e690ee86d047895472d04',
       abi: abi.daoStonksVaultContract,
-      strategyAddress: '0xa8a3b0412a25c1183dfcfed6dc7b6acd584a6383',
+      strategyAddress: '0x9cc2659d2516ecafe1abc1c5b45baf2709a9f597',
       strategyABI: abi.daoStonksStrategyContract,
       contractType: "daoStonks",
       tokenId: ["tether", "usd-coin", "dai"],
-      inceptionBlock: 27263090,
+      inceptionBlock: 27387067,
       pnl:[
         {db: "lp", tokenId: ""},
         {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
