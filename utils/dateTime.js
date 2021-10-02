@@ -19,6 +19,9 @@ module.exports.getStartTimeFromParameter = (days) => {
         case '30d':
             startTime = moment().subtract(30, 'days');
             break;
+        case '90d':
+            startTime = moment().subtract(90, "days");
+            break;
         case '7d':
             startTime = moment().subtract(7, 'days');
             break;

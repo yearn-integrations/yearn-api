@@ -15,23 +15,6 @@ const moment = require("moment");
 
 let contracts;
 
-const getStartTime = (days) => {
-    var startTime = -1;
-
-    switch (days) {
-        case '30d':
-            startTime = moment().subtract(30, 'days');
-            break;
-        case '7d':
-            startTime = moment().subtract(7, 'days');
-            break;
-        case '1d':
-            startTime = moment().subtract(1, 'days');
-            break;
-    }
-    return startTime;
-}
-
 const getVaultApy = (apys, vaultKey) => {
     const vaultApy = apys.find(a => a.vaultSymbol === vaultKey);
     return vaultApy ? vaultApy : null;
