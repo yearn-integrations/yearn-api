@@ -120,6 +120,24 @@ const getDAOStonksPricePerFullShare = async(contract) => {
   }
 }
 
+const getTAPricePerFullShare = async(contract) => {
+  let pricePerFullShare = 0;
+  try {
+    const pool = await contract.methods.getAllPoolInUSD().call();
+    const totalSupply = await contract.methods.totalSupply().call();
+
+    if(parseInt(pool) === 0 || parseInt(totalSupply) === 0) {
+      pricePerFullShare = 0;
+    } else {
+      pricePerFullShare = pool / totalSupply;
+    }
+  } catch (ex) {
+    console.error(`[price/handler] Error in getTAPricePerFullShare(): `, ex);
+  } finally {
+    return pricePerFullShare;
+  }
+}
+
 const getCurrentPrice = async () => {
   let contracts = contractHelper.getContractsFromDomain();
 
@@ -211,7 +229,6 @@ const getCurrentPrice = async () => {
       } else if (contracts.farmer[key].contractType === 'daoStonks') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
         const pricePerFullShare = await getDAOStonksPricePerFullShare(contract);
-        console.log(`PPFS ${pricePerFullShare}`);
         await db.add(key + '_price', {
           earnPrice: 0,
           vaultPrice: 0,
@@ -258,6 +275,13 @@ const getCurrentPrice = async () => {
           metaversePrice: 0,
           citadelv2Price: pricePerFullShare,
           daoStonksPrice: 0
+        }).catch((err) => console.log('err', err));
+      } else if (contracts.farmer[key].contractType === "daoTA") {
+        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getTAPricePerFullShare(contract);
+      
+        await db.add(key + '_price', {
+          price: pricePerFullShare
         }).catch((err) => console.log('err', err));
       } 
     } catch (err) {
@@ -331,6 +355,9 @@ module.exports.handleHistoricialPrice = async (req, res) => {
         break;
       case db.daoSTO2Farmer:
         collection = db.daoSTO2Farmer;
+        break;
+      case db.daoTASFarmer: 
+        collection = db.daoTASFarmer;
         break;
       default:
         res.status(200).json({

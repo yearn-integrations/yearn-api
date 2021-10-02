@@ -45,4 +45,5 @@ module.exports = {
   daoMVFFarmer: 'daoMVF_price',
   daoCDV2Farmer: 'daoCDV2_price',
   daoSTO2Farmer: 'daoSTO2_price',
+  daoTASFarmer: 'daoTAS_price'
 };
