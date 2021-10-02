@@ -200,6 +200,21 @@ const testContracts = {
         {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
       ],
       network: constant.ETHEREUM,
+    },
+    daoTAS : {
+      address: '0xb72b89fa6d222973379cbd9c5c88768e3a050aed',
+      abi: abi.daoTAVaultContract,
+      strategyAddress: '0x8a3cbce40a8f92a1f27b250f0c9061ceeae328be',
+      strategyABI: abi.daoTAStrategyContract,
+      contractType: "daoTA",
+      tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 27400992,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
+      network: constant.ETHEREUM,
     }
   },
   DVD: {
@@ -451,6 +466,21 @@ const mainContracts = {
     //   ],
     //   network: constant.ETHEREUM,
     // }
+    daoTAS : {
+      address: '0xb72b89fa6d222973379cbd9c5c88768e3a050aed',
+      abi: abi.daoTAVaultContract,
+      strategyAddress: '0x8a3cbce40a8f92a1f27b250f0c9061ceeae328be',
+      strategyABI: abi.daoTAStrategyContract,
+      contractType: "daoTA",
+      tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 27400992,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
+      network: constant.ETHEREUM,
+    }
   },
   compund: {
     cUSDT: {
