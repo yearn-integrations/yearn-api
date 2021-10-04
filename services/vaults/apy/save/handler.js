@@ -148,6 +148,28 @@ const getMetaversePricePerFullShare = async(contract, block, inceptionBlockNumbe
   }
 }
 
+const getCitadelV2PricePerFullShare = async(contract, block, inceptionBlockNumber) => {
+  const contractDidntExist = block < inceptionBlockNumber;
+  const inceptionBlock = block === inceptionBlockNumber;
+
+  if (inceptionBlock) {
+    return 1e18;
+  }
+  if (contractDidntExist) {
+    return 0;
+  }
+
+  let pricePerFullShare = 0;
+  try {
+    pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
+    pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
+  } catch (err) {
+    console.error(`[apy/save/handler]Error in getCitadelV2PricePerFullShare(): `, err);
+  } finally {
+    return pricePerFullShare;
+  }
+}
+
 const getApyForVault = async (vault, contracts) => {
   const {
     lastMeasurement: inceptionBlockNbr,
@@ -288,6 +310,37 @@ const getApyForVault = async (vault, contracts) => {
       faangApy: 0,
       metaverseApy: apy
     }
+  } else if (vault.isCitadelV2) {
+    const contract = await contractHelper.getEthereumContract(abi, address);
+    
+    let pricePerFullShareCurrent = await getCitadelV2PricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    let pricePerFullShareOneDayAgo = await getCitadelV2PricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
+    pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
+
+    // APY Calculation
+    const n = 365 / 2; // Assume 2 days to trigger invest function
+    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+    let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+    if(apy === Infinity) {
+      apy = 0;
+    }
+
+    return {
+      apyInceptionSample: 0,
+      apyOneDaySample: 0,
+      apyThreeDaySample: 0,
+      apyOneWeekSample: 0,
+      apyOneMonthSample: 0,
+      apyLoanscan: 0,
+      compoundApy: 0,
+      citadelApy: 0,
+      elonApy: 0,
+      cubanApy: 0,
+      faangApy: 0,
+      citadelv2Apy: apy
+    }
   }
 };
 
@@ -366,3 +419,4 @@ module.exports.getElonPricePerFullShare = getElonPricePerFullShare;
 module.exports.getCubanPricePerFullShare = getCubanPricePerFullShare;
 module.exports.getFaangPricePerFullShare = getFaangPricePerFullShare;
 module.exports.getMetaversePricePerFullShare = getMetaversePricePerFullShare;
+module.exports.getCitadelV2PricePerFullShare = getCitadelV2PricePerFullShare;

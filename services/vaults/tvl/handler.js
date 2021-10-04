@@ -102,11 +102,16 @@ const getTVL = async (vault) => {
   } = vault;
 
   try {
-    if (vault.contractType === 'citadel' || vault.contractType === 'elon' || vault.contractType === 'cuban') {
+    if (vault.contractType === 'citadel' || 
+        vault.contractType === 'elon' || 
+        vault.contractType === 'cuban') {
       const contract = await getContract(vault);
       const usdPool = await contract.methods.getAllPoolInUSD().call();
       tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
-    } else if (vault.contractType === "metaverse") {
+    } else if (
+        vault.contractType === "metaverse" ||
+        vault.contractType === "citadelv2"
+      ) {
       const contract = await getContract(vault);
       const usdPool = await contract.methods.getAllPoolInUSD().call();
       tvl = usdPool / 10 ** 18; // Check from code, Pool In USD returns in 18 decimals
@@ -279,6 +284,9 @@ module.exports.tvlHandle = async (req, res) => {
       break;
     case db.daoMVFFarmer: 
       collection = db.daoMVFFarmer;
+      break;
+    case db.daoCDV2Farmer: 
+      collection = db.daoCDV2Farmer;
       break;
     default:
       res.status(200).json({
