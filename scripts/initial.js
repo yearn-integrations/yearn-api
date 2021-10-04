@@ -7,7 +7,7 @@ db.vault_categories.insertMany([
     { name: 'advance', network:"polygon", contract_address: '0x3db93e95c9881bc7d9f2c845ce12e97130ebf5f2', symbol: 'daoMPT',deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' },
     { name: 'basic', network:"ethereum", contract_address: '0x5b3ae8b672a753906b1592d44741f71fbd05ba8c', symbol: 'daoMVF', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'expert', network:"ethereum", contract_address: '0xcc6c417e991e810477b486d992faaca1b7440e76', symbol: 'daoCDV2', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
-    // { name: 'advance', network:"ethereum", contract_address: '0x7739933d775bf2ed5eaec76bc61c581a82e25b0c', symbol: 'daoSTO2', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
+    { name: 'advance', network:"ethereum", contract_address: '0xd0b14644b0f91239075ed8a415769c4e20d37cf9', symbol: 'daoSTO2', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
 ]);
 
 db.stake_pool.insertMany([
