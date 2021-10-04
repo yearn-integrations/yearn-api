@@ -84,7 +84,7 @@ const getDepositedAmount = async(type, depositedShares, vaultContract, strategyC
     
       depositedAmount = (depositedShares * (poolInUSD / (10 ** 12))) / totalSupply;
       depositedAmount = new BigNumber(depositedAmount);
-    } else if (type === 'citadelv2') {
+    } else if (type === 'citadelv2' || type === 'daoStonks') {
       const totalSupply = await vaultContract.methods.totalSupply().call();
       let poolInUSD = await vaultContract.methods.getAllPoolInUSD().call(); // Default returned in 18 decimals, divide 12 to make it in 6 decimals.
     

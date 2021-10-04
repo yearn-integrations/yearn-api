@@ -56,6 +56,7 @@ module.exports = {
   daoELOFarmer: "daoELO_tvl",
   daoCUBFarmer: "daoCUB_tvl",
   daoSTOFarmer: "daoSTO_tvl",
+  daoSTO2Farmer: "daoSTO2_tvl",
   hfDaiFarmer: "hfDAI_tvl",
   hfUsdtFarmer: "hfUSDT_tvl",
   hfUsdcFarmer: "hfUSDC_tvl",  
