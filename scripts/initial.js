@@ -274,3 +274,11 @@ db.tokens.insertMany([
     { tokenId: 'mirrored-microsoft', symbol: 'MMSFT'}, // TODO:Remember to add this for DaoStonks
     { tokenId: 'mirrored-twitter', symbol: 'MTWTR'}, // TODO:Remember to add this for DaoStonks
 ]);
+
+db.airdrop.insertMany([
+    {address: "", amount: "", signature: ""}
+]);
+
+db.airdrop_event.insertMany([
+    {address: "0xbcf5cef54bca1b0591ee487bac567e7182bf8c7d", active: true}
+]);
