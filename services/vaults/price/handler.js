@@ -11,6 +11,7 @@ const { delayTime } = require("../apy/save/config");
 
 const contractHelper = require("../../../utils/contract");
 const priceFeedHelper = require("../../../utils/chainlinkHelper");
+const dateTimeHelper = require("../../../utils/dateTime");
 
 const getCitadelPricePerFullShare = async (contract) => {
   let pricePerFullShare = 0;
@@ -120,6 +121,19 @@ const getDAOStonksPricePerFullShare = async(contract) => {
   }
 }
 
+const getDaoDegenPricePerFullShare = async(contract, block) => {
+  let pricePerFullShare = 0;
+  try {
+    pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
+    pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
+  } catch (err) {
+    console.error(`[apy/save/handler]Error in getDaoDegenPricePerFullShare(): `, err);
+  } finally {
+    return pricePerFullShare;
+  }
+}
+
+
 const getCurrentPrice = async () => {
   let contracts = contractHelper.getContractsFromDomain();
 
@@ -211,7 +225,6 @@ const getCurrentPrice = async () => {
       } else if (contracts.farmer[key].contractType === 'daoStonks') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
         const pricePerFullShare = await getDAOStonksPricePerFullShare(contract);
-        console.log(`PPFS ${pricePerFullShare}`);
         await db.add(key + '_price', {
           earnPrice: 0,
           vaultPrice: 0,
@@ -259,21 +272,17 @@ const getCurrentPrice = async () => {
           citadelv2Price: pricePerFullShare,
           daoStonksPrice: 0
         }).catch((err) => console.log('err', err));
-      } 
+      } else if (contracts.farmer[key].contractType === "daoDegen") {
+        const contract = await contractHelper.getBscContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getDaoDegenPricePerFullShare(contract);
+
+        await db.add(key + '_price', {
+          price: pricePerFullShare
+        })
+      }
     } catch (err) {
       await db.add(key + '_price', {
-        earnPrice: "0",
-        vaultPrice: "0",
-        compoundExchangeRate: 0,
-        citadelPrice: 0,
-        elonPrice: 0,
-        cubanPrice: 0,
-        faangPrice: 0,
-        moneyPrinterPrice: 0,
-        harvestPrice: "0",
-        metaversePrice: 0,
-        citadelv2Price: 0,
-        daoStonksPrice: 0,
+        price: 0
       }).catch((err) => console.log('err', err));
     }
   }
@@ -295,81 +304,44 @@ module.exports.handler = async () => {
 }
 
 module.exports.handleHistoricialPrice = async (req, res) => {
-  if (req.params.days == null || req.params.days == '') {
-    res.status(200).json({
-      message: 'Days is empty.',
-      body: null
-    });
-  } else if (req.params.farmer == null || req.params.farmer == '') {
-    res.status(200).json({
-      message: 'Farmer is empty.',
-      body: null
-    });
-  } else {
-    let collection = '';
-    switch (req.params.farmer) {
-      case db.daoCDVFarmer:
-        collection = db.daoCDVFarmer;
-        break;
-      case db.daoELOFarmer:
-        collection = db.daoELOFarmer;
-        break;
-      case db.daoCUBFarmer:
-        collection = db.daoCUBFarmer;
-        break;
-      case db.daoSTOFarmer:
-        collection = db.daoSTOFarmer;
-        break;
-      case db.daoMPTFarmer:
-        collection = db.daoMPTFarmer;
-        break;
-      case db.daoMVFFarmer:
-        collection = db.daoMVFFarmer;
-        break;
-      case db.daoCDV2Farmer:
-        collection = db.daoCDV2Farmer;
-        break;
-      case db.daoSTO2Farmer:
-        collection = db.daoSTO2Farmer;
-        break;
-      default:
-        res.status(200).json({
-          message: 'Invalid Farmer',
-          body: null
-        })
-        return;
+  let message = "Successful response";
+  let result = null;
+
+  try {
+    if (req.params.days == null || req.params.days == '') {
+      throw(`Days is empty`);
+    }
+    if (req.params.farmer == null || req.params.farmer == '') {
+      throw(`Strategy ID is empty`);
     }
 
-    var startTime = -1;
-    switch (req.params.days) {
-      case '30d':
-        startTime = moment().subtract(30, 'days');
-        break;
-      case '7d':
-        startTime = moment().subtract(7, 'days');
-        break;
-      case '1d':
-        startTime = moment().subtract(1, 'days');
-        break;
+    const strategyId = req.params.farmer;
+    if(!contractHelper.checkIsValidStrategyId(strategyId)) {
+      throw(`Invalid Strategy ID`);
     }
 
-    if (startTime !== -1) {
-      var result = await getHistoricalPrice(startTime.unix(), collection);
-      const resultMapping = (price) => {
-        delete price._id;
-        return price;
-      };
-      result = result.map(resultMapping);
-      res.status(200).json({
-        message: '',
-        body: result
-      })
-    } else {
-      res.status(200).json({
-        message: "Please only pass '30d', '7d' or '1d' as days option.",
-        body: null
-      })
+    let startTime = dateTimeHelper.getStartTimeFromParameter(req.params.days);
+    if(startTime === -1) {
+      throw(`Please only pass '1y', '6m', 30d', '7d' or '1d' as days option.`)
     }
+    startTime = dateTimeHelper.toTimestamp(startTime);
+
+    const collectionName = `${strategyId}_price`;
+    result = await getHistoricalPrice(startTime, collectionName);
+    const resultMapping = (price) => {
+      delete price._id;
+      return price;
+    };
+    result = result.map(resultMapping);
+    
+  } catch(err) {
+    message = err;
+    console.error(`Error in handleHistoricialPrice(): `, err);
+  } finally {
+    res.status(200).json({
+      message: message,
+      body: result
+    });
   }
 }
 
