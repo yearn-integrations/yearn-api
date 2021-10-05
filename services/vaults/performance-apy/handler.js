@@ -68,6 +68,12 @@ const getApyAttributeNameByStrategy = (strategyType) => {
                 { seriesName: "BTC", attributeName: "btc_performance" },
                 { seriesName: "ETH", attributeName: "eth_performance" },
             ];
+        case constant.STRATEGY_TYPE.DAODEGEN: 
+            return [
+                { seriesName: "DAO Degen", attributeName: "lp_performance" },
+                { seriesName: "BTC", attributeName: "btc_performance" },
+                { seriesName: "ETH", attributeName: "eth_performance" },
+            ];
         default: 
             return [];
     }
