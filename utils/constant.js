@@ -150,7 +150,7 @@ const CONTRACT_IDS = {
     DAOMVF: "daoMVF",
     DAOCDV2: "daoCDV2",
     DAOSTO2: "daoSTO2",
-    DAODEGEN: "DAODEGEN",
+    DAODEGEN: "daoDEGEN",
 }
 
 const ETF_STRATEGIES = [
