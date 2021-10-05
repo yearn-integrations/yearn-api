@@ -32,6 +32,10 @@ const TOKEN_COINGECKO_ID = {
     MVI: "metaverse-index",
     MMSFT: "mirrored-microsoft", // Remember to add this.
     MTWTR: "mirrored-twitter", // Remember to add this.
+    BUNNY: "pancake-bunny",
+    AUTO: "auto",
+    EPS: "ellipsis",
+    XVS: "venus"
 }
 
 const TOKEN_CHART_COLOR = {
@@ -130,6 +134,13 @@ const DAOSTO2_ASSET_DISTRIBUTION = {
     MNFLX: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MNFLX},
 };
 
+const DAODEGEN_ASSET_DISTRIBUTION = {
+    BUNNY: { percent: 25, tokenId: TOKEN_COINGECKO_ID.BUNNY},
+    AUTO: { percent: 25, tokenId: TOKEN_COINGECKO_ID.AUTO},
+    EPS: { percent: 25, tokenId: TOKEN_COINGECKO_ID.EPS},
+    XVS: { percent: 25, tokenId: TOKEN_COINGECKO_ID.XVS}
+}
+
 const CONTRACT_IDS = {
     DAOCDV: "daoCDV",
     DAOELO: "daoELO",
@@ -138,7 +149,8 @@ const CONTRACT_IDS = {
     DAOMPT: "daoMPT",
     DAOMVF: "daoMVF",
     DAOCDV2: "daoCDV2",
-    DAOSTO2: "daoSTO2"
+    DAOSTO2: "daoSTO2",
+    DAODEGEN: "DAODEGEN",
 }
 
 const ETF_STRATEGIES = [
@@ -149,7 +161,8 @@ const ETF_STRATEGIES = [
     CONTRACT_IDS.DAOMPT,
     CONTRACT_IDS.DAOMVF,
     CONTRACT_IDS.DAOCDV2,
-    CONTRACT_IDS.DAOSTO2
+    CONTRACT_IDS.DAOSTO2,
+    CONTRACT_IDS.DAODEGEN
 ];
 
 const STRATEGY_TYPE = {
@@ -164,6 +177,7 @@ const STRATEGY_TYPE = {
     METAVERSE: "metaverse",
     CITADELV2: "citadelv2",
     DAOSTONKS: "daoStonks",
+    DAODEGEN: "daoDegen"
 }
 
 module.exports = {
@@ -196,6 +210,7 @@ module.exports = {
     DAOMPT_ASSET_DISTRIBUTION,
     DAOMVF_ASSET_DISTRIBUTION,
     DAOSTO2_ASSET_DISTRIBUTION,
+    DAODEGEN_ASSET_DISTRIBUTION,
     
     TOKEN_COINGECKO_ID,
     ETF_STRATEGIES,
