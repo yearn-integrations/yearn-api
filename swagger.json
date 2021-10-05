@@ -43,7 +43,7 @@
           {
             "name": "farmer",
             "in": "path",
-            "description": "Vault ID with '_price'",
+            "description": "Vault ID",
             "required": true,
             "type": "string"
           },
@@ -223,7 +223,7 @@
           {
             "name": "farmer",
             "in": "path",
-            "description": "Vault ID with '_tvl'",
+            "description": "Vault ID",
             "required": true,
             "type": "string"
           }
