@@ -78,17 +78,12 @@ const getDepositedAmount = async(type, depositedShares, vaultContract, strategyC
     
       depositedAmount = (depositedShares * poolInUSD) / totalSupply;
       depositedAmount = new BigNumber(depositedAmount);
-    } else if (type === 'metaverse') {
+    } else if (type === 'metaverse' || type === 'daoStonks' || type === 'citadelv2' || type === "daoSafu" || type === "daoTA" || type === "daoDegen") {
       const totalSupply = await vaultContract.methods.totalSupply().call();
-      let poolInUSD = await vaultContract.methods.getAllPoolInUSD().call(); // Default returned in 18 decimals, divide 12 to make it in 6 decimals.
+      const poolInUSD = await vaultContract.methods.getAllPoolInUSD().call(); 
+      const pricePerFullShare = poolInUSD / totalSupply;
     
-      depositedAmount = (depositedShares * (poolInUSD / (10 ** 12))) / totalSupply;
-      depositedAmount = new BigNumber(depositedAmount);
-    } else if (type === 'daoStonks' || type === 'citadelv2') {
-      const totalSupply = await vaultContract.methods.totalSupply().call();
-      let poolInUSD = await vaultContract.methods.getAllPoolInUSD().call(); // Default returned in 18 decimals, divide 12 to make it in 6 decimals.
-    
-      depositedAmount = (depositedShares * (poolInUSD / (10 ** 12))) / totalSupply;
+      depositedAmount = depositedShares * pricePerFullShare;
       depositedAmount = new BigNumber(depositedAmount);
     }
   } catch(err) {
