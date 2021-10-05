@@ -6,7 +6,7 @@ const testVaults = [
         name: "DAO Vault Degen",
         symbol: ["USDT","USDC","DAI"],
         description: "DAO Vault Degen for 3 stablecoins",
-        vaultSymbol: "daoSAFU",
+        vaultSymbol: "daoDEGEN",
         erc20address: ["0x337610d27c682E347C9cD60BD4b3b107C9d34dDd", "0x64544969ed7EBf5f083679233325356EbE738930", "0xEC5dCb5Dbf4B114C9d0F65BcCAb49EC54F6A0867"],
         vaultContractAddress: "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
         vaultContractABI: abi.daoDegenVaultContract,
