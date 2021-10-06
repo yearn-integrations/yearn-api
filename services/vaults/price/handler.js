@@ -101,7 +101,6 @@ const getCitadelV2PricePerFullShare = async(contract) => {
   }
 }
 
-
 const getDAOStonksPricePerFullShare = async(contract) => {
   let pricePerFullShare = 0;
   try {
@@ -115,6 +114,18 @@ const getDAOStonksPricePerFullShare = async(contract) => {
     }
   } catch (ex) {
     console.error(`[price/handler] Error in getDAOStonksPricePerFullShare(): `, ex);
+  } finally {
+    return pricePerFullShare;
+  }
+}
+
+const getDAOSafuPricePerFullShare = async(contract) => {
+  let pricePerFullShare = 0;
+  try {
+    pricePerFullShare = await contract.methods.getPricePerFullShare().call();
+    pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
+  } catch (ex) {
+    console.error(`[price/handler] Error in getDAOSafuPricePerFullShare(): `, ex);
   } finally {
     return pricePerFullShare;
   }
@@ -251,7 +262,7 @@ const getCurrentPrice = async () => {
           vaultPrice: 0,
           compoundExchangeRate: 0,
           citadelPrice: 0,
-          elonPrice: pricePerFullShare,
+          elonPrice: 0,
           cubanPrice: 0,
           faangPrice: 0,
           harvestPrice: 0,
@@ -259,7 +270,25 @@ const getCurrentPrice = async () => {
           citadelv2Price: pricePerFullShare,
           daoStonksPrice: 0
         }).catch((err) => console.log('err', err));
-      } 
+      } else if (contracts.farmer[key].contractType === 'daoSafu')  {
+        const contract = await contractHelper.getBSCContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getDAOSafuPricePerFullShare(contract);
+      
+        await db.add(key + '_price', {
+          earnPrice: 0,
+          vaultPrice: 0,
+          compoundExchangeRate: 0,
+          citadelPrice: 0,
+          elonPrice: 0,
+          cubanPrice: 0,
+          faangPrice: 0,
+          harvestPrice: 0,
+          metaversePrice: 0,
+          citadelv2Price: 0,
+          daoStonksPrice: 0,
+          daoSafuPrice: pricePerFullShare
+        });
+      }
     } catch (err) {
       await db.add(key + '_price', {
         earnPrice: "0",
@@ -331,6 +360,9 @@ module.exports.handleHistoricialPrice = async (req, res) => {
         break;
       case db.daoSTO2Farmer:
         collection = db.daoSTO2Farmer;
+        break;
+      case db.daoSAFUFarmer: 
+        collection = db.daoSAFUFarmer;
         break;
       default:
         res.status(200).json({

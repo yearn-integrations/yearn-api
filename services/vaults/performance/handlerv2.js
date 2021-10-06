@@ -36,17 +36,17 @@ const getTokenPrice = async(tokenId, date) => {
             return 1;
         }
     } catch (err){
-        console.error(`[performance/handlerv2] getTokenPrice(): `, err);
+        console.error(`[performance/handlerv2] getTokenPrice() ${tokenId}: `, err);
     }
 }
 
-const getTotalSupply = async(etf, vault, block) => {
+const getTotalSupply = async(etf, vault, block, network) => {
     let totalSupply = 0;
     try {
-        if(etf === "daoMPT") {
-          totalSupply = await vault.methods.totalSupply().call(undefined, block);
-        } else {
+        if(network === constant.ETHEREUM) {
           totalSupply = await vault.totalSupply({ blockTag: block });
+        } else {
+          totalSupply = await vault.methods.totalSupply().call(undefined, block);
         }
     } catch (err) {
         console.error(`[performance/handlerv2] getTotalSupply() for${etf}: `, err);
@@ -62,7 +62,9 @@ const getTotalPool = async(etf, vault, block) => {
         pool = await vault.getTotalValueInPool({ blockTag: block });
       } else if(etf === "daoMPT") {
         pool = await vault.methods.getValueInPool().call(undefined, block);
-      } else {
+      } else if(etf === "daoSAFU") {
+        pool = await vault.methods.getAllPoolInUSD().call(undefined, block);
+      }else {
         // daoELO, daoCDV, daoCUB, daoMVF using this
         pool = await vault.getAllPoolInUSD({ blockTag: block });
       }
@@ -89,9 +91,9 @@ const calcLPTokenPriceUSD = (etf, totalSupply, totalPool, network) => {
           : totalPool;
       lpPrice = newTotalPool.mul(ethers.BigNumber.from("1000000000000000000")).div(totalSupply);
       lpPrice = ethers.utils.formatEther(lpPrice);
-    } else if(network === constant.POLYGON) {
+    } else if(network === constant.POLYGON || network === constant.BSC) {
       lpPrice = (new BigNumber(totalPool)).dividedBy(totalSupply);
-    }
+    } 
   
     return lpPrice;
 }
@@ -125,6 +127,14 @@ const getSearchRange = async (firstBlock, lastBlock, network) => {
         1, // Duration, optional, integer. By default 1.
         true // Block after, optional. Search for the nearest block before or after the given date. By default true.
       );
+    }  else if (network === constant.BSC) {
+      days = await contractHelper.getEveryBSC(
+        "days", // Period, required. Valid value: years, quarters, months, weeks, days, hours, minutes
+        firstTimestamp, // Start date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+        lastTimestamp, // End date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+        1, // Duration, optional, integer. By default 1.
+        true // Block after, optional. Search for the nearest block before or after the given date. By default true.
+      );
     }
     return days;
 }
@@ -133,9 +143,8 @@ const getUnixTime = async (block, network) => {
   let timestamp = 0;
 
   try {
-    const blockInfo = (network === constant.ETHEREUM) 
-    ? (await provider.getBlock(block))
-    : (await contractHelper.getPolygonBlockInfo(block))
+
+    const blockInfo = await contractHelper.getBlockInformationByNetwork(block,network)
    
     timestamp =  blockInfo.timestamp;
   } catch(err) {
@@ -165,6 +174,9 @@ const getNextUpdateBlock = async (dateTime, network) => {
   } else if (network === constant.POLYGON) {
     const block = await contractHelper.getPolygonBlockByTimeline(nearestDateTime);
     return [block];
+  } else if (network === constant.BSC) {
+    const block = await contractHelper.getBSCBlockByTimeline(nearestDateTime);
+    return [block];
   }
 }
 
@@ -185,9 +197,10 @@ const syncHistoricalPerformance = async (dateTime) => {
       vault = new ethers.Contract(address, abi, provider);
     } else if (network === constant.POLYGON) {
       vault = await contractHelper.getPolygonContract(abi, address);
-    }
+    } else if (network === constant.BSC) {
+      vault = await contractHelper.getBSCContract(abi, address);
+    } 
      
-
     // Get latest record
     let latestEntry = await performanceDb.findLatest(etf);
     let dates;
@@ -215,12 +228,10 @@ const syncHistoricalPerformance = async (dateTime) => {
       }
     } else {
       const startBlock = etfContractInfo.inceptionBlock;
-      const latestBlock = (network === constant.ETHEREUM) 
-        ? await provider.getBlockNumber()
-        : await contractHelper.getPolygonCurrentBlockNumber();
+      const latestBlock = await contractHelper.getCurrentBlockNumberByNetwork(network);
       dates = await getSearchRange(startBlock, latestBlock, network);
     }
-
+  
     pnlSeries.forEach(p => {
       const attributeName = `${p.db}_inception_price`;
       basePrice[p.db] = latestRecord[attributeName] !== undefined ? latestRecord[attributeName] : 0;
@@ -229,7 +240,7 @@ const syncHistoricalPerformance = async (dateTime) => {
 
     for (const date of dates) {
       try {
-        const totalSupply = await getTotalSupply(etf, vault, date.block);
+        const totalSupply = await getTotalSupply(etf, vault, date.block, network);
         await delay(1000);
         const totalPool = await getTotalPool(etf, vault, date.block);
 
@@ -278,7 +289,7 @@ const syncHistoricalPerformance = async (dateTime) => {
         await performanceDb.add(etf, data);
         console.log(`${etf} Data for ${date.date} saved to db.`);
       } catch (err) {
-        console.error(`Error in syncHistoricalPerformance(): `, err);
+        console.error(`Error in syncHistoricalPerformance() ${etf}: `, err);
       }
     }
   }
