@@ -27,7 +27,7 @@ const getDaoSafuPricePerFullShare = async(contract, block, inceptionBlockNumber)
   
     let pricePerFullShare = 0;
     try {
-      pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, );
+      pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
       pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
     } catch (err) {
       console.error(`[apy/save/handler]Error in getDaoSafuPricePerFullShare(): `, err);
