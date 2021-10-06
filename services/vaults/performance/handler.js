@@ -19,6 +19,7 @@ let url = process.env.ARCHIVENODE_ENDPOINT_2;
 
 const constant = require("../../../utils/constant");
 const dateTimeHelper = require("../../../utils/dateTime");
+const contractHelper = require("../../../utils/contract");
 
 // Using ethers.js0.26
 let provider = new ethers.providers.JsonRpcProvider(url);
@@ -402,7 +403,7 @@ const pnlHandle = async (req, res) => {
         collection,
         dateTimeHelper.toTimestamp(startTime)
       );
-
+  
     if(!result || result.length <= 0) {
       return res.status(200).json({
         message: `Performance Data for ${req.params.farmer}`,
@@ -415,15 +416,11 @@ const pnlHandle = async (req, res) => {
       // If time period not stated, return latest lp performance data=
       return res.status(200).json({
         message: `Performance Data for ${req.params.farmer}`,
-        body: result[lastDataIndex]["lp_performance"],
+        body: result[lastDataIndex]["lp_performance"] * 100, // Result from database haven't times with 100% yet
       });
     }
 
-    const basePrice = result[0]["lp_token_price_usd"];
-    const pnl = calculatePerformance(
-      basePrice,
-      result[lastDataIndex]["lp_token_price_usd"]
-    ) * 100;
+    const pnl = await calculateStrategyPNL(result);
 
     return res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
@@ -437,31 +434,90 @@ const pnlHandle = async (req, res) => {
   }
 };
 
-const processPerformanceData = (datas) => {
-  if(!datas || datas === undefined || datas.length <= 0) {
-    throw(`Datas is undefined or empty in processPerformanceData.`);
-  }
+const calculateStrategyPNL = async(datas) => {
+  let pnl = 0;
 
   try {
-    const basePrice = datas[0]["lp_token_price_usd"];
-    const btcBasePrice = datas[0]["btc_price"];
-    const ethBasePrice = datas[0]["eth_price"];
+    if(!datas || datas === undefined || datas.length <= 0) {
+      throw(`Missing datas for calculation.`);
+    }
+
+    const lastDataIndex = datas.length - 1;
+    let basePrice = datas[0]["lp_token_price_usd"];
+
+    if(parseFloat(basePrice) === 0) {
+      // Looking for the next non-zero lp price in datas array
+      const data = datas.find(r => parseFloat(r["lp_token_price_usd"]) !== 0);
+      basePrice = data !== undefined && data["lp_token_price_usd"] 
+        ? data["lp_token_price_usd"]
+        : 0;
+    }
   
-    datas.forEach((data) => {
-      data["lp_performance"] = calculatePerformance(
-        basePrice,
-        data["lp_token_price_usd"]
-      ) * 100;
-      data["btc_performance"] = calculatePerformance(
-        btcBasePrice,
-        data["btc_price"]
-      ) * 100;
-      data["eth_performance"] = calculatePerformance(
-        ethBasePrice,
-        data["eth_price"]
-      ) * 100;
-    });
+    pnl = calculatePerformance(
+      basePrice,
+      datas[lastDataIndex]["lp_token_price_usd"]
+    ) * 100;
+
+  } catch (err) {
+    console.error(`[performance/handler] Error in calculatePNL(): ${err}`);
+  } finally {
+    return pnl;
+  }
+}
+
+const processPerformanceData = (datas, strategyId, sinceInception = false) => {
+  try {
+    if(!datas || datas === undefined || datas.length <= 0) {
+      throw(`Datas is undefined or empty in processPerformanceData.`);
+    }
+    if(!strategyId || strategyId === undefined || strategyId === "") {
+      throw(`Strategy Type is not defined`);
+    }
+
+    const contracts = contractHelper.getContractsFromDomain();
+    const pnlSeries = contracts.farmer[strategyId].pnl;
   
+    if(sinceInception) {
+      datas.forEach(data => {
+        pnlSeries.forEach(series => {
+          const seriesName = `${series.db}_performance`;
+          data[seriesName] = data[seriesName] * 100
+        });
+      });
+    } else {
+      const firstData = datas[0];
+      const basePrices = {};
+      pnlSeries.forEach(series => {
+        const propertyName = (series.db === "lp") 
+          ? "lp_token_price_usd"
+          : `${series.db}_price`;
+        basePrices[series.db] = firstData[propertyName]
+          ? firstData[propertyName] 
+          : 0;
+      })
+
+      datas.forEach((data) => {
+        // If base price is zero, to set base price as first non-zero lp price
+        if( parseFloat(basePrices["lp"]) === 0 && 
+            parseFloat(data["lp_token_price_usd"]) !== 0
+        ) {
+          basePrices["lp"] = data["lp_token_price_usd"];
+        }
+
+        pnlSeries.forEach(series => {
+          const seriesName = series.db;
+          const propertyName = (seriesName === "lp") 
+            ? "lp_token_price_usd"
+            : `${seriesName}_price`;
+          const performanceName = `${seriesName}_performance`;
+          
+          data[performanceName] = calculatePerformance(
+            basePrices[seriesName],
+            data[propertyName]
+          ) * 100
+        });
+      });
+    }
     return datas;
   } catch (err) {
     console.error(`Error in processPerformanceData(): `, err);
@@ -507,10 +563,11 @@ const performanceHandle = async (req, res) => {
     const startTime = dateTimeHelper.getStartTimeFromParameter(req.params.days);
     const collection = req.params.farmer;
   
-    let result = (startTime == -1) 
+    const sinceInception = (startTime == -1);
+    let result = (sinceInception) 
       ? await historicalDb.findAll(collection)
       : await historicalDb.findPerformanceWithTimePeriods(collection, dateTimeHelper.toTimestamp(startTime));
-  
+
     if(!result || result.length <= 0) {
       return res.status(200).json({
         message: `Performance Data for ${req.params.farmer}`,
@@ -518,9 +575,7 @@ const performanceHandle = async (req, res) => {
       })
     }
     
-    if(startTime !== -1) {
-      result = processPerformanceData(result); 
-    }
+    result = processPerformanceData(result, req.params.farmer, sinceInception);
 
     res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
@@ -535,10 +590,13 @@ const performanceHandle = async (req, res) => {
   }
 };
 
+
 module.exports = {
   savePerformance,
   pnlHandle,
   performanceHandle,
   getTokenPrice,
-  processPerformanceData
+  processPerformanceData,
+  calculateStrategyPNL
 }
+ 
