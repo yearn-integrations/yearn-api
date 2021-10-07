@@ -5,7 +5,6 @@ const BigNumber = require("bignumber.js");
 const contractHelper = require("../../../../utils/contract");
 const dateTimeHelper = require("../../../../utils/dateTime");
 const historicalDb = require('../../../../models/historical-apy.model');
-const { getDaoStonksPricePerFullShare } = require("./handler");
 
 let bscBlockNumber = {
     current: 0,
