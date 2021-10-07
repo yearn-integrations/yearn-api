@@ -35,7 +35,11 @@ const TOKEN_COINGECKO_ID = {
     BUNNY: "pancake-bunny",
     AUTO: "auto",
     EPS: "ellipsis",
-    XVS: "venus"
+    XVS: "venus",
+    BNB: "binancecoin",
+    XVS: "venus",
+    CAKE: "pancakeswap-token",
+    BUSD: "binance-usd"
 }
 
 const TOKEN_CHART_COLOR = {
@@ -139,7 +143,15 @@ const DAODEGEN_ASSET_DISTRIBUTION = {
     AUTO: { percent: 25, tokenId: TOKEN_COINGECKO_ID.AUTO},
     EPS: { percent: 25, tokenId: TOKEN_COINGECKO_ID.EPS},
     XVS: { percent: 25, tokenId: TOKEN_COINGECKO_ID.XVS}
-}
+};
+
+const DAOSAFU_ASSET_DISTRIBUTION = {
+    BTC: { percent: 45, tokenId: TOKEN_COINGECKO_ID.BTC },
+    BNB: { percent: 35, tokenId: TOKEN_COINGECKO_ID.BNB },
+    XVS: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.XVS },
+    CAKE: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.CAKE},
+    BUSD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.BUSD}
+};
 
 const CONTRACT_IDS = {
     DAOCDV: "daoCDV",
@@ -151,6 +163,7 @@ const CONTRACT_IDS = {
     DAOCDV2: "daoCDV2",
     DAOSTO2: "daoSTO2",
     DAODEGEN: "daoDEGEN",
+    DAOSAFU: "daoSAFU"
 }
 
 const ETF_STRATEGIES = [
@@ -162,7 +175,8 @@ const ETF_STRATEGIES = [
     CONTRACT_IDS.DAOMVF,
     CONTRACT_IDS.DAOCDV2,
     CONTRACT_IDS.DAOSTO2,
-    CONTRACT_IDS.DAODEGEN
+    CONTRACT_IDS.DAODEGEN,
+    CONTRACT_IDS.DAOSAFU
 ];
 
 const STRATEGY_TYPE = {
@@ -177,7 +191,8 @@ const STRATEGY_TYPE = {
     METAVERSE: "metaverse",
     CITADELV2: "citadelv2",
     DAOSTONKS: "daoStonks",
-    DAODEGEN: "daoDegen"
+    DAODEGEN: "daoDegen",
+    DAOSAFU: "daoSafu"
 }
 
 module.exports = {
@@ -211,6 +226,7 @@ module.exports = {
     DAOMVF_ASSET_DISTRIBUTION,
     DAOSTO2_ASSET_DISTRIBUTION,
     DAODEGEN_ASSET_DISTRIBUTION,
+    DAOSAFU_ASSET_DISTRIBUTION,
     
     TOKEN_COINGECKO_ID,
     ETF_STRATEGIES,

@@ -280,6 +280,9 @@ const getHistoricalAPY = async (startTime, contractAddress) => {
     case testContracts.farmer['daoDEGEN'].address:
     case mainContracts.farmer['daoDEGEN'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoDegenFarmer);
+    case testContracts.farmer['daoSAFU'].address:
+    case mainContracts.farmer['daoSAFU'].address:
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoSAFUFarmer);
       break;
   }
 

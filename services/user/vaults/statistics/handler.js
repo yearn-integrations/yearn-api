@@ -57,8 +57,8 @@ const getDepositedAmount = async(type, depositedShares, vaultContract, strategyC
     } else if (type === 'citadel' || type === 'elon' || type === 'cuban') {
       const pool = await vaultContract.methods.getAllPoolInUSD().call();
       const totalSupply = await vaultContract.methods.totalSupply().call(); 
-      depositedAmount = (depositedShares * pool) / totalSupply;
-      depositedAmount = new BigNumber(depositedAmount);
+      const pricePerFullShare = new BigNumber(pool).shiftedBy(12).dividedBy(totalSupply);
+      depositedAmount = new BigNumber(depositedShares).multipliedBy(pricePerFullShare);
     } else if (type === 'harvest') {
       depositedAmount = await strategyContract.methods.getCurrentBalance(userAddress).call();
       depositedAmount = new BigNumber(depositedAmount);

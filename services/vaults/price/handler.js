@@ -102,7 +102,6 @@ const getCitadelV2PricePerFullShare = async(contract) => {
   }
 }
 
-
 const getDAOStonksPricePerFullShare = async(contract) => {
   let pricePerFullShare = 0;
   try {
@@ -133,6 +132,17 @@ const getDaoDegenPricePerFullShare = async(contract, block) => {
   }
 }
 
+const getDAOSafuPricePerFullShare = async(contract) => {
+  let pricePerFullShare = 0;
+  try {
+    pricePerFullShare = await contract.methods.getPricePerFullShare().call();
+    pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
+  } catch (ex) {
+    console.error(`[price/handler] Error in getDAOSafuPricePerFullShare(): `, ex);
+  } finally {
+    return pricePerFullShare;
+  }
+}
 
 const getCurrentPrice = async () => {
   let contracts = contractHelper.getContractsFromDomain();
@@ -264,7 +274,7 @@ const getCurrentPrice = async () => {
           vaultPrice: 0,
           compoundExchangeRate: 0,
           citadelPrice: 0,
-          elonPrice: pricePerFullShare,
+          elonPrice: 0,
           cubanPrice: 0,
           faangPrice: 0,
           harvestPrice: 0,
@@ -276,6 +286,13 @@ const getCurrentPrice = async () => {
         const contract = await contractHelper.getBscContract(contracts.farmer[key].abi, contracts.farmer[key].address);
         const pricePerFullShare = await getDaoDegenPricePerFullShare(contract);
 
+        await db.add(key + '_price', {
+          price: pricePerFullShare
+        })
+      } else if (contracts.farmer[key].contractType === 'daoSafu')  {
+        const contract = await contractHelper.getBSCContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getDAOSafuPricePerFullShare(contract);
+      
         await db.add(key + '_price', {
           price: pricePerFullShare
         })
