@@ -204,7 +204,7 @@ const testContracts = {
     daoTAS : {
       address: '0xb72b89fa6d222973379cbd9c5c88768e3a050aed',
       abi: abi.daoTAVaultContract,
-      strategyAddress: '0x8a3cbce40a8f92a1f27b250f0c9061ceeae328be',
+      strategyAddress: '0xfd2f8db43bcd7817bc6cd83a3bbf18dbe8227e55',
       strategyABI: abi.daoTAStrategyContract,
       contractType: "daoTA",
       tokenId: ["tether", "usd-coin", "dai"],
@@ -467,13 +467,13 @@ const mainContracts = {
     //   network: constant.ETHEREUM,
     // }
     daoTAS : {
-      address: '0xb72b89fa6d222973379cbd9c5c88768e3a050aed',
+      address: '0xb72b89fa6d222973379cbd9c5c88768e3a050aed', // Update this.
       abi: abi.daoTAVaultContract,
-      strategyAddress: '0x8a3cbce40a8f92a1f27b250f0c9061ceeae328be',
+      strategyAddress: '0x8a3cbce40a8f92a1f27b250f0c9061ceeae328be', // Update this
       strategyABI: abi.daoTAStrategyContract,
       contractType: "daoTA",
       tokenId: ["tether", "usd-coin", "dai"],
-      inceptionBlock: 27400992,
+      inceptionBlock: 27400992, // Update this
       pnl:[
         {db: "lp", tokenId: ""},
         {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
