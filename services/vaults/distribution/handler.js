@@ -7,7 +7,6 @@ const constant = require("../../../utils/constant");
 const tokenDb = require("../../../models/token.model");
 
 let delayTime = 10000;
-let tokens = {};
 
 const getStrategyUnderlyingAssets = (strategyId) => {
     return constant[`${strategyId.toUpperCase()}_ASSET_DISTRIBUTION`];
@@ -47,6 +46,7 @@ const getStrategyAssetDistribution = async(strategyId) => {
             assetObject.oneDayPrice = asset.oneDayPrice || 0.00;
             assetObject.changePercentage = asset.changePercentage || 0.00;
             assetObject.timestamp = asset.timestamp;
+            assetObject.infoLink = `https://www.coingecko.com/en/coins/${assetObject.tokenId}`;
             
             // Representative color in chart
             let chartColor = constant.TOKEN_CHART_COLOR[assetSymbol];
@@ -82,13 +82,6 @@ const findAllStrategiesAssetDistribution = async() => {
 const saveAssetsPrice = async() => {
     try {
         const assets = await tokenDb.findAll();
-       
-        if(assets.length <= 0) {
-            throw "Assets not found in database!";
-        }
-        if(tokens === undefined) {
-            throw "Token current price not found!";
-        }
 
         const yesterdayDate = await dateTimeHelper.formatDate(
             dateTimeHelper.getStartOfDay(
@@ -97,14 +90,28 @@ const saveAssetsPrice = async() => {
         );
         const todayDate = new Date().getTime() // today date in timestamp
 
-        const tokenIds = assets.map(a => a.tokenId);
+        const tokens = constant.TOKEN_COINGECKO_ID;
+        const tokenIds = Object.values(tokens);
         const todayCoingeckoPrices = await tokenHelper.findTokenPrice(tokenIds, "usd");
 
-        for(let i = 0; i < assets.length; i++) {
-            const asset = assets[i];
+        for(const key in tokens) {
+            let asset;
+            const coingeckoId = tokens[key];
 
-            const todayPrice = todayCoingeckoPrices[asset.tokenId].usd;
+            const todayPrice = todayCoingeckoPrices[coingeckoId].usd;
             let yesterdayPrice;
+           
+            // Find asset object
+            if(assets.length > 0) {
+                asset = assets.find(a => a.tokenId === coingeckoId);
+            } 
+
+            // If asset not found and is new entry
+            if(asset === undefined) {
+                asset ={};
+                asset.tokenId = coingeckoId;
+                asset.symbol = key;
+            }
 
             // check if cronjob is run on same day, apply only on token cronjob which is not run for first time
             if(asset.timestamp !== undefined) {
@@ -113,7 +120,7 @@ const saveAssetsPrice = async() => {
                     ? asset.oneDayPrice // pick today's yesterday price
                     : asset.currentPrice; // yesterday's current price has become today's yesterday price
             }
-           
+
             if(yesterdayPrice === undefined || yesterdayPrice === null) {
                 await delay(delayTime);
                 yesterdayPrice =  await tokenHelper.getTokenHistoricalPriceInUSD(asset.tokenId, yesterdayDate);

@@ -89,11 +89,41 @@ const getMetaversePricePerFullShare = async(contract) => {
   }
 }
 
+const getCitadelV2PricePerFullShare = async(contract) => {
+  let pricePerFullShare = 0;
+  try {
+    pricePerFullShare = await contract.methods.getPricePerFullShare().call();
+    pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
+  } catch (ex) {
+    console.error(`[price/handler] Error in getCitadelV2PricePerFullShare(): `, ex);
+  } finally {
+    return pricePerFullShare;
+  }
+}
+
+
+const getDAOStonksPricePerFullShare = async(contract) => {
+  let pricePerFullShare = 0;
+  try {
+    const pool = await contract.methods.getAllPoolInUSD().call();
+    const totalSupply = await contract.methods.totalSupply().call();
+
+    if(parseInt(pool) === 0 || parseInt(totalSupply) === 0) {
+      pricePerFullShare = 0;
+    } else {
+      pricePerFullShare = pool / totalSupply;
+    }
+  } catch (ex) {
+    console.error(`[price/handler] Error in getDAOStonksPricePerFullShare(): `, ex);
+  } finally {
+    return pricePerFullShare;
+  }
+}
+
 const getCurrentPrice = async () => {
   let contracts = contractHelper.getContractsFromDomain();
 
   for (const key of Object.keys(contracts.farmer)) {
-    console.log(`Key ${key}`);
     try {
       if (contracts.farmer[key].contractType === 'citadel') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -108,7 +138,8 @@ const getCurrentPrice = async () => {
           faangPrice: 0,
           moneyPrinterPrice: 0,
           harvestPrice: 0,
-          metaversePrice: 0
+          metaversePrice: 0,
+          daoStonksPrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'elon') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -122,7 +153,9 @@ const getCurrentPrice = async () => {
           cubanPrice: 0,
           faangPrice: 0,
           harvestPrice: 0,
-          metaversePrice: 0
+          metaversePrice: 0,
+          citadelv2Price: 0,
+          daoStonksPrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'cuban') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -137,7 +170,9 @@ const getCurrentPrice = async () => {
           faangPrice: 0,
           moneyPrinterPrice: 0,
           harvestPrice: 0,
-          metaversePrice: 0
+          metaversePrice: 0,
+          citadelv2Price: 0,
+          daoStonksPrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'metaverse') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -152,7 +187,9 @@ const getCurrentPrice = async () => {
           faangPrice: 0,
           moneyPrinterPrice: 0,
           harvestPrice: 0,
-          metaversePrice: pricePerFullShare
+          metaversePrice: pricePerFullShare,
+          citadelv2Price: 0,
+          daoStonksPrice: 0
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'daoFaang') {
         const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -167,7 +204,27 @@ const getCurrentPrice = async () => {
           faangPrice: pricePerFullShare,
           moneyPrinterPrice: 0,
           harvestPrice: 0,
-          metaversePrice: 0
+          metaversePrice: 0,
+          citadelv2Price: 0,
+          daoStonksPrice: 0
+        }).catch((err) => console.log('err', err));
+      } else if (contracts.farmer[key].contractType === 'daoStonks') {
+        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getDAOStonksPricePerFullShare(contract);
+        console.log(`PPFS ${pricePerFullShare}`);
+        await db.add(key + '_price', {
+          earnPrice: 0,
+          vaultPrice: 0,
+          compoundExchangeRate: 0,
+          citadelPrice: 0,
+          elonPrice: 0,
+          cubanPrice: 0,
+          faangPrice: 0,
+          moneyPrinterPrice: 0,
+          harvestPrice: 0,
+          metaversePrice: 0,
+          daoStonksPrice: pricePerFullShare,
+          citadelv2Price: 0,
         }).catch((err) => console.log('err', err));
       } else if (contracts.farmer[key].contractType === 'moneyPrinter') {
         const contract = await contractHelper.getPolygonContract(contracts.farmer[key].abi, contracts.farmer[key].address);
@@ -181,7 +238,26 @@ const getCurrentPrice = async () => {
           faangPrice: 0,
           moneyPrinterPrice: pricePerFullShare,
           harvestPrice: 0,
-          metaversePrice: 0
+          metaversePrice: 0,
+          citadelv2Price: 0,
+          daoStonksPrice: 0
+        }).catch((err) => console.log('err', err));
+      } else if (contracts.farmer[key].contractType === "citadelv2") {
+        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getCitadelV2PricePerFullShare(contract);
+
+        await db.add(key + '_price', {
+          earnPrice: 0,
+          vaultPrice: 0,
+          compoundExchangeRate: 0,
+          citadelPrice: 0,
+          elonPrice: pricePerFullShare,
+          cubanPrice: 0,
+          faangPrice: 0,
+          harvestPrice: 0,
+          metaversePrice: 0,
+          citadelv2Price: pricePerFullShare,
+          daoStonksPrice: 0
         }).catch((err) => console.log('err', err));
       } 
     } catch (err) {
@@ -246,8 +322,14 @@ module.exports.handleHistoricialPrice = async (req, res) => {
         collection = db.daoMPTFarmer;
         break;
       case db.daoMVFFarmer:
-          collection = db.daoMVFFarmer;
-          break;
+        collection = db.daoMVFFarmer;
+        break;
+      case db.daoCDV2Farmer:
+        collection = db.daoCDV2Farmer;
+        break;
+      case db.daoSTO2Farmer:
+        collection = db.daoSTO2Farmer;
+        break;
       default:
         res.status(200).json({
           message: 'Invalid Farmer',

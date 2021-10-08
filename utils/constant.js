@@ -25,12 +25,13 @@ const TOKEN_COINGECKO_ID = {
     ADAI: "aave-dai",
     AUSDC: "aave-usdc",
     AUSDT: "aave-usdt",
-    // Remember to update on db
     SLP: "smooth-love-potion",
     ILV: "illuvium",
     GHST: "aavegotchi",
     REVV: "revv",
-    MVI: "metaverse-index"
+    MVI: "metaverse-index",
+    MMSFT: "mirrored-microsoft", // Remember to add this.
+    MTWTR: "mirrored-twitter", // Remember to add this.
 }
 
 const TOKEN_CHART_COLOR = {
@@ -110,13 +111,34 @@ const DAOMVF_ASSET_DISTRIBUTION = {
     MVI: { percent: 25.0, tokenId: TOKEN_COINGECKO_ID.MVI},
 }
 
+const DAOCDV2_ASSET_DISTRIBUTION = {
+    ETH: { percent: 35, tokenId: TOKEN_COINGECKO_ID.ETH }, 
+    HBTC: { percent: 30, tokenId: TOKEN_COINGECKO_ID.HBTC },
+    WBTC: { percent: 15, tokenId: TOKEN_COINGECKO_ID.WBTC }, 
+    DPI: { percent: 15, tokenId: TOKEN_COINGECKO_ID.DPI }, 
+    DAI: { percent: 5, tokenId: TOKEN_COINGECKO_ID.DAI },
+};
+
+// Remember to update this according to actual propotion
+const DAOSTO2_ASSET_DISTRIBUTION = {
+    MMSFT: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MMSFT },
+    MTWTR: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MTWTR},
+    MTSLA: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MTSLA },
+    MGOOGL: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MGOOGL },
+    MAMZN: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MAMZN },
+    MAAPL: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MAAPL },
+    MNFLX: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MNFLX},
+};
+
 const CONTRACT_IDS = {
     DAOCDV: "daoCDV",
     DAOELO: "daoELO",
     DAOCUB: "daoCUB",
     DAOSTO: "daoSTO", 
     DAOMPT: "daoMPT",
-    DAOMVF: "daoMVF"
+    DAOMVF: "daoMVF",
+    DAOCDV2: "daoCDV2",
+    DAOSTO2: "daoSTO2"
 }
 
 const ETF_STRATEGIES = [
@@ -125,7 +147,9 @@ const ETF_STRATEGIES = [
     CONTRACT_IDS.DAOCUB,
     CONTRACT_IDS.DAOELO,
     CONTRACT_IDS.DAOMPT,
-    CONTRACT_IDS.DAOMVF
+    CONTRACT_IDS.DAOMVF,
+    CONTRACT_IDS.DAOCDV2,
+    CONTRACT_IDS.DAOSTO2
 ];
 
 const STRATEGY_TYPE = {
@@ -137,7 +161,9 @@ const STRATEGY_TYPE = {
     FAANG: "daoFaang",
     HARVEST: "harvest",
     MONEYPRINTER: "moneyPrinter",
-    METAVERSE: "metaverse"
+    METAVERSE: "metaverse",
+    CITADELV2: "citadelv2",
+    DAOSTONKS: "daoStonks",
 }
 
 module.exports = {
@@ -162,11 +188,13 @@ module.exports = {
     // DAOSTO: "daoSTO",
 
     DAOCDV_ASSET_DISTRIBUTION,
+    DAOCDV2_ASSET_DISTRIBUTION,
     DAOSTO_ASSET_DISTRIBUTION,
     DAOCUB_ASSET_DISTRIBUTION,
     DAOELO_ASSET_DISTRIBUTION,
     DAOMPT_ASSET_DISTRIBUTION,
     DAOMVF_ASSET_DISTRIBUTION,
+    DAOSTO2_ASSET_DISTRIBUTION,
     
     TOKEN_COINGECKO_ID,
     ETF_STRATEGIES,

@@ -42,5 +42,7 @@ module.exports = {
   hfDaiFarmer: 'hfDAI_price',
   hfUsdcFarmer: 'hfUSDC_price',
   hfUsdtFarmer: 'hfUSDT_price', 
-  daoMVFFarmer: 'daoMVF_price' 
+  daoMVFFarmer: 'daoMVF_price',
+  daoCDV2Farmer: 'daoCDV2_price',
+  daoSTO2Farmer: 'daoSTO2_price',
 };
