@@ -46,6 +46,7 @@ const getStrategyAssetDistribution = async(strategyId) => {
             assetObject.oneDayPrice = asset.oneDayPrice || 0.00;
             assetObject.changePercentage = asset.changePercentage || 0.00;
             assetObject.timestamp = asset.timestamp;
+            assetObject.infoLink = `https://www.coingecko.com/en/coins/${assetObject.tokenId}`;
             
             // Representative color in chart
             let chartColor = constant.TOKEN_CHART_COLOR[assetSymbol];
