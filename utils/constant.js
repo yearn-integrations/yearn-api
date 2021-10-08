@@ -131,8 +131,14 @@ const DAOSTO2_ASSET_DISTRIBUTION = {
 
 // Remember to update asset distribution
 const DAOTAS_ASSET_DISTRIBUTION = {
-    ETH: { percent: 35, tokenId: TOKEN_COINGECKO_ID.ETH }, // Remember to update this
-    HBTC: { percent: 30, tokenId: TOKEN_COINGECKO_ID.HBTC }, // Remember to update this
+   BULLISH: {
+        BTC: { percent: 50, tokenId: TOKEN_COINGECKO_ID.BTC },
+        ETH: { percent: 50,  tokenId: TOKEN_COINGECKO_ID.ETH },
+   },
+   BEARISH: {
+        USDC: { percent: 50, tokenId: TOKEN_COINGECKO_ID.USDC },
+        ETH: { percent: 50,  tokenId: TOKEN_COINGECKO_ID.ETH },
+   }
 }
 
 const CONTRACT_IDS = {

@@ -1,6 +1,7 @@
 const delay = require("delay");
 
 const tokenHelper = require("../../../utils/token");
+const contractHelper = require("../../../utils/contract");
 const dateTimeHelper = require("../../../utils/dateTime");
 
 const constant = require("../../../utils/constant");
@@ -8,8 +9,38 @@ const tokenDb = require("../../../models/token.model");
 
 let delayTime = 10000;
 
-const getStrategyUnderlyingAssets = (strategyId) => {
+const getStrategyUnderlyingAssets = async (strategyId) => {
+    if(strategyId === "daoTAS") {
+        return await getUnderlyingAssetsForTA();
+    }
     return constant[`${strategyId.toUpperCase()}_ASSET_DISTRIBUTION`];
+}
+
+// Special case for TA
+const getUnderlyingAssetsForTA = async () => {
+    let result = {};
+
+    try {
+        const contracts = contractHelper.getContractsFromDomain();
+        const daoTA = contracts.farmer["daoTAS"];
+    
+        if(!daoTA) {
+            throw(`Not able to find DAO TA info.`);
+        }
+
+        // Create strategy contract
+        const contract = await contractHelper.getEthereumContract(daoTA.strategyABI, daoTA.strategyAddress);
+        const mode = await contract.methods.mode().call();
+        
+        const assetDistribution = constant.DAOTAS_ASSET_DISTRIBUTION;
+        const modeDesc = (mode === true) ? `BULLISH`: `BEARISH`;
+        
+        result = assetDistribution[modeDesc];
+    } catch (err) {
+        console.error(`Error in getUnderlyingAssetsForTA()`, err);
+    } finally {
+        return result;
+    }
 }
 
 const calculateChangePercentage = (oldPrice, newPrice) => {
@@ -27,7 +58,7 @@ const getStrategyAssetDistribution = async(strategyId) => {
         }
 
         const result = [];
-        const strategyUnderlyingAssets = getStrategyUnderlyingAssets(strategyId);
+        const strategyUnderlyingAssets = await getStrategyUnderlyingAssets(strategyId);
         if(strategyUnderlyingAssets === undefined) {
             return result;
         }
