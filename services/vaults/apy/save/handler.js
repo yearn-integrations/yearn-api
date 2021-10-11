@@ -170,7 +170,6 @@ const getCitadelV2PricePerFullShare = async(contract, block, inceptionBlockNumbe
   }
 }
 
-
 const getDaoStonksPricePerFullShare = async(contract, block, inceptionBlockNumber) => {
   const contractDidntExist = block < inceptionBlockNumber;
   const inceptionBlock = block === inceptionBlockNumber;
