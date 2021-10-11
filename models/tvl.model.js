@@ -63,5 +63,6 @@ module.exports = {
   daoMPTFarmer: "daoMPT_tvl",
   daoMVFFarmer: "daoMVF_tvl",
   daoCDV2Farmer: "daoCDV2_tvl",
-  daoSAFUFarmer: "daoSAFU_tvl"
+  daoSAFUFarmer: "daoSAFU_tvl",
+  daoTASFarmer: "daoTAS_tvl",
 };

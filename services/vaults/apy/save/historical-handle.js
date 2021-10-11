@@ -19,7 +19,8 @@ const {
   getFaangPricePerFullShare,
   getMetaversePricePerFullShare,
   getCitadelV2PricePerFullShare,
-  getDaoStonksPricePerFullShare
+  getDaoStonksPricePerFullShare,
+  getTAPricePerFullShare
 } = require("./handler");
 
 let currentBlockNbr;
@@ -207,7 +208,6 @@ const getApyForVault = async (vault, contracts) => {
       citadelv2Apy: apy
     }
   } else if (vault.isDaoStonks) {
-      // Metaverse Vault
       const contract = await contractHelper.getEthereumContract(abi, address);
   
       let pricePerFullShareCurrent = await getDaoStonksPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
@@ -240,7 +240,27 @@ const getApyForVault = async (vault, contracts) => {
         metaverseApy: 0,
         daoStonksApy: apy
       }
-    } 
+  } else if (vault.isTA) {
+    const contract = await contractHelper.getEthereumContract(abi, address);
+  
+    let pricePerFullShareCurrent = await getTAPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+    let pricePerFullShareOneDayAgo = await getTAPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
+    pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
+
+    // APY Calculation
+    const n = 365 / 2; // Assume 2 days to trigger invest function
+    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+    let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+    if(apy === Infinity) {
+      apy = 0;
+    }
+
+    return {
+      apy: apy
+    }
+  }
 };
 
 const getHistoricalAPY = async (startTime, contractAddress) => {
@@ -270,9 +290,14 @@ const getHistoricalAPY = async (startTime, contractAddress) => {
     case mainContracts.farmer['daoMVF'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoMVFFarmer);
       break;
+    case testContracts.farmer['daoTAS'].address: 
+    case mainContracts.farmer['daoTAS'].address:    
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoTASFarmer);
+      break;
     case testContracts.farmer['daoCDV2'].address:
     case mainContracts.farmer['daoCDV2'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoCDV2Farmer);
+      break;
     case testContracts.farmer['daoSTO2'].address:
     case mainContracts.farmer['daoSTO2'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoSTO2Farmer);
@@ -285,7 +310,6 @@ const getHistoricalAPY = async (startTime, contractAddress) => {
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoSAFUFarmer);
       break;
   }
-
   return result;
 }
 

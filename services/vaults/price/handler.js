@@ -144,6 +144,24 @@ const getDAOSafuPricePerFullShare = async(contract) => {
   }
 }
 
+const getTAPricePerFullShare = async(contract) => {
+  let pricePerFullShare = 0;
+  try {
+    const pool = await contract.methods.getAllPoolInUSD().call();
+    const totalSupply = await contract.methods.totalSupply().call();
+
+    if(parseInt(pool) === 0 || parseInt(totalSupply) === 0) {
+      pricePerFullShare = 0;
+    } else {
+      pricePerFullShare = pool / totalSupply;
+    }
+  } catch (ex) {
+    console.error(`[price/handler] Error in getTAPricePerFullShare(): `, ex);
+  } finally {
+    return pricePerFullShare;
+  }
+}
+
 const getCurrentPrice = async () => {
   let contracts = contractHelper.getContractsFromDomain();
 
@@ -296,7 +314,14 @@ const getCurrentPrice = async () => {
         await db.add(key + '_price', {
           price: pricePerFullShare
         })
-      }
+      } else if (contracts.farmer[key].contractType === "daoTA") {
+        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
+        const pricePerFullShare = await getTAPricePerFullShare(contract);
+      
+        await db.add(key + '_price', {
+          price: pricePerFullShare
+        }).catch((err) => console.log('err', err));
+      } 
     } catch (err) {
       await db.add(key + '_price', {
         price: 0

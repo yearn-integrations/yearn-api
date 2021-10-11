@@ -58,6 +58,7 @@ module.exports = {
   daoCDV2Farmer: 'daoCDV2_historical-apy',
   daoDegenFarmer: 'daoDEGEN_historical-apy',
   daoSAFUFarmer: 'daoSAFU_historical-apy',
+  daoTASFarmer: 'daoTAS_historical-apy',
   hfDaiFarmer: 'hfDAI_historical-apy',
   hfUsdcFarmer: 'hfUSDC_historical-apy',
   hfUsdtFarmer: 'hfUSDT_historical-apy',  
