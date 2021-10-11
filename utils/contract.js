@@ -313,4 +313,22 @@ module.exports.balanceOf = async(contract, address) => {
     }
 }
 
+module.exports.checkIsValidStrategyId = (strategyId) => {
+    let result = false;
+    try { 
+        if(strategyId === null || strategyId === "" || strategyId === undefined) {
+            throw(`Missing strategy ID`);
+        }
+
+        const contracts = this.getContractsFromDomain();
+        const strategies = Object.keys(contracts.farmer);
+
+        result = strategies.includes(strategyId);
+    } catch(err) {
+        console.error(`Error in checkIsValidStrategyId(): `, err);
+    } finally {
+        return result;
+    }
+}
+
 

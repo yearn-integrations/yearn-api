@@ -14,6 +14,28 @@ let bscBlockNumber = {
     oneMonth: 0,
 }
 
+const getDaoDegenPricePerFullShare = async(contract, block, inceptionBlockNumber) => {
+    const contractDidntExist = block < inceptionBlockNumber;
+    const inceptionBlock = block === inceptionBlockNumber;
+  
+    if (inceptionBlock) {
+      return 1e18;
+    }
+    if (contractDidntExist) {
+      return 0;
+    }
+  
+    let pricePerFullShare = 0;
+    try {
+      pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
+      pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
+    } catch (err) {
+      console.error(`[apy/save/handler]Error in getDaoDegenPricePerFullShare(): `, err);
+    } finally {
+      return pricePerFullShare;
+    }
+}
+
 const getDaoSafuPricePerFullShare = async(contract, block, inceptionBlockNumber) => {
     const contractDidntExist = block < inceptionBlockNumber;
     const inceptionBlock = block === inceptionBlockNumber;
@@ -40,8 +62,25 @@ const getApyForVault = async (vault) => {
     const { lastMeasurement: inceptionBlockNumber } = vault;
     const contracts = contractHelper.getContractsFromDomain();
 
-    // DAO Safu
-    if(vault.isDaoSafu) {
+    // DAO Degen
+    if(vault.isDaoDegen) {
+        const contractInfo = contracts.farmer["daoDEGEN"];
+        const contract = await contractHelper.getBSCContract(contractInfo.abi, contractInfo.address);
+
+        let pricePerFullShareCurrent = await getDaoDegenPricePerFullShare(contract, bscBlockNumber.current, inceptionBlockNumber);
+        let pricePerFullShareOneDayAgo = await getDaoDegenPricePerFullShare(contract, bscBlockNumber.oneDay, inceptionBlockNumber);
+
+        pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
+        pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
+
+        const n = 2; 
+        const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+        let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+        return {
+            apy: apy
+        }
+    } else if(vault.isDaoSafu) {
         const contractInfo = contracts.farmer["daoSAFU"];
         const contract = await contractHelper.getBSCContract(contractInfo.abi, contractInfo.address);
 
@@ -56,17 +95,7 @@ const getApyForVault = async (vault) => {
         let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
 
         return {
-            apyInceptionSample: 0,
-            apyOneDaySample: 0,
-            apyThreeDaySample: 0,
-            apyOneWeekSample: 0,
-            apyOneMonthSample: 0,
-            apyLoanscan: 0,
-            compoundApy: 0,
-            citadelApy: 0,
-            elonApy: 0,
-            faangApy: 0,
-            daoSafuApy: apy
+            apy: apy
         }
     }
 }
@@ -125,6 +154,7 @@ const saveHandler = async() => {
 }
 
 module.exports = {
-    getDaoSafuPricePerFullShare,
+    getDaoDegenPricePerFullShare: getDaoDegenPricePerFullShare,
+    getDaoSafuPricePerFullShare: getDaoStonksPricePerFullShare,
     saveHandler
 };

@@ -78,7 +78,7 @@ const getDepositedAmount = async(type, depositedShares, vaultContract, strategyC
     
       depositedAmount = (depositedShares * poolInUSD) / totalSupply;
       depositedAmount = new BigNumber(depositedAmount);
-    } else if (type === 'metaverse' || type === 'daoStonks' || type === 'citadelv2' || type === "daoSafu") {
+    } else if (type === 'metaverse' || type === 'daoStonks' || type === 'citadelv2' || type === "daoSafu" || type === "daoTA" || type === "daoDegen") {
       const totalSupply = await vaultContract.methods.totalSupply().call();
       const poolInUSD = await vaultContract.methods.getAllPoolInUSD().call(); 
       const pricePerFullShare = poolInUSD / totalSupply;

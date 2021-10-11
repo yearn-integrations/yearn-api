@@ -30,8 +30,12 @@ const TOKEN_COINGECKO_ID = {
     GHST: "aavegotchi",
     REVV: "revv",
     MVI: "metaverse-index",
-    MMSFT: "mirrored-microsoft",
-    MTWTR: "mirrored-twitter", 
+    MMSFT: "mirrored-microsoft", // Remember to add this.
+    MTWTR: "mirrored-twitter", // Remember to add this.
+    BUNNY: "pancake-bunny",
+    AUTO: "auto",
+    EPS: "ellipsis",
+    XVS: "venus",
     BNB: "binancecoin",
     XVS: "venus",
     CAKE: "pancakeswap-token",
@@ -134,6 +138,13 @@ const DAOSTO2_ASSET_DISTRIBUTION = {
     MNFLX: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MNFLX},
 };
 
+const DAODEGEN_ASSET_DISTRIBUTION = {
+    BUNNY: { percent: 25, tokenId: TOKEN_COINGECKO_ID.BUNNY},
+    AUTO: { percent: 25, tokenId: TOKEN_COINGECKO_ID.AUTO},
+    EPS: { percent: 25, tokenId: TOKEN_COINGECKO_ID.EPS},
+    XVS: { percent: 25, tokenId: TOKEN_COINGECKO_ID.XVS}
+};
+
 const DAOSAFU_ASSET_DISTRIBUTION = {
     BTC: { percent: 45, tokenId: TOKEN_COINGECKO_ID.BTC },
     BNB: { percent: 35, tokenId: TOKEN_COINGECKO_ID.BNB },
@@ -151,6 +162,7 @@ const CONTRACT_IDS = {
     DAOMVF: "daoMVF",
     DAOCDV2: "daoCDV2",
     DAOSTO2: "daoSTO2",
+    DAODEGEN: "daoDEGEN",
     DAOSAFU: "daoSAFU"
 }
 
@@ -163,6 +175,7 @@ const ETF_STRATEGIES = [
     CONTRACT_IDS.DAOMVF,
     CONTRACT_IDS.DAOCDV2,
     CONTRACT_IDS.DAOSTO2,
+    CONTRACT_IDS.DAODEGEN,
     CONTRACT_IDS.DAOSAFU
 ];
 
@@ -178,6 +191,7 @@ const STRATEGY_TYPE = {
     METAVERSE: "metaverse",
     CITADELV2: "citadelv2",
     DAOSTONKS: "daoStonks",
+    DAODEGEN: "daoDegen",
     DAOSAFU: "daoSafu"
 }
 
@@ -211,6 +225,7 @@ module.exports = {
     DAOMPT_ASSET_DISTRIBUTION,
     DAOMVF_ASSET_DISTRIBUTION,
     DAOSTO2_ASSET_DISTRIBUTION,
+    DAODEGEN_ASSET_DISTRIBUTION,
     DAOSAFU_ASSET_DISTRIBUTION,
     
     TOKEN_COINGECKO_ID,

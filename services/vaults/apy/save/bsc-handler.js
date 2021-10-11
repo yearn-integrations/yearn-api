@@ -5,7 +5,11 @@ const delay = require("delay");
 const moment = require("moment");
 const contractHelper = require("../../../../utils/contract");
 const apyDb = require('../../../../models/apy.model');
-const { getDaoSafuPricePerFullShare } = require("./historical-handle-bsc");
+const { 
+    getDaoDegenPricePerFullShare, 
+    getDaoSafuPricePerFullShare} 
+= require("./historical-handle-bsc");
+
 
 let bscBlockNumber = {
     current: 0,
@@ -17,8 +21,25 @@ const getApyForVault = async (vault) => {
     
     const contracts = await contractHelper.getContractsFromDomain();
 
-    // DAO Safu
-    if(vault.isDaoSafu) {
+    // DAO Degen
+    if(vault.isDaoDegen) {
+        const contractInfo = contracts.farmer["daoDEGEN"];
+        const contract = await contractHelper.getBSCContract(contractInfo.abi, contractInfo.address);
+
+        let pricePerFullShareCurrent = await getDaoDegenPricePerFullShare(contract, bscBlockNumber.current, inceptionBlockNumber);
+        let pricePerFullShareOneDayAgo = await getDaoDegenPricePerFullShare(contract, bscBlockNumber.oneDay, inceptionBlockNumber);
+
+        pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
+        pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
+
+        const n = 2;
+        const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+        let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+
+        return {
+            apy: apy
+        }
+    } else if(vault.isDaoSafu) {
         const contractInfo = contracts.farmer["daoSAFU"];
         const contract = await contractHelper.getBSCContract(contractInfo.abi, contractInfo.address);
 
@@ -32,17 +53,7 @@ const getApyForVault = async (vault) => {
         let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
         
         return {
-            apyInceptionSample: 0,
-            apyOneDaySample: 0,
-            apyThreeDaySample: 0,
-            apyOneWeekSample: 0,
-            apyOneMonthSample: 0,
-            apyLoanscan: 0,
-            compoundApy: 0,
-            citadelApy: 0,
-            elonApy: 0,
-            faangApy: 0,
-            daoSafuApy: apy
+            apy: apy
         }
     }
 }
