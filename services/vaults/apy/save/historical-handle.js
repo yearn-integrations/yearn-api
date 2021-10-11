@@ -207,40 +207,40 @@ const getApyForVault = async (vault, contracts) => {
       citadelv2Apy: apy
     }
   } else if (vault.isDaoStonks) {
-    // Metaverse Vault
-    const contract = await contractHelper.getEthereumContract(abi, address);
-
-    let pricePerFullShareCurrent = await getDaoStonksPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    let pricePerFullShareOneDayAgo = await getDaoStonksPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
-    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
-    pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
-
-    // APY Calculation
-    const n = 365 / 2; // Assume 2 days to trigger invest function
-    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-    let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
-
-    if(apy === Infinity) {
-      apy = 0;
-    }
-
-    return {
-      apyInceptionSample: 0,
-      apyOneDaySample: 0,
-      apyThreeDaySample: 0,
-      apyOneWeekSample: 0,
-      apyOneMonthSample: 0,
-      apyLoanscan: 0,
-      compoundApy: 0,
-      citadelApy: 0,
-      elonApy: 0,
-      cubanApy: apy,
-      faangApy: 0,
-      moneyPrinterApy: 0,
-      metaverseApy: 0,
-      daoStonksApy: apy
-    }
-  }
+      // Metaverse Vault
+      const contract = await contractHelper.getEthereumContract(abi, address);
+  
+      let pricePerFullShareCurrent = await getDaoStonksPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
+      let pricePerFullShareOneDayAgo = await getDaoStonksPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
+      pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
+      pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
+  
+      // APY Calculation
+      const n = 365 / 2; // Assume 2 days to trigger invest function
+      const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
+      let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+  
+      if(apy === Infinity) {
+        apy = 0;
+      }
+  
+      return {
+        apyInceptionSample: 0,
+        apyOneDaySample: 0,
+        apyThreeDaySample: 0,
+        apyOneWeekSample: 0,
+        apyOneMonthSample: 0,
+        apyLoanscan: 0,
+        compoundApy: 0,
+        citadelApy: 0,
+        elonApy: 0,
+        cubanApy: apy,
+        faangApy: 0,
+        moneyPrinterApy: 0,
+        metaverseApy: 0,
+        daoStonksApy: apy
+      }
+    } 
 };
 
 const getHistoricalAPY = async (startTime, contractAddress) => {

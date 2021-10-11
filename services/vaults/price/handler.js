@@ -271,7 +271,9 @@ const getCurrentPrice = async () => {
         faangPrice: 0,
         moneyPrinterPrice: 0,
         harvestPrice: "0",
-        metaversePrice: 0
+        metaversePrice: 0,
+        citadelv2Price: 0,
+        daoStonksPrice: 0,
       }).catch((err) => console.log('err', err));
     }
   }

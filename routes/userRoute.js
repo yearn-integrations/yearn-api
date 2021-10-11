@@ -4,6 +4,7 @@ const router = express.Router();
 const userStatistics = require("../services/user/vaults/statistics/handler");
 const userTransactions = require("../services/user/vaults/transactions/handler");
 const reimburse = require("../services/user/reimburse/handler");
+const airdrop = require("../services/user/airdrop/handler");
 
 // Transaction Statistic for each strategy by user wallet 
 router.get("/:userAddress/:network/vaults/statistics", (req, res) => {
@@ -40,5 +41,14 @@ router.post("/reimburse-address/update", (req, res) => {
         console.error(`Error while getting /reimburse-address/update: `, err);
     }
 })
+
+// Airdrop
+router.get("/airdrop/:airdropAddress/:address",(req, res) => {
+    try{
+        airdrop.getAirdropAddress(req, res);
+    } catch(err) {
+        console.error(`Error while getting /:airdropAddress/:address`, err);
+    }
+});
 
 module.exports = router;
