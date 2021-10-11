@@ -155,6 +155,6 @@ const saveHandler = async() => {
 
 module.exports = {
     getDaoDegenPricePerFullShare: getDaoDegenPricePerFullShare,
-    getDaoSafuPricePerFullShare: getDaoStonksPricePerFullShare,
+    getDaoSafuPricePerFullShare: getDaoSafuPricePerFullShare,
     saveHandler
 };
