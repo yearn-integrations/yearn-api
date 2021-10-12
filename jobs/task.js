@@ -334,7 +334,7 @@ const saveTokenPriceHandler = async() => {
 const saveTotalDepositedAmount = async() => {
   await saveTotalDepositedAmountHandler();
   cron.schedule(
-    "0 0 * * *",
+    "58 * * * *",
     async () => {
       await saveTotalDepositedAmountHandler();
     },

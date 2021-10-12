@@ -1,39 +1,42 @@
 const mongo = require("../config/db");
 const collection = "total-deposited-amount";
 
-const findAll = async() => {
+const getCollectionName = (symbol) => {
+  return `${symbol}_total_deposited_amount`;
+}
+
+const findAll = async(symbol) => {
     const db = mongo.getDB();
-    return await db.collection(collection).find({}).toArray();
+    const collectionName = getCollectionName(symbol);
+    return await db.collection(collectionName).find({}).toArray();
 }
 
 const getStrategyTotalDepositedAmount = async(symbol) => {
     const db = mongo.getDB();
-    return await db.collection(collection).findOne({
+    const collectionName = getCollectionName(symbol);
+    return await db.collection(collectionName).findOne({
         symbol: symbol
     })
 }
 
 const add = async (params) => {
     const db = mongo.getDB();
-    
-    const result = await getStrategyTotalDepositedAmount(params.symbol);
-    
-    if (result != null) {
-      return await db.collection(collection).updateOne({
-        symbol: params.symbol
-      },
-      {
-        $set: {
-          ...params
-        }
-      });
-    } else {
-      return await db.collection(collection).insertOne(params);
-    }
+    const collectionName = getCollectionName(params.symbol);
+    return await db.collection(collectionName).insertOne(params);
+}
+
+const getLatestTotalAmountDepositInfo = async(symbol) => {
+  const db = mongo.getDB();
+  const collectionName = getCollectionName(symbol);
+
+  const latestData = await db.collection(collectionName).find({}).sort({ timestamp: -1 }).limit(1).toArray();
+
+  return latestData;
 }
 
 module.exports = {
     findAll,
     getStrategyTotalDepositedAmount,
-    add
+    add,
+    getLatestTotalAmountDepositInfo
 };

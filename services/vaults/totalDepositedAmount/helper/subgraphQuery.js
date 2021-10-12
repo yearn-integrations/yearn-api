@@ -2,7 +2,7 @@ const fetch = require("node-fetch");
 const subgraphUrl = process.env.SUBGRAPH_ENDPOINT;
 
 module.exports.getLatestDistributeLPTokenEvent = async(strategyAddress) => {
-    let blockNumber = 0;
+    let events = [];
 
     try {
         if(!strategyAddress || strategyAddress === undefined || strategyAddress === "") {
@@ -11,7 +11,7 @@ module.exports.getLatestDistributeLPTokenEvent = async(strategyAddress) => {
 
         const query = `
         {
-            distributeLPTokens(where: { farmer:"${strategyAddress}" } first: 1, orderBy: blockNumber, orderDirection: desc) {
+            distributeLPTokens(where: { farmer:"${strategyAddress}" } , orderBy: blockNumber, orderDirection: desc) {
                 blockNumber
             }
         }
@@ -25,30 +25,37 @@ module.exports.getLatestDistributeLPTokenEvent = async(strategyAddress) => {
         const latestDistributeLPTokenEvent = responseJson.data;
         
         if(latestDistributeLPTokenEvent !== undefined && latestDistributeLPTokenEvent.distributeLPTokens) {
-            blockNumber = latestDistributeLPTokenEvent.distributeLPTokens[0].blockNumber;
+            events = latestDistributeLPTokenEvent.distributeLPTokens;
         }
     } catch (err) {
         console.error(`Error in getLatestDistributeLPTokenEvent(): `, err);
     } finally { 
-        return blockNumber;
+        return events;
     }
 }
 
 
-module.exports.getDepositEvents = async(blockNumber, strategyAddress) => {
+module.exports.getDepositEvents = async(startBlock, endBlock, strategyAddress) => {
     let result = [];
 
     try {
-        if(!blockNumber || blockNumber === undefined || blockNumber === "") {
-            throw(`Missing block number`);
+        if(!startBlock || startBlock === undefined || startBlock === "") {
+            throw(`Missing start block`);
         }
         if(!strategyAddress || strategyAddress === undefined || strategyAddress === "") {
             throw(`Missing strategy address`);
         }
 
+        const condition = `
+            farmer: "${strategyAddress}",
+            blockNumber_gt: ${startBlock}
+            ${ endBlock === undefined ? "" : ", blockNumber_lte: " + endBlock}
+        `;
+
+
         const query = `
             {
-                transactions(where: { blockNumber_gt: ${blockNumber}, farmer:"${strategyAddress}" }) {
+                transactions(where: { ${condition} }) {
                     deposits {
                         amountInUSD
                         amountAfterFee
@@ -70,7 +77,9 @@ module.exports.getDepositEvents = async(blockNumber, strategyAddress) => {
         });
         
         const responseJson = await response.json();
-        result = responseJson.data.transactions;
+        result = responseJson.data && responseJson.data.transactions
+            ? responseJson.data.transactions
+            : [];
     } catch(err) {
         console.error(`Error in getDepositEvents(): `, err);
     } finally {
