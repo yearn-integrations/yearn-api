@@ -39,8 +39,8 @@ const saveTotalDepositedAmount = async() => {
             const strategyAddress = contracts.farmer[etfStrategies[i]].address;
 
             // Block number for latest Distribute LP Token event
-            // const blockNumber = await getLatestDistributeLPTokenEvent(strategyAddress);
-            const blockNumber = 27366061; // For Testing purpose
+            const blockNumber = await getLatestDistributeLPTokenEvent(strategyAddress);
+            // const blockNumber = 27366061; // For Testing purpose
             if(blockNumber === undefined || parseFloat(blockNumber)  === 0) {
                 await saveToDb(etfStrategies[i], 0, 0);
                 continue;
