@@ -20,11 +20,12 @@ const getStrategyTotalDepositAmountInfo = async(strategyId) => {
     }
 }
 
-const saveToDb = async(strategyId, blockNumber, totalDepositedAmount) => { 
+const saveToDb = async(strategyId, blockNumber, blockTimestamp, totalDepositedAmount) => { 
     const saveObjects = {
         timestamp: new Date().getTime(),
         totalDepositedAmount: totalDepositedAmount,
         blockNumber: blockNumber,
+        blockTimestamp: blockTimestamp,
         symbol: strategyId
     };
     await db.add(saveObjects);
@@ -49,27 +50,29 @@ const saveTotalDepositedAmount = async() => {
             const datas = await db.findAll(strategyId);
         
             // Block number for latest Distribute LP Token event
-            let blockNumbers = await getLatestDistributeLPTokenEvent(strategyAddress);
-            blockNumbers = blockNumbers.map(element => parseFloat(element.blockNumber))
+            let blockNumbersRaw = await getLatestDistributeLPTokenEvent(strategyAddress);
+            blockNumbers = blockNumbersRaw.map(element => parseFloat(element.blockNumber))
                 .filter((element, index, self) => index === self.indexOf(element))
                 .sort();
             if(blockNumbers === undefined || blockNumbers.length < 0) {
-                await saveToDb(strategyId, 0, 0);
+                await saveToDb(strategyId, 0, 0, 0);
                 continue;
             }
-
+           
             let transactions = [];
             if(datas.length > 0) { 
                 const latestDistributeTokenBlockNumber = blockNumbers[blockNumbers.length - 1];
                 transactions = await getDepositEvents(latestDistributeTokenBlockNumber, undefined, strategyAddress);
 
                 if(transactions.length <= 0) {
-                    await saveToDb(etfStrategies[i], 0, 0);
+                    await saveToDb(strategyId, 0, 0, 0);
                     break;
                 }
 
                 totalDepositedAmount = calculateTotalDepositedAmount(transactions);
-                await saveToDb(strategyId, latestDistributeTokenBlockNumber, totalDepositedAmount);
+                let blockTimestamp = (blockNumbersRaw.find(b => parseFloat(b.blockNumber) === parseFloat(latestDistributeTokenBlockNumber))).timestamp;
+            
+                await saveToDb(strategyId, latestDistributeTokenBlockNumber, blockTimestamp, totalDepositedAmount);
             } else {
                 // For first time sync
                 // Add strategy start block
@@ -85,8 +88,14 @@ const saveTotalDepositedAmount = async() => {
                         continue;
                     }
 
+                    let blockInfo = blockNumbersRaw.find(b => parseFloat(b.blockNumber) === parseFloat(startBlock));
+                    if(blockInfo === undefined) {
+                        blockInfo = await contractHelper.getEthereumBlockInfo(startBlock);
+                    } 
+                    const blockTimestamp = parseFloat(blockInfo.timestamp);
+
                     totalDepositedAmount = calculateTotalDepositedAmount(transactions);
-                    await saveToDb(strategyId, startBlock, totalDepositedAmount);
+                    await saveToDb(strategyId, startBlock, blockTimestamp, totalDepositedAmount);
                 }
             }
         }

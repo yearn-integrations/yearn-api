@@ -12,7 +12,8 @@ module.exports.getLatestDistributeLPTokenEvent = async(strategyAddress) => {
         const query = `
         {
             distributeLPTokens(where: { farmer:"${strategyAddress}" } , orderBy: blockNumber, orderDirection: desc) {
-                blockNumber
+                blockNumber,
+                timestamp
             }
         }
         `;
