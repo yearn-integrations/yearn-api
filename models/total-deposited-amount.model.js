@@ -34,9 +34,21 @@ const getLatestTotalAmountDepositInfo = async(symbol) => {
   return latestData;
 }
 
+const getInfoByClosestLessThanBlockNumber = async(symbol, blockTimestamp) => {
+    const db = mongo.getDB();
+    const collectionName = getCollectionName(symbol);
+    const data = await db.collection(collectionName).find({
+        blockTimestamp: {
+            $lte: blockTimestamp
+        }
+    }).sort({timestamp: -1 }).limit(1).toArray();
+    return data;
+}
+
 module.exports = {
     findAll,
     getStrategyTotalDepositedAmount,
     add,
-    getLatestTotalAmountDepositInfo
+    getLatestTotalAmountDepositInfo,
+    getInfoByClosestLessThanBlockNumber
 };
