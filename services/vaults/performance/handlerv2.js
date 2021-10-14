@@ -233,7 +233,16 @@ const syncHistoricalPerformance = async (dateTime) => {
         await delay(1000);
         const totalPool = await getTotalPool(etf, vault, date.block);
 
-        currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
+        let lpPrice = 0;
+        if(["daoSAFU", "daoDEGEN"].includes(etf)) {
+          lpPrice = await vault.methods.getPricePerFullShare().call(undefined, date.block);
+          lpPrice = (new BigNumber(lpPrice)).shiftedBy(-18).toNumber();
+        } else {
+          lpPrice = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
+        }
+        currentPrice["lp"] = lpPrice;
+
+        
         if (basePrice["lp"] === 0) {
           basePrice["lp"] = currentPrice["lp"];
           inceptionPrice["lp"] = basePrice["lp"];
