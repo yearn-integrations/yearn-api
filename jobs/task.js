@@ -2,8 +2,10 @@ const cron = require("node-cron");
 const delay = require("delay");
 const vaultApySave = require("../services/vaults/apy/save/historical-handle");
 const vaultPolygonApySave = require("../services/vaults/apy/save/historical-handle-polygon");
+const vaultBscApySave = require("../services/vaults/apy/save/historical-handle-bsc");
 const vaultHandlerSave = require("../services/vaults/apy/save/handler");
 const vaultPolygonHandlerSave = require("../services/vaults/apy/save/polygon-handler");
+const vaultBscHandlerSave = require("../services/vaults/apy/save/bsc-handler");
 const vaultSave = require("../services/vaults/save/handler");
 const priceSave = require("../services/vaults/price/handler");
 const tvlSave = require("../services/vaults/tvl/handler");
@@ -22,6 +24,7 @@ const jobDelayTime = {
   saveVaultApy: 15 * 60 * 1000, // 15 mins
   saveABIPools: 18 * 60 * 1000, // 18 mins
   savePolygonVaultAPY: 3 * 60 * 1000, // 3 mins in milliseconds;
+  saveBscVaultAPY: 3 * 60 * 1000, // 3 mins in milliseconds;
 };
 
 /** Save Vault **/
@@ -88,6 +91,28 @@ const savePolygonVaultAPYHandler = async() => {
   console.log(`[saveVaultAPY Polygon] END: ${new Date().getTime()}`);
 }
 
+/** Save Vault APY */
+const saveBSCVaultAPY = async() => {
+  await delay(jobDelayTime.saveBscVaultAPY);
+  await saveBSCVaultAPYHandler();
+
+  cron.schedule(
+    "0 0 0 * * *",
+    async () => {
+      await saveBSCVaultAPYHandler();
+    },
+    {
+      scheduled: true,
+      timezone: "Etc/UTC", // UTC +0
+    }
+  );
+}
+const saveBSCVaultAPYHandler = async() => {
+  console.log(`[saveVaultAPY BSC] START: ${new Date().getTime()}`);
+  await vaultBscHandlerSave.saveHandler();
+  console.log(`[saveVaultAPY BSC] END: ${new Date().getTime()}`);
+}
+
 /** Store getPricePerFullShare */
 const savePricePerFullShare = async () => {
   await delay(jobDelayTime.savePricePerFullShare);
@@ -147,6 +172,25 @@ const savePolygonHistoricalAPYHandler = async () => {
   console.log(`[savePolygonHistoricalAPY] START: ${new Date().getTime()}`);
   await vaultPolygonApySave.saveHandler();
   console.log(`[savePolygonHistoricalAPY] END: ${new Date().getTime()}`);
+}
+
+/** Store Historical APY For BSC */
+const saveBSCHistoricalAPY = async () => {
+  await saveBSCHistoricalAPYHandler();
+  cron.schedule(
+    "*/5 * * * *",
+    async () => {
+      await saveBSCHistoricalAPYHandler();
+    },
+    {
+      scheduled: true,
+    }
+  );
+}
+const saveBSCHistoricalAPYHandler = async () => {
+  console.log(`[saveBSCHistoricalAPYHandler] START: ${new Date().getTime()}`);
+  await vaultBscApySave.saveHandler();
+  console.log(`[saveBSCHistoricalAPYHandler] END: ${new Date().getTime()}`);
 }
 
 /** Store Historical TVL */
@@ -291,9 +335,11 @@ module.exports = {
   saveVaultAPY,
   saveVault,
   savePolygonVaultAPY,
+  saveBSCVaultAPY,
   savePricePerFullShare,
   saveHistoricalAPY,
   savePolygonHistoricalAPY,
+  saveBSCHistoricalAPY,
   saveHistoricalPools,
   saveDAOmineHistoricalPools,
   saveABIPools,
