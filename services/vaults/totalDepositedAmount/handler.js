@@ -20,6 +20,20 @@ const getStrategyTotalDepositAmountInfo = async(strategyId) => {
     }
 }
 
+const getLatestTotalAmountDepositInfo = async(strategyId) => {
+    let totalDepositedAmount = null;
+    try {
+        if(strategyId === undefined || strategyId === null || strategyId === "") {
+            throw (`Missing strategy ID`);
+        }
+        totalDepositedAmount = await db.getLatestTotalAmountDepositInfo(strategyId);
+    } catch (err) {
+        console.error(`Error in getLatestTotalAmountDepositInfo(): `, err);
+    } finally {
+        return totalDepositedAmount;
+    }
+}
+
 const saveToDb = async(strategyId, blockNumber, blockTimestamp, totalDepositedAmount) => { 
     const saveObjects = {
         timestamp: new Date().getTime(),
@@ -41,12 +55,13 @@ const calculateTotalDepositedAmount = (transactions) => {
 
 const saveTotalDepositedAmount = async() => {
     let totalDepositedAmount = 0;
-    const etfStrategies = ["daoCDV2"]; // Only applies to daoCDV2 and daoSTO2
+    const etfStrategies = ["daoCDV2", "daoSTO2"]; // Only applies to daoCDV2 and daoSTO2
     const contracts = contractHelper.getContractsFromDomain();
 
     try {
         for(const strategyId of etfStrategies) {
             const { address: strategyAddress, inceptionBlock } = contracts.farmer[strategyId];
+            console.log(`Getting total deposited amount for ${strategyId}`);
             const datas = await db.findAll(strategyId);
         
             // Block number for latest Distribute LP Token event
@@ -55,6 +70,7 @@ const saveTotalDepositedAmount = async() => {
                 .filter((element, index, self) => index === self.indexOf(element))
                 .sort();
             if(blockNumbers === undefined || blockNumbers.length < 0) {
+                console.error(`[totalDepositedAmount/handler] ${strategyId}: block numbers are not defined`);
                 await saveToDb(strategyId, 0, 0, 0);
                 continue;
             }
@@ -65,8 +81,9 @@ const saveTotalDepositedAmount = async() => {
                 transactions = await getDepositEvents(latestDistributeTokenBlockNumber, undefined, strategyAddress);
 
                 if(transactions.length <= 0) {
+                    console.error(`[totalDepositedAmount/handler] ${strategyId}: No transaction found`);
                     await saveToDb(strategyId, 0, 0, 0);
-                    break;
+                    continue;
                 }
 
                 totalDepositedAmount = calculateTotalDepositedAmount(transactions);
@@ -84,6 +101,7 @@ const saveTotalDepositedAmount = async() => {
 
                     transactions = await getDepositEvents(startBlock, endBlock, strategyAddress);
                     if(transactions.length <= 0) {
+                        console.error(`[totalDepositedAmount/handler] ${strategyId}: No transaction found`);
                         await saveToDb(etfStrategies[i], startBlock, 0);
                         continue;
                     }
@@ -109,5 +127,6 @@ const saveTotalDepositedAmount = async() => {
 
 module.exports = {
     getStrategyTotalDepositAmountInfo,
+    getLatestTotalAmountDepositInfo,
     saveTotalDepositedAmount
 }
