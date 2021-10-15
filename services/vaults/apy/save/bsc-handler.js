@@ -5,11 +5,7 @@ const delay = require("delay");
 const moment = require("moment");
 const contractHelper = require("../../../../utils/contract");
 const apyDb = require('../../../../models/apy.model');
-const { 
-    getDaoDegenPricePerFullShare, 
-    getDaoSafuPricePerFullShare} 
-= require("./historical-handle-bsc");
-
+const { getPricePerFullShare, calculateApy } = require("./handler"); 
 
 let bscBlockNumber = {
     current: 0,
@@ -17,45 +13,19 @@ let bscBlockNumber = {
 }
 
 const getApyForVault = async (vault) => {
-    const { lastMeasurement: inceptionBlockNumber } = vault;
-    
-    const contracts = await contractHelper.getContractsFromDomain();
+    const {
+        lastMeasurement: inceptionBlockNumber,
+        vaultContractABI: abi,
+        vaultContractAddress: address,
+        triggerDuration,
+        vaultSymbol
+    } = vault;
 
-    // DAO Degen
-    if(vault.isDaoDegen) {
-        const contractInfo = contracts.farmer["daoDEGEN"];
-        const contract = await contractHelper.getBSCContract(contractInfo.abi, contractInfo.address);
-
-        let pricePerFullShareCurrent = await getDaoDegenPricePerFullShare(contract, bscBlockNumber.current, inceptionBlockNumber);
-        let pricePerFullShareOneDayAgo = await getDaoDegenPricePerFullShare(contract, bscBlockNumber.oneDay, inceptionBlockNumber);
-
-        pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
-        pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
-
-        const n = 2;
-        const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-        let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
-
-        return {
-            apy: apy
-        }
-    } else if(vault.isDaoSafu) {
-        const contractInfo = contracts.farmer["daoSAFU"];
-        const contract = await contractHelper.getBSCContract(contractInfo.abi, contractInfo.address);
-
-        let pricePerFullShareCurrent = await getDaoSafuPricePerFullShare(contract, bscBlockNumber.current, inceptionBlockNumber);
-        let pricePerFullShareOneDayAgo = await getDaoSafuPricePerFullShare(contract, bscBlockNumber.oneDay, inceptionBlockNumber);
-        pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
-        pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
-
-        const n = 2;
-        const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-        let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
-        
-        return {
-            apy: apy
-        }
-    }
+    const contract = await contractHelper.getBSCContract(abi, address);
+    const currentPrice = await getPricePerFullShare(contract, bscBlockNumber.current, inceptionBlockNumber, vaultSymbol);
+    const oneDayAgoPrice = await getPricePerFullShare(contract, bscBlockNumber.oneDay, inceptionBlockNumber, vaultSymbol);
+    const apy = calculateApy(triggerDuration, currentPrice, oneDayAgoPrice);
+    return { apy: apy };
 }
 
 const saveAndReadVault = async (vault) => {
