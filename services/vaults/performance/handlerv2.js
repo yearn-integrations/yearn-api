@@ -187,6 +187,31 @@ const getNextUpdateBlock = async (dateTime, network) => {
   }
 }
 
+const getPricePerFullShare = async(etf, vault, block, network, pool, totalSupply) => {
+  const olderStrategies = ["daoCDV", "daoSTO", "daoELO", "daoCUB", "daoMPT"];
+  let pricePerFullShare = 0;
+
+  try {
+    if(olderStrategies.includes(etf)) {
+      pricePerFullShare = calcLPTokenPriceUSD(etf, totalSupply, pool, network);
+    } else {
+      // New strategies starts from Metaverse onwards
+      if(network !== constant.ETHEREUM) {
+        pricePerFullShare = await vault.methods.getPricePerFullShare().call(undefined, block);
+      } else {
+        pricePerFullShare = await vault.getPricePerFullShare({blockTag: block});
+      }
+      pricePerFullShare = pricePerFullShare.toString();
+      pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
+    }
+  } catch (err) {
+    console.error(`Error in getPricePerFullShare(): `, err);
+  } finally { 
+    console.log(`Price for ${etf}: ${pricePerFullShare}`);
+    return pricePerFullShare;
+  }
+}
+
 // If want to add new strategy.
 // 1. Check and add for "pnl" property in contract.farmers.strategyId
 // 2. Check getTotalPool(), getTotalSupply(), calcLPTokenPriceUSD() in current document
@@ -250,14 +275,11 @@ const syncHistoricalPerformance = async (dateTime) => {
         const totalSupply = await getTotalSupply(etf, vault, date.block, network);
         await delay(1000);
         const totalPool = await getTotalPool(etf, vault, date.block, network);
-
-        currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
+ 
+        // currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
+        currentPrice["lp"] = await getPricePerFullShare(etf, vault, date.block, network, totalPool, totalSupply);
         
-        // base price = lp inception price. If not running cronjob for first time and
-        // strategy LP haven't get its first non-zero inception price
-        // and in this loop, current price > 0
-        // set current price as base price and inception for the strategy
-        if (basePrice["lp"] === 0 && currentPrice["lp"] > 0) {
+        if (basePrice["lp"] === 0) {
           basePrice["lp"] = currentPrice["lp"];
           inceptionPrice["lp"] = basePrice["lp"];
         }
