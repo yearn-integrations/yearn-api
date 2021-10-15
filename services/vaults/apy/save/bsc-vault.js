@@ -61,7 +61,7 @@ const mainVaults = [
       "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
       "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
     ],
-    vaultContractAddress: "", // Update here
+    vaultContractAddress: "0x5e5d75c2d1eec055e8c824c6c4763b59d5c7f065",
     vaultContractABI: abi.daoDegenVaultContract,
     balance: 0,
     vaultBalance: 0,
@@ -70,7 +70,7 @@ const mainVaults = [
     depositAll: true,
     withdraw: true,
     withdrawAll: true,
-    lastMeasurement: 12757720, // Update here
+    lastMeasurement: 11796468, 
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isDaoDegen: true,
@@ -81,7 +81,11 @@ const mainVaults = [
     symbol: ["USDT","USDC","DAI"],
     description: "DAO Vault Safu for 3 stablecoins",
     vaultSymbol: "daoSAFU",
-    erc20address: [ "0x55d398326f99059fF775485246999027B3197955", "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d","0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",],
+    erc20address: [
+        "0x55d398326f99059fF775485246999027B3197955",
+        "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+        "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+    ],
     vaultContractAddress: "0xb9e35635084b8b198f4bf4ee787d5949b46338f1",
     vaultContractABI: abi.daoSafuVaultContract,
     balance: 0,
