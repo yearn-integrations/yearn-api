@@ -168,6 +168,31 @@ const getNextUpdateBlock = async (dateTime, network) => {
   }
 }
 
+const getPricePerFullShare = async(etf, vault, block, network, pool, totalSupply) => {
+  const olderStrategies = ["daoCDV", "daoSTO", "daoELO", "daoCUB", "daoMPT"];
+  let pricePerFullShare = 0;
+
+  try {
+    if(olderStrategies.includes(etf)) {
+      pricePerFullShare = calcLPTokenPriceUSD(etf, totalSupply, pool, network);
+    } else {
+      // New strategies starts from Metaverse onwards
+      if(network !== constant.ETHEREUM) {
+        pricePerFullShare = await vault.methods.getPricePerFullShare().call(undefined, block);
+      } else {
+        pricePerFullShare = await vault.getPricePerFullShare({blockTag: block});
+      }
+      pricePerFullShare = pricePerFullShare.toString();
+      pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
+    }
+  } catch (err) {
+    console.error(`Error in getPricePerFullShare(): `, err);
+  } finally { 
+    console.log(`Price for ${etf}: ${pricePerFullShare}`);
+    return pricePerFullShare;
+  }
+}
+
 // If want to add new strategy.
 // 1. Check and add for "pnl" property in contract.farmers.strategyId
 // 2. Check getTotalPool(), getTotalSupply(), calcLPTokenPriceUSD() in current document
@@ -231,17 +256,10 @@ const syncHistoricalPerformance = async (dateTime) => {
       try {
         const totalSupply = await getTotalSupply(etf, vault, date.block);
         await delay(1000);
-        const totalPool = await getTotalPool(etf, vault, date.block);
-
-        let lpPrice = 0;
-        if(["daoSAFU", "daoDEGEN"].includes(etf)) {
-          lpPrice = await vault.methods.getPricePerFullShare().call(undefined, date.block);
-          lpPrice = (new BigNumber(lpPrice)).shiftedBy(-18).toNumber();
-        } else {
-          lpPrice = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
-        }
-        currentPrice["lp"] = lpPrice;
-
+        const totalPool = await getTotalPool(etf, vault, date.block, network);
+ 
+        // currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
+        currentPrice["lp"] = await getPricePerFullShare(etf, vault, date.block, network, totalPool, totalSupply);
         
         if (basePrice["lp"] === 0) {
           basePrice["lp"] = currentPrice["lp"];
