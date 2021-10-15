@@ -65,7 +65,7 @@ const mainVaults = [
       "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
       "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
     ],
-    vaultContractAddress: "", // Update here
+    vaultContractAddress: "0x5e5d75c2d1eec055e8c824c6c4763b59d5c7f065",
     vaultContractABI: abi.daoDegenVaultContract,
     balance: 0,
     vaultBalance: 0,
@@ -74,7 +74,7 @@ const mainVaults = [
     depositAll: true,
     withdraw: true,
     withdrawAll: true,
-    lastMeasurement: 12757720, // Update here
+    lastMeasurement: 11796468, 
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isDaoDegen: true,
