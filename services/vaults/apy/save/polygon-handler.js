@@ -5,57 +5,62 @@ const delay = require("delay");
 const moment = require("moment");
 const contractHelper = require("../../../../utils/contract");
 const apyDb = require('../../../../models/apy.model');
-const { getMoneyPrinterPricePerFullShare } = require("./historical-handle-polygon");
-const { 
-    testContracts, 
-    mainContracts
-} = require('../../../../config/serverless/domain');
+const { getPricePerFullShare, calculateApy } = require("./handler");
 
 let polygonBlockNumber = {
     current: 0,
     oneDay: 0,
 }
-const { jobDelayTime } = require("../../../../constant/delayTimeConfig");
 
+const moneyPrinterApyCalculation = (currentPrice, oneDayAgoPrice) => {
+    const n = 5 * 24 * 365;  // Assume trigger compound function 5 times per HOUR
+    const apr = (currentPrice - oneDayAgoPrice) * n;
+    const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+    return (isNaN(apy) || apy === Infinity) ? 0 : apy;
+}   
+
+const getMoneyPrinterPricePerFullShare = async (contract, blockNumber, inceptionBlockNumber) => {
+    if(blockNumber === inceptionBlockNumber) {
+        return 1e18;
+    }
+    if(blockNumber < inceptionBlockNumber) {
+        return 0;
+    }
+
+    let pricePerFullShare = 0;
+    try {
+        const pool = await contract.methods.getValueInPool().call(undefined, blockNumber);
+        const totalSupply = await contract.methods.totalSupply().call(undefined, blockNumber);
+        pricePerFullShare = pool / totalSupply;
+    } catch (err) {
+        console.log(`Error in getMoneyPrinterPricePerFullShare()`,err);
+    }
+    
+    await delay(delayTime);
+    return pricePerFullShare;
+}
 
 const getApyForVault = async (vault) => {
-    const { lastMeasurement: inceptionBlockNumber } = vault;
-    
-    const contracts = await contractHelper.getContractsFromDomain();
+    const { 
+        lastMeasurement: inceptionBlockNumber, 
+        vaultContractAddress: address,  
+        vaultContractABI: abi,
+        triggerDuration,
+        vaultSymbol
+    } = vault;
 
-    // Money Printer vault
+    const contract = await contractHelper.getPolygonContract(abi, address);
+
     if(vault.isMoneyPrinter) {
-        const contractInfo = contracts.farmer["daoMPT"];
-        const contract = await contractHelper.getPolygonContract(contractInfo.abi, contractInfo.address);
-
-        let pricePerFullShareCurrent = await getMoneyPrinterPricePerFullShare(contract, polygonBlockNumber.current, inceptionBlockNumber);
-        let pricePerFullShareOneDayAgo = await getMoneyPrinterPricePerFullShare(contract, polygonBlockNumber.oneDay, inceptionBlockNumber);
-        pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
-        pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
-
-        const n = 5 * 24 * 365;  // Assume trigger compound function 5 times per HOUR
-        const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-        let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
-
-        if(apy === 0) {
-            // Use back previous value if apy = 0
-            const mpApyObj = await apyDb.getApy("daoMPT");
-            apy = mpApyObj ? mpApyObj.moneyPrinterApy : 0;
-        }
-        
-        return {
-            apyInceptionSample: 0,
-            apyOneDaySample: 0,
-            apyThreeDaySample: 0,
-            apyOneWeekSample: 0,
-            apyOneMonthSample: 0,
-            apyLoanscan: 0,
-            compoundApy: 0,
-            citadelApy: 0,
-            elonApy: 0,
-            faangApy: 0,
-            moneyPrinterApy: apy,
-        }
+        let currentPrice = await getMoneyPrinterPricePerFullShare(contract, polygonBlockNumber.current, inceptionBlockNumber, vaultSymbol);
+        let oneDayAgoPrice = await getMoneyPrinterPricePerFullShare(contract, polygonBlockNumber.oneDay, inceptionBlockNumber, vaultSymbol);
+        apy = moneyPrinterApyCalculation(currentPrice, oneDayAgoPrice);
+        return { apy: apy }
+    } else {
+        let currentPrice = await getPricePerFullShare(contract, polygonBlockNumber.current, inceptionBlockNumber, vaultSymbol);
+        let oneDayAgoPrice = await getPricePerFullShare(contract, polygonBlockNumber.oneDay, inceptionBlockNumber, vaultSymbol);
+        apy = calculateApy(triggerDuration, currentPrice, oneDayAgoPrice);
+        return { apy: apy }
     }
 }
 
@@ -85,7 +90,7 @@ const saveVaultWithApy = async (data) => {
     console.log(`Saved ${data.name}`);
 };
 
-module.exports.saveHandler = async() => {
+const saveHandler = async() => {
     try {  
         const oneDayAgo = moment().subtract(1, "days").valueOf();
        
@@ -114,3 +119,11 @@ module.exports.saveHandler = async() => {
         }
     }
 }
+
+module.exports = {
+    saveHandler,
+    moneyPrinterApyCalculation,
+    getMoneyPrinterPricePerFullShare
+}
+
+

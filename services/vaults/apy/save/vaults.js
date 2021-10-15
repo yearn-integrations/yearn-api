@@ -22,6 +22,7 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isCitadel: true,
+    triggerDuration: 2
   },
   {
     id: "daoELO",
@@ -43,6 +44,7 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isElon: true,
+    triggerDuration: 2
   },
   {
     id: "daoCUB",
@@ -64,6 +66,7 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isCuban: true,
+    triggerDuration: 2
   },
   {
     id: "daoSTO",
@@ -85,6 +88,7 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isFaang: true,
+    triggerDuration: 2
   },
   {
     id: "daoMVF",
@@ -106,6 +110,7 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isMetaverse: true,
+    triggerDuration: 2
   },
   {
     id: "daoCDV2",
@@ -127,6 +132,7 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isCitadelV2: true,
+    triggerDuration: 2
   },
   {
     id: "daoSTO2",
@@ -148,6 +154,7 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isDaoStonks: true,
+    triggerDuration: 2
   },
   {
     id: "daoTAS",
@@ -169,6 +176,7 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isTA: true,
+    triggerDuration: 2
   },
 ];
 
@@ -193,6 +201,7 @@ const mainVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isCitadel: true,
+    triggerDuration: 2
   },
   {
     id: "daoELO",
@@ -214,6 +223,7 @@ const mainVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isElon: true,
+    triggerDuration: 2
   },
   {
     id: "daoCUB",
@@ -235,6 +245,7 @@ const mainVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isCuban: true,
+    triggerDuration: 2
   },
   {
     id: "daoSTO",
@@ -256,6 +267,7 @@ const mainVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isFaang: true,
+    triggerDuration: 2
   },
   {
     id: "daoMVF",
@@ -277,6 +289,7 @@ const mainVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isMetaverse: true,
+    triggerDuration: 2
   },
   {
     id: "daoCDV2",
@@ -298,6 +311,7 @@ const mainVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isCitadelV2: true,
+    triggerDuration: 2
   },
   {
     id: "daoSTO2",
@@ -319,6 +333,7 @@ const mainVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isDaoStonks: true,
+    triggerDuration: 2
   },
   {
     id: "daoTAS",
