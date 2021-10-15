@@ -200,6 +200,21 @@ const testContracts = {
         {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
       ],
       network: constant.ETHEREUM,
+    },
+    daoDEGEN: {
+      address: "0x56f2005c3fec21dd3c21899fbceb1aae5b4bc5da",
+      abi: abi.daoDegenVaultContract,
+      strategyAddress: "0xd1fc92873fcc59708cf26e2b8302188735caf526",
+      strategyABI: abi.daoDegenStrategyContract,
+      contractType: "daoDegen",
+      tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 12757720,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
+      network: constant.BSC,
     }, 
     daoSAFU: {
       address: '0x81390703430015a751f967694d5ccb8745fda254',
@@ -477,6 +492,21 @@ const mainContracts = {
         {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
       ],
       network: constant.ETHEREUM,
+    },
+    daoDEGEN: {
+      address: "0x5e5d75c2d1eec055e8c824c6c4763b59d5c7f065",
+      abi: abi.daoDegenVaultContract,
+      strategyAddress: "0xeaa8c430d17c894134acfa0561853f37363ce887",
+      strategyABI: abi.daoDegenStrategyContract,
+      contractType: "daoDegen",
+      tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 11796468,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
+      network: constant.BSC,
     },
     daoSAFU: {
       address: '0xb9e35635084b8b198f4bf4ee787d5949b46338f1',

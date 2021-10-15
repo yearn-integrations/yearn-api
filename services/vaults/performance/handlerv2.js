@@ -55,16 +55,23 @@ const getTotalSupply = async(etf, vault, block, network) => {
     }
 }
 
-const getTotalPool = async(etf, vault, block) => {
+const getTotalPool = async(etf, vault, block, network) => {
   let pool = 0;
+
+  const networks = [constant.POLYGON, constant.BSC];
+
   try {
       if(etf === "daoSTO") {
         pool = await vault.getTotalValueInPool({ blockTag: block });
-      } else if(etf === "daoMPT") {
-        pool = await vault.methods.getValueInPool().call(undefined, block);
-      } else if(etf === "daoSAFU") {
-        pool = await vault.methods.getAllPoolInUSD().call(undefined, block);
-      }else {
+      } else if(networks.includes(network)) {
+        // BSC or Polygon Network
+        // Different function name for daoMPT
+        if(etf === "daoMPT") {
+          pool = await vault.methods.getValueInPool().call(undefined, block);
+        } else {
+          pool = await vault.methods.getAllPoolInUSD().call(undefined, block);
+        }
+      } else {
         // daoELO, daoCDV, daoCUB, daoMVF using this
         pool = await vault.getAllPoolInUSD({ blockTag: block });
       }
