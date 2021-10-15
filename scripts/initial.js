@@ -8,7 +8,7 @@ db.vault_categories.insertMany([
     { name: 'basic', network:"ethereum", contract_address: '0x5b3ae8b672a753906b1592d44741f71fbd05ba8c', symbol: 'daoMVF', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'expert', network:"ethereum", contract_address: '', symbol: 'daoCDV2', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     // { name: 'advance', network:"ethereum", contract_address: '0x7739933d775bf2ed5eaec76bc61c581a82e25b0c', symbol: 'daoSTO2', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
-    // { name: 'basic', network:"bsc", contract_address: '', symbol: 'daoSAFU', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
+    { name: 'basic', network:"bsc", contract_address: '0xb9e35635084b8b198f4bf4ee787d5949b46338f1', symbol: 'daoSAFU', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
 ]);
 
 db.stake_pool.insertMany([

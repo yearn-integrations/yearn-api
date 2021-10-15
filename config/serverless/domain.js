@@ -467,13 +467,13 @@ const mainContracts = {
       network: constant.ETHEREUM,
     },
     daoSAFU: {
-      address: '0x81390703430015a751f967694d5ccb8745fda254',
+      address: '0xb9e35635084b8b198f4bf4ee787d5949b46338f1',
       abi: abi.daoSafuVaultContract,
-      strategyAddress: '0x7436297148face594f1b2f04a2901c3bb65eb771',
+      strategyAddress: '0xdac6e0cd7a535038f5d836155784603fac1ba23d',
       strategyABI: abi.daoSafuStrategyContract,
       contractType: "daoSafu",
       tokenId: ["tether", "usd-coin", "dai"],
-      inceptionBlock: 12751827,
+      inceptionBlock: 11788791,
       pnl:[
         {db: "lp", tokenId: ""},
         {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
