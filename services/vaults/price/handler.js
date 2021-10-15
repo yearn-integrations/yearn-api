@@ -1,8 +1,5 @@
 "use strict"
 
-const {
-  getPricePerFullShare
-} = require('../../user/vaults/statistics/handler');
 const db = require('../../../models/price.model');
 const BigNumber = require("bignumber.js");
 const moment = require("moment");
@@ -26,19 +23,7 @@ const getCitadelPricePerFullShare = async (contract) => {
   return pricePerFullShare;
 }
 
-const getElonPricePerFullShare = async (contract) => {
-  let pricePerFullShare = 0;
-  try {
-    const pool = await contract.methods.getAllPoolInUSD().call(); // All pool in USD (6 decimals)
-    const totalSupply = await contract.methods.totalSupply().call();
-    pricePerFullShare = (new BigNumber(pool)).shiftedBy(12).dividedBy(totalSupply).toNumber();
-  } catch (ex) { }
-
-  await delay(delayTime);
-  return pricePerFullShare;
-}
-
-const getCubanPricePerFullShare = async (contract) => {
+const getCubanElonPricePerFullShare = async (contract) => {
   let pricePerFullShare = 0;
   try {
     const pool = await contract.methods.getAllPoolInUSD().call(); // All pool in USD (6 decimals)
@@ -72,73 +57,13 @@ const getMoneyPrinterPricePerFullShare = async (contract) => {
   return pricePerFullShare;
 }
 
-const getMetaversePricePerFullShare = async(contract) => {
-  let pricePerFullShare = 0;
-  try {
-    const pool = await contract.methods.getAllPoolInUSD().call();
-    const totalSupply = await contract.methods.totalSupply().call();
-
-    if(parseInt(pool) === 0 || parseInt(totalSupply) === 0) {
-      pricePerFullShare = 0;
-    } else {
-      pricePerFullShare = pool / totalSupply;
-    }
-  } catch (ex) {
-    console.error(`[price/handler] Error in getMetaversePricePerFullShare(): `, ex);
-  } finally {
-    return pricePerFullShare;
-  }
-}
-
-const getCitadelV2PricePerFullShare = async(contract) => {
+const getPricePerFullShare = async(contract, vaultSymbol) => {
   let pricePerFullShare = 0;
   try {
     pricePerFullShare = await contract.methods.getPricePerFullShare().call();
     pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
   } catch (ex) {
-    console.error(`[price/handler] Error in getCitadelV2PricePerFullShare(): `, ex);
-  } finally {
-    return pricePerFullShare;
-  }
-}
-
-const getDAOStonksPricePerFullShare = async(contract) => {
-  let pricePerFullShare = 0;
-  try {
-    const pool = await contract.methods.getAllPoolInUSD().call();
-    const totalSupply = await contract.methods.totalSupply().call();
-
-    if(parseInt(pool) === 0 || parseInt(totalSupply) === 0) {
-      pricePerFullShare = 0;
-    } else {
-      pricePerFullShare = pool / totalSupply;
-    }
-  } catch (ex) {
-    console.error(`[price/handler] Error in getDAOStonksPricePerFullShare(): `, ex);
-  } finally {
-    return pricePerFullShare;
-  }
-}
-
-const getDaoDegenPricePerFullShare = async(contract, block) => {
-  let pricePerFullShare = 0;
-  try {
-    pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
-    pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
-  } catch (err) {
-    console.error(`[apy/save/handler]Error in getDaoDegenPricePerFullShare(): `, err);
-  } finally {
-    return pricePerFullShare;
-  }
-}
-
-const getDAOSafuPricePerFullShare = async(contract) => {
-  let pricePerFullShare = 0;
-  try {
-    pricePerFullShare = await contract.methods.getPricePerFullShare().call();
-    pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
-  } catch (ex) {
-    console.error(`[price/handler] Error in getDAOSafuPricePerFullShare(): `, ex);
+    console.error(`[price/handler] Error in getPricePerFullShare(): ${vaultSymbol} `, ex);
   } finally {
     return pricePerFullShare;
   }
@@ -148,158 +73,30 @@ const getCurrentPrice = async () => {
   let contracts = contractHelper.getContractsFromDomain();
 
   for (const key of Object.keys(contracts.farmer)) {
+    const { abi, address, network, contractType } = contracts.farmer[key];
+    const contract = await contractHelper.getContract(abi, address, network);
+
+    let pricePerFullShare = 0;
+
     try {
-      if (contracts.farmer[key].contractType === 'citadel') {
-        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const pricePerFullShare = await getCitadelPricePerFullShare(contract);
-        await db.add(key + '_price', {
-          earnPrice: 0,
-          vaultPrice: 0,
-          compoundExchangeRate: 0,
-          citadelPrice: isNaN(pricePerFullShare) ? 0 : pricePerFullShare,
-          elonPrice: 0,
-          cubanPrice: 0,
-          faangPrice: 0,
-          moneyPrinterPrice: 0,
-          harvestPrice: 0,
-          metaversePrice: 0,
-          daoStonksPrice: 0
-        }).catch((err) => console.log('err', err));
-      } else if (contracts.farmer[key].contractType === 'elon') {
-        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const pricePerFullShare = await getElonPricePerFullShare(contract);
-        await db.add(key + '_price', {
-          earnPrice: 0,
-          vaultPrice: 0,
-          compoundExchangeRate: 0,
-          citadelPrice: 0,
-          elonPrice: pricePerFullShare,
-          cubanPrice: 0,
-          faangPrice: 0,
-          harvestPrice: 0,
-          metaversePrice: 0,
-          citadelv2Price: 0,
-          daoStonksPrice: 0
-        }).catch((err) => console.log('err', err));
-      } else if (contracts.farmer[key].contractType === 'cuban') {
-        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const pricePerFullShare = await getCubanPricePerFullShare(contract);
-        await db.add(key + '_price', {
-          earnPrice: 0,
-          vaultPrice: 0,
-          compoundExchangeRate: 0,
-          citadelPrice: 0,
-          elonPrice: 0,
-          cubanPrice: pricePerFullShare,
-          faangPrice: 0,
-          moneyPrinterPrice: 0,
-          harvestPrice: 0,
-          metaversePrice: 0,
-          citadelv2Price: 0,
-          daoStonksPrice: 0
-        }).catch((err) => console.log('err', err));
-      } else if (contracts.farmer[key].contractType === 'metaverse') {
-        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const pricePerFullShare = await getMetaversePricePerFullShare(contract);
-        await db.add(key + '_price', {
-          earnPrice: 0,
-          vaultPrice: 0,
-          compoundExchangeRate: 0,
-          citadelPrice: 0,
-          elonPrice: 0,
-          cubanPrice: 0,
-          faangPrice: 0,
-          moneyPrinterPrice: 0,
-          harvestPrice: 0,
-          metaversePrice: pricePerFullShare,
-          citadelv2Price: 0,
-          daoStonksPrice: 0
-        }).catch((err) => console.log('err', err));
+      if (contractType === 'citadel') {
+        pricePerFullShare = await getCitadelPricePerFullShare(contract);
+      } else if (contractType === 'elon' || contractType === 'cuban') {
+        pricePerFullShare = await getCubanElonPricePerFullShare(contract);
       } else if (contracts.farmer[key].contractType === 'daoFaang') {
-        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const pricePerFullShare = await getFaangPricePerFullShare(contract);
-        await db.add(key + '_price', {
-          earnPrice: 0,
-          vaultPrice: 0,
-          compoundExchangeRate: 0,
-          citadelPrice: 0,
-          elonPrice: 0,
-          cubanPrice: 0,
-          faangPrice: pricePerFullShare,
-          moneyPrinterPrice: 0,
-          harvestPrice: 0,
-          metaversePrice: 0,
-          citadelv2Price: 0,
-          daoStonksPrice: 0
-        }).catch((err) => console.log('err', err));
-      } else if (contracts.farmer[key].contractType === 'daoStonks') {
-        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const pricePerFullShare = await getDAOStonksPricePerFullShare(contract);
-        await db.add(key + '_price', {
-          earnPrice: 0,
-          vaultPrice: 0,
-          compoundExchangeRate: 0,
-          citadelPrice: 0,
-          elonPrice: 0,
-          cubanPrice: 0,
-          faangPrice: 0,
-          moneyPrinterPrice: 0,
-          harvestPrice: 0,
-          metaversePrice: 0,
-          daoStonksPrice: pricePerFullShare,
-          citadelv2Price: 0,
-        }).catch((err) => console.log('err', err));
+        pricePerFullShare = await getFaangPricePerFullShare(contract);
       } else if (contracts.farmer[key].contractType === 'moneyPrinter') {
-        const contract = await contractHelper.getPolygonContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const pricePerFullShare = await getMoneyPrinterPricePerFullShare(contract);
-        await db.add(key + '_price', {
-          earnPrice: 0,
-          vaultPrice: 0,
-          compoundExchangeRate: 0,
-          citadelPrice: 0,
-          elonPrice: 0,
-          faangPrice: 0,
-          moneyPrinterPrice: pricePerFullShare,
-          harvestPrice: 0,
-          metaversePrice: 0,
-          citadelv2Price: 0,
-          daoStonksPrice: 0
-        }).catch((err) => console.log('err', err));
-      } else if (contracts.farmer[key].contractType === "citadelv2") {
-        const contract = await contractHelper.getEthereumContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const pricePerFullShare = await getCitadelV2PricePerFullShare(contract);
-
-        await db.add(key + '_price', {
-          earnPrice: 0,
-          vaultPrice: 0,
-          compoundExchangeRate: 0,
-          citadelPrice: 0,
-          elonPrice: 0,
-          cubanPrice: 0,
-          faangPrice: 0,
-          harvestPrice: 0,
-          metaversePrice: 0,
-          citadelv2Price: pricePerFullShare,
-          daoStonksPrice: 0
-        }).catch((err) => console.log('err', err));
-      } else if (contracts.farmer[key].contractType === "daoDegen") {
-        const contract = await contractHelper.getBscContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const pricePerFullShare = await getDaoDegenPricePerFullShare(contract);
-
-        await db.add(key + '_price', {
-          price: pricePerFullShare
-        })
-      } else if (contracts.farmer[key].contractType === 'daoSafu')  {
-        const contract = await contractHelper.getBSCContract(contracts.farmer[key].abi, contracts.farmer[key].address);
-        const pricePerFullShare = await getDAOSafuPricePerFullShare(contract);
-      
-        await db.add(key + '_price', {
-          price: pricePerFullShare
-        })
+        pricePerFullShare = await getMoneyPrinterPricePerFullShare(contract);
+      } else {
+        pricePerFullShare = await getPricePerFullShare(contract, key);
       }
+      
+      pricePerFullShare = isNaN(pricePerFullShare) ? 0 : pricePerFullShare;
     } catch (err) {
+      console.error(`Error in getCurrentPrice(): ${key}`, err);
+    } finally {
       await db.add(key + '_price', {
-        price: 0
+        price: pricePerFullShare
       }).catch((err) => console.log('err', err));
     }
   }
@@ -400,7 +197,6 @@ module.exports.handleAllHistoricialPrice = async (req, res) => {
     });
   }
 
-  var startTime = -1;
   switch (req.params.days) {
     case '30d':
       startTime = moment().subtract(30, 'days');
@@ -412,10 +208,9 @@ module.exports.handleAllHistoricialPrice = async (req, res) => {
       startTime = moment().subtract(1, 'days');
       break;
   }
-
+  const startTime = await dateTimeHelper.getStartTimeFromParameter(req.params.days);
   if (startTime !== -1) {
     const results = await this.getAllVaultHistoricalPrice(startTime, req.params.network);
-
     res.status(200).json({
       message: "Success!",
       body: results

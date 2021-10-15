@@ -17,9 +17,8 @@ const {
   getElonPricePerFullShare,
   getCubanPricePerFullShare,
   getFaangPricePerFullShare,
-  getMetaversePricePerFullShare,
-  getCitadelV2PricePerFullShare,
-  getDaoStonksPricePerFullShare
+  getPricePerFullShare,
+  calculateApy
 } = require("./handler");
 
 let currentBlockNbr;
@@ -34,6 +33,8 @@ const getApyForVault = async (vault, contracts) => {
     lastMeasurement: inceptionBlockNbr,
     vaultContractABI: abi,
     vaultContractAddress: address,
+    triggerDuration,
+    vaultSymbol
   } = vault;
 
   if (vault.isCitadel) {
@@ -140,107 +141,15 @@ const getApyForVault = async (vault, contracts) => {
       faangApy: apy,
       moneyPrinterApy: 0,
     }
-  } else if (vault.isMetaverse) {
-    // Metaverse Vault
+  } else {
     const contract = await contractHelper.getEthereumContract(abi, address);
-
-    let pricePerFullShareCurrent = await getMetaversePricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    let pricePerFullShareOneDayAgo = await getMetaversePricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
-    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
-    pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
-
-    // APY Calculation
-    const n = 365 / 2; // Assume 2 days to trigger invest function
-    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-    let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
-
-    if(apy === Infinity) {
-      apy = 0;
-    }
-
+    let currentPrice = await getPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr, vaultSymbol);
+    let oneDayAgoPrice = await getPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr,vaultSymbol);
+    const apy = calculateApy(triggerDuration, currentPrice, oneDayAgoPrice);
     return {
-      apyInceptionSample: 0,
-      apyOneDaySample: 0,
-      apyThreeDaySample: 0,
-      apyOneWeekSample: 0,
-      apyOneMonthSample: 0,
-      apyLoanscan: 0,
-      compoundApy: 0,
-      citadelApy: 0,
-      elonApy: 0,
-      cubanApy: apy,
-      faangApy: 0,
-      moneyPrinterApy: 0,
-      metaverseApy: apy
+      apy: apy
     }
-  } else if (vault.isCitadelV2) {
-    // Metaverse Vault
-    const contract = await contractHelper.getEthereumContract(abi, address);
-
-    let pricePerFullShareCurrent = await getCitadelV2PricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    let pricePerFullShareOneDayAgo = await getCitadelV2PricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
-    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
-    pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
-
-    // APY Calculation
-    const n = 365 / 2; // Assume 2 days to trigger invest function
-    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-    let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
-
-    if(apy === Infinity) {
-      apy = 0;
-    }
-
-    return {
-      apyInceptionSample: 0,
-      apyOneDaySample: 0,
-      apyThreeDaySample: 0,
-      apyOneWeekSample: 0,
-      apyOneMonthSample: 0,
-      apyLoanscan: 0,
-      compoundApy: 0,
-      citadelApy: 0,
-      elonApy: 0,
-      cubanApy: apy,
-      faangApy: 0,
-      moneyPrinterApy: 0,
-      citadelv2Apy: apy
-    }
-  } else if (vault.isDaoStonks) {
-      // Metaverse Vault
-      const contract = await contractHelper.getEthereumContract(abi, address);
-  
-      let pricePerFullShareCurrent = await getDaoStonksPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-      let pricePerFullShareOneDayAgo = await getDaoStonksPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
-      pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
-      pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
-  
-      // APY Calculation
-      const n = 365 / 2; // Assume 2 days to trigger invest function
-      const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-      let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
-  
-      if(apy === Infinity) {
-        apy = 0;
-      }
-  
-      return {
-        apyInceptionSample: 0,
-        apyOneDaySample: 0,
-        apyThreeDaySample: 0,
-        apyOneWeekSample: 0,
-        apyOneMonthSample: 0,
-        apyLoanscan: 0,
-        compoundApy: 0,
-        citadelApy: 0,
-        elonApy: 0,
-        cubanApy: apy,
-        faangApy: 0,
-        moneyPrinterApy: 0,
-        metaverseApy: 0,
-        daoStonksApy: apy
-      }
-    } 
+  }
 };
 
 const getHistoricalAPY = async (startTime, contractAddress) => {
@@ -270,6 +179,10 @@ const getHistoricalAPY = async (startTime, contractAddress) => {
     case mainContracts.farmer['daoMVF'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoMVFFarmer);
       break;
+    case testContracts.farmer['daoTAS'].address: 
+    case mainContracts.farmer['daoTAS'].address:    
+      result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoTASFarmer);
+      break;
     case testContracts.farmer['daoCDV2'].address:
     case mainContracts.farmer['daoCDV2'].address:
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoCDV2Farmer);
@@ -286,7 +199,6 @@ const getHistoricalAPY = async (startTime, contractAddress) => {
       result = await historicalDb.findWithTimePeriods(startTime, new Date().getTime(), historicalDb.daoSAFUFarmer);
       break;
   }
-
   return result;
 }
 
