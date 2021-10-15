@@ -43,6 +43,7 @@ async function init() {
     jobs.saveVipApr();
     jobs.savePerformance();
     jobs.saveTokenPrice();
+    jobs.saveTotalDepositedAmount();
   });
 
   app.use(cors());
