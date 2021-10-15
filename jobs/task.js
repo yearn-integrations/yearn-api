@@ -16,6 +16,7 @@ const vipDVG = require("../services/staking/vipdvg/handler");
 // const performanceSave = require("../services/vaults/performance/handler");
 const performanceSave = require("../services/vaults/performance/handlerv2"); 
 const tokenSave = require("../services/vaults/distribution/handler");
+const totalDepositAmountSave = require("../services/vaults/totalDepositedAmount/handler");
 
 const jobDelayTime = { 
   saveHistoricalApy: 3 * 60 * 1000, // 3 mins in milliseconds
@@ -330,6 +331,25 @@ const saveTokenPriceHandler = async() => {
   console.log(`[saveTokenPrice] END: ${new Date().getTime()}`);
 }
 
+const saveTotalDepositedAmount = async() => {
+  await saveTotalDepositedAmountHandler();
+  cron.schedule(
+    "58 * * * *",
+    async () => {
+      await saveTotalDepositedAmountHandler();
+    },
+    {
+      scheduled: true,
+      // timezone: "Etc/UTC", // UTC +0
+    }
+  );
+}
+const saveTotalDepositedAmountHandler = async() => {
+  console.log(`[saveTotalDepositedAmount] START: ${new Date().getTime()}`);
+  await totalDepositAmountSave.saveTotalDepositedAmount();
+  console.log(`[saveTotalDepositedAmount] END: ${new Date().getTime()}`);
+}
+
 module.exports = {
   saveHistoricalTVL,
   saveVaultAPY,
@@ -345,5 +365,6 @@ module.exports = {
   saveABIPools,
   saveVipApr,
   savePerformance,
-  saveTokenPrice
+  saveTokenPrice,
+  saveTotalDepositedAmount
 };

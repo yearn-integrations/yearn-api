@@ -2,6 +2,7 @@
 
 require("dotenv").config();
 const performanceDb = require("../../../models/performance.model");
+const totalDepositAmountDb = require("../../../models/total-deposited-amount.model");
 
 const delay = require("delay");
 const ethers = require("ethers");
@@ -96,6 +97,7 @@ const calcLPTokenPriceUSD = (etf, totalSupply, totalPool, network) => {
       let newTotalPool = etfs.includes(etf)
           ? totalPool.mul(ethers.BigNumber.from("1000000000000"))
           : totalPool;
+
       lpPrice = newTotalPool.mul(ethers.BigNumber.from("1000000000000000000")).div(totalSupply);
       lpPrice = ethers.utils.formatEther(lpPrice);
     } else if(network === constant.POLYGON || network === constant.BSC) {
@@ -189,10 +191,11 @@ const getNextUpdateBlock = async (dateTime, network) => {
 
 const getPricePerFullShare = async(etf, vault, block, network, pool, totalSupply) => {
   const olderStrategies = ["daoCDV", "daoSTO", "daoELO", "daoCUB", "daoMPT"];
+  const tempStrategies = ["daoCDV2", "daoSTO2"]; // Strategies which required total deposited amount deducted
   let pricePerFullShare = 0;
 
   try {
-    if(olderStrategies.includes(etf)) {
+    if(olderStrategies.includes(etf) || tempStrategies.includes(etf)) {
       pricePerFullShare = calcLPTokenPriceUSD(etf, totalSupply, pool, network);
     } else {
       // New strategies starts from Metaverse onwards
@@ -274,8 +277,23 @@ const syncHistoricalPerformance = async (dateTime) => {
       try {
         const totalSupply = await getTotalSupply(etf, vault, date.block, network);
         await delay(1000);
-        const totalPool = await getTotalPool(etf, vault, date.block, network);
- 
+        let totalPool = await getTotalPool(etf, vault, date.block, network);
+      
+        // Temporary solution
+        let totalDepositedAmount = 0;
+        let oriTotalPool = 0;
+        if(["daoCDV2","daoSTO2"].includes(etf)) {
+          const latestTotalDepositAmount = await totalDepositAmountDb.getLatestTotalAmountDepositInfo(etf);
+    
+          if(latestTotalDepositAmount && latestTotalDepositAmount.length > 0) {
+            totalDepositedAmount = latestTotalDepositAmount[0].totalDepositedAmount;
+            totalDepositedAmount = (totalDepositedAmount * 10 ** 18).toString();
+            totalDepositedAmount = ethers.BigNumber.from(totalDepositedAmount);
+            oriTotalPool = totalPool;
+            totalPool = totalPool.sub(totalDepositedAmount);
+          }
+        }
+
         // currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
         currentPrice["lp"] = await getPricePerFullShare(etf, vault, date.block, network, totalPool, totalSupply);
         
@@ -294,6 +312,11 @@ const syncHistoricalPerformance = async (dateTime) => {
           lp_token_price_usd:  currentPrice["lp"].toString(),
           lp_inception_price: inceptionPrice["lp"].toString(),
         };
+
+        if(["daoCDV2","daoSTO2"].includes(etf)) {
+          data["total_pending_amount"] = totalDepositedAmount.toString();
+          data["total_pool_usd"] = oriTotalPool.toString();
+        }
 
         for(let i = 0; i < pnlSeries.length; i++) {
           const seriesName = pnlSeries[i].db;
