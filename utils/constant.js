@@ -213,6 +213,7 @@ module.exports = {
     ETHEREUM: "ethereum",
     POLYGON: "polygon",
     BSC: "bsc",
+    AVAX: "avalanche",
 
     // Tokens
     ETH: "ETH",
