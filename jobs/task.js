@@ -3,9 +3,11 @@ const delay = require("delay");
 const vaultApySave = require("../services/vaults/apy/save/historical-handle");
 const vaultPolygonApySave = require("../services/vaults/apy/save/historical-handle-polygon");
 const vaultBscApySave = require("../services/vaults/apy/save/historical-handle-bsc");
+const vaultAvalancheApySave = require("../services/vaults/apy/save/historical-handle-avalanche");
 const vaultHandlerSave = require("../services/vaults/apy/save/handler");
 const vaultPolygonHandlerSave = require("../services/vaults/apy/save/polygon-handler");
 const vaultBscHandlerSave = require("../services/vaults/apy/save/bsc-handler");
+const vaultAvaxHandlerSave = require("../services/vaults/apy/save/avax-handler");
 const vaultSave = require("../services/vaults/save/handler");
 const priceSave = require("../services/vaults/price/handler");
 const tvlSave = require("../services/vaults/tvl/handler");
@@ -114,6 +116,30 @@ const saveBSCVaultAPYHandler = async() => {
   console.log(`[saveVaultAPY BSC] END: ${new Date().getTime()}`);
 }
 
+
+/** Save Vault APY */
+const saveAvalancheVaultAPY = async() => {
+  await delay(jobDelayTime.saveBscVaultAPY);
+  await saveAvaxVaultAPYHandler();
+
+  cron.schedule(
+    "0 0 0 * * *",
+    async () => {
+      await saveAvaxVaultAPYHandler();
+    },
+    {
+      scheduled: true,
+      timezone: "Etc/UTC", // UTC +0
+    }
+  );
+}
+const saveAvaxVaultAPYHandler = async() => {
+  console.log(`[saveVaultAPY Avalanche] START: ${new Date().getTime()}`);
+  await vaultAvaxHandlerSave.saveHandler();
+  console.log(`[saveVaultAPY Avalanche] END: ${new Date().getTime()}`);
+}
+
+
 /** Store getPricePerFullShare */
 const savePricePerFullShare = async () => {
   await delay(jobDelayTime.savePricePerFullShare);
@@ -192,6 +218,25 @@ const saveBSCHistoricalAPYHandler = async () => {
   console.log(`[saveBSCHistoricalAPYHandler] START: ${new Date().getTime()}`);
   await vaultBscApySave.saveHandler();
   console.log(`[saveBSCHistoricalAPYHandler] END: ${new Date().getTime()}`);
+}
+
+// vaultAvalancheApySave
+const saveAvalancheHistoricalAPY = async() => {
+  await saveAvalancheHistoricalAPYHandler();
+  cron.schedule(
+    "*/5 * * * *",
+    async () => {
+      await saveAvalancheHistoricalAPYHandler();
+    },
+    {
+      scheduled: true,
+    }
+  );
+}
+const saveAvalancheHistoricalAPYHandler = async () => {
+  console.log(`[saveAvalancheHistoricalAPYHandler] START: ${new Date().getTime()}`);
+  await vaultAvalancheApySave.saveHandler();
+  console.log(`[saveAvalancheHistoricalAPYHandler] END: ${new Date().getTime()}`);
 }
 
 /** Store Historical TVL */
@@ -356,6 +401,8 @@ module.exports = {
   saveVault,
   savePolygonVaultAPY,
   saveBSCVaultAPY,
+  saveAvalancheVaultAPY,
+  saveAvalancheHistoricalAPY,
   savePricePerFullShare,
   saveHistoricalAPY,
   savePolygonHistoricalAPY,

@@ -32,10 +32,12 @@ async function init() {
     jobs.saveVaultAPY();
     jobs.savePolygonVaultAPY();
     jobs.saveBSCVaultAPY();
+    jobs.saveAvalancheVaultAPY();
     jobs.savePricePerFullShare();
     jobs.saveHistoricalAPY();
     jobs.savePolygonHistoricalAPY();
     jobs.saveBSCHistoricalAPY();
+    jobs.saveAvalancheHistoricalAPY();
     jobs.saveHistoricalTVL();
     jobs.saveHistoricalPools();
     jobs.saveDAOmineHistoricalPools();
