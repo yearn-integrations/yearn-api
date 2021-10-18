@@ -11,6 +11,7 @@ const performanceDb = require("../../../models/performance.model");
 const contractHelper = require("../../../utils/contract");
 const dateTimeHelper = require("../../../utils/dateTime");
 const constant = require("../../../utils/constant");
+
 let contracts;
 
 const getVaultApy = (apys, vaultKey) => {
@@ -42,7 +43,11 @@ const findAllDepositedAmount = async() => {
     const resultMap = {};
     for(const s of strategies) {
         const totalDepositedAmount = await getLatestTotalAmountDepositInfo(s);
-        resultMap[s] = totalDepositedAmount[0].totalDepositedAmount;
+        resultMap[s] = (totalDepositedAmount === undefined || 
+            totalDepositedAmount.length <= 0 || 
+            totalDepositedAmount[0].totalDepositedAmount === null) 
+            ? 0
+            : totalDepositedAmount[0].totalDepositedAmount;
     }
     return resultMap;
 }
