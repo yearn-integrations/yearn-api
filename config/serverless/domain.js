@@ -539,13 +539,13 @@ const mainContracts = {
       network: constant.BSC,
     },
     daoTAS : {
-      address: '0xb72b89fa6d222973379cbd9c5c88768e3a050aed', // Update this.
+      address: '0xae6637a2e583295654989adcfb3221691bb490ef', 
       abi: abi.daoTAVaultContract,
-      strategyAddress: '0x8a3cbce40a8f92a1f27b250f0c9061ceeae328be', // Update this
+      strategyAddress: '0xdddf9212cf1c87db8f61846b7c66aa0f066ed4e5', 
       strategyABI: abi.daoTAStrategyContract,
       contractType: "daoTA",
       tokenId: ["tether", "usd-coin", "dai"],
-      inceptionBlock: 27400992, // Update this
+      inceptionBlock: 13390565,
       pnl:[
         {db: "lp", tokenId: ""},
         {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
