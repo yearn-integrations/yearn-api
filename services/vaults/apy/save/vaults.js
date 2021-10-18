@@ -355,6 +355,7 @@ const mainVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isTA: true,
+    triggerDuration: 2
   },
 ];
 
