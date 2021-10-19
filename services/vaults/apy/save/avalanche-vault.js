@@ -38,6 +38,7 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isAXA: true,
+    triggerDuration: 2
   },
   {
     id: "daoASA",
@@ -57,6 +58,7 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isAXA: true,
+    triggerDuration: 2
   },
   {
     id: "daoA2S",
@@ -76,6 +78,7 @@ const testVaults = [
     measurement: 1e18,
     price_id: ["tether", "usd-coin", "dai"],
     isAXA: true,
+    triggerDuration: 2
   },
 ];
 
@@ -98,6 +101,7 @@ const mainVaults = [
     //     measurement: 1e18,
     //     price_id: ["tether", "usd-coin", "dai"],
     //     isAXA: true,
+    //     triggerDuration: 2
     //   },
     //   {
     //     id: "daoAXS",
@@ -117,6 +121,7 @@ const mainVaults = [
     //     measurement: 1e18,
     //     price_id: ["tether", "usd-coin", "dai"],
     //     isAXA: true,
+    //     triggerDuration: 2
     //   },
     //   {
     //     id: "daoASA",
@@ -136,6 +141,7 @@ const mainVaults = [
     //     measurement: 1e18,
     //     price_id: ["tether", "usd-coin", "dai"],
     //     isAXA: true,
+    //     triggerDuration: 2
     //   },
     //   {
     //     id: "daoA2S",
@@ -155,6 +161,7 @@ const mainVaults = [
     //     measurement: 1e18,
     //     price_id: ["tether", "usd-coin", "dai"],
     //     isAXA: true,
+    //     triggerDuration: 2
     //   },
 ];
 
