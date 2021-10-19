@@ -168,26 +168,31 @@ const DAOTAS_ASSET_DISTRIBUTION = {
 }
 
 const DAOAXA_ASSET_DISTRIBUTION = {
-    JOE: { percent: 45, tokenId: TOKEN_COINGECKO_ID.JOE },
-    PNG: { percent: 45, tokenId: TOKEN_COINGECKO_ID.PNG },
-    LYD: { percent: 10, tokenId: TOKEN_COINGECKO_ID.LYD },
+    AVAX: { percent: 50, tokenId: TOKEN_COINGECKO_ID.AVAX },
+    JOE: { percent: 22.5, tokenId: TOKEN_COINGECKO_ID.JOE },
+    PNG: { percent: 22.5, tokenId: TOKEN_COINGECKO_ID.PNG },
+    LYD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.LYD },
 };
 
 const DAOAXS_ASSET_DISTRIBUTION = {
-    JOE: { percent: 80, tokenId: TOKEN_COINGECKO_ID.JOE },
-    PNG: { percent: 10, tokenId: TOKEN_COINGECKO_ID.PNG },
-    LYD: { percent: 10, tokenId: TOKEN_COINGECKO_ID.LYD },
+    JOE: { percent: 40, tokenId: TOKEN_COINGECKO_ID.JOE },
+    PNG: { percent: 5, tokenId: TOKEN_COINGECKO_ID.PNG },
+    LYD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.LYD },
+    USDT: { percent: 5, tokenId: TOKEN_COINGECKO_ID.USDT },
+    USDC: { percent: 40, tokenId: TOKEN_COINGECKO_ID.USDC},
+    DAI: { percent: 5, tokenId: TOKEN_COINGECKO_ID.DAI },
 };
 
 const DAOASA_ASSET_DISTRIBUTION = {
-    DAI: { percent: 50, tokenId: TOKEN_COINGECKO_ID.DAI },
-    USDC: { percent: 45, tokenId: TOKEN_COINGECKO_ID.USDC },
-    USDT: { percent: 5, tokenId: TOKEN_COINGECKO_ID.USDT },
+    AVAX: { percent: 50, tokenId: TOKEN_COINGECKO_ID.AVAX},
+    DAI: { percent: 25, tokenId: TOKEN_COINGECKO_ID.DAI },
+    USDC: { percent: 22.5, tokenId: TOKEN_COINGECKO_ID.USDC },
+    USDT: { percent: 2.5, tokenId: TOKEN_COINGECKO_ID.USDT },
 };
 
 const DAOA2S_ASSET_DISTRIBUTION = {
     DAI: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
-    DAI: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
+    USDT: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
     USDC: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.USDC },
 };
 
