@@ -246,6 +246,66 @@ const testContracts = {
       ],
       network: constant.ETHEREUM,
     },
+    daoAXA: {
+      address: '0x0b0e5b52e14152308f9f952ff19c67ebeb7560bb',
+      abi: abi.avaxVaultContract,
+      strategyAddress: '',
+      strategyABI: [],
+      contractType: "daoAXA",
+      tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 2074684,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
+      network: constant.AVAX,
+    },
+    daoAXS: {
+      address: '0xdf9fc6774937bf42602be1f80ab3da8a0b2a8594',
+      abi: abi.avaxStableVaultContract,
+      strategyAddress: '',
+      strategyABI: [],
+      contractType: "daoAXS",
+      tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 2074783,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
+      network: constant.AVAX,
+    },
+    daoASA: {
+      address: '0x0d79f121fd1eb213e5dbde11edbe7744ecb51352',
+      abi: abi.avaxStableVaultContract,
+      strategyAddress: '',
+      strategyABI: [],
+      contractType: "daoASA",
+      tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 2074872,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
+      network: constant.AVAX,
+    },
+    daoA2S: {
+      address: '0x89d6fd8ba3eaf76687cf7b3d10f914cc445eaec1',
+      abi: abi.avaxStableVaultContract,
+      strategyAddress: '',
+      strategyABI: [],
+      contractType: "daoA2S",
+      tokenId: ["tether", "usd-coin", "dai"],
+      inceptionBlock: 2074921,
+      pnl:[
+        {db: "lp", tokenId: ""},
+        {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+        {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+      ],
+      network: constant.AVAX,
+    }
   },
   DVD: {
     address: "0x6639c554a299d58284e36663f609a7d94526fec0",
@@ -552,7 +612,67 @@ const mainContracts = {
         {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
       ],
       network: constant.ETHEREUM,
-    }
+    },
+    // daoAXA: {
+    //   address: '0x0b0e5b52e14152308f9f952ff19c67ebeb7560bb', // Update here
+    //   abi: abi.avaxVaultContract,
+    //   strategyAddress: '',
+    //   strategyABI: [],
+    //   contractType: "daoAXA",
+    //   tokenId: ["tether", "usd-coin", "dai"],
+    //   inceptionBlock: 2074684, // Update here
+    //   pnl:[
+    //     {db: "lp", tokenId: ""},
+    //     {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+    //     {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+    //   ],
+    //   network: constant.AVAX,
+    // },
+    // daoAXS: {
+    //   address: '0xdf9fc6774937bf42602be1f80ab3da8a0b2a8594', // Update here
+    //   abi: abi.avaxStableVaultContract,
+    //   strategyAddress: '',
+    //   strategyABI: [],
+    //   contractType: "daoAXS", 
+    //   tokenId: ["tether", "usd-coin", "dai"],
+    //   inceptionBlock: 2074783, // Update here
+    //   pnl:[
+    //     {db: "lp", tokenId: ""},
+    //     {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+    //     {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+    //   ],
+    //   network: constant.AVAX,
+    // },
+    // daoASA: {
+    //   address: '0x0d79f121fd1eb213e5dbde11edbe7744ecb51352', // Update here
+    //   abi: abi.avaxStableVaultContract, 
+    //   strategyAddress: '',
+    //   strategyABI: [],
+    //   contractType: "daoASA", 
+    //   tokenId: ["tether", "usd-coin", "dai"],
+    //   inceptionBlock: 2074872, // Update here
+    //   pnl:[
+    //     {db: "lp", tokenId: ""},
+    //     {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+    //     {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+    //   ],
+    //   network: constant.AVAX,
+    // },
+    // daoA2S: {
+    //   address: '0x89d6fd8ba3eaf76687cf7b3d10f914cc445eaec1', // Update here
+    //   abi: abi.avaxStableVaultContract,
+    //   strategyAddress: '',
+    //   strategyABI: [],
+    //   contractType: "daoA2S", // Update here
+    //   tokenId: ["tether", "usd-coin", "dai"],
+    //   inceptionBlock: 2074921,
+    //   pnl:[
+    //     {db: "lp", tokenId: ""},
+    //     {db: "btc", tokenId: constant.TOKEN_COINGECKO_ID.BTC},
+    //     {db: "eth", tokenId: constant.TOKEN_COINGECKO_ID.ETH},
+    //   ],
+    //   network: constant.AVAX,
+    // }
   },
   compund: {
     cUSDT: {
