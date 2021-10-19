@@ -39,7 +39,11 @@ const TOKEN_COINGECKO_ID = {
     BNB: "binancecoin",
     XVS: "venus",
     CAKE: "pancakeswap-token",
-    BUSD: "binance-usd"
+    BUSD: "binance-usd",
+    JOE: "joe",
+    PNG: "pangolin",
+    LYD: "lydia-finance",
+    AVAX: "avalanche-2",
 }
 
 const TOKEN_CHART_COLOR = {
@@ -151,7 +155,7 @@ const DAOSAFU_ASSET_DISTRIBUTION = {
     CAKE: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.CAKE},
     BUSD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.BUSD}
 };
-// Remember to update asset distribution
+
 const DAOTAS_ASSET_DISTRIBUTION = {
    BULLISH: {
         BTC: { percent: 50, tokenId: TOKEN_COINGECKO_ID.BTC },
@@ -162,6 +166,30 @@ const DAOTAS_ASSET_DISTRIBUTION = {
         ETH: { percent: 50,  tokenId: TOKEN_COINGECKO_ID.ETH },
    }
 }
+
+const DAOAXA_ASSET_DISTRIBUTION = {
+    JOE: { percent: 45, tokenId: TOKEN_COINGECKO_ID.JOE },
+    PNG: { percent: 45, tokenId: TOKEN_COINGECKO_ID.PNG },
+    LYD: { percent: 10, tokenId: TOKEN_COINGECKO_ID.LYD },
+};
+
+const DAOAXS_ASSET_DISTRIBUTION = {
+    JOE: { percent: 80, tokenId: TOKEN_COINGECKO_ID.JOE },
+    PNG: { percent: 10, tokenId: TOKEN_COINGECKO_ID.PNG },
+    LYD: { percent: 10, tokenId: TOKEN_COINGECKO_ID.LYD },
+};
+
+const DAOASA_ASSET_DISTRIBUTION = {
+    JOE: { percent: 50, tokenId: TOKEN_COINGECKO_ID.DAI },
+    PNG: { percent: 45, tokenId: TOKEN_COINGECKO_ID.USDC },
+    LYD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.USDT },
+};
+
+const DAOA2S_ASSET_DISTRIBUTION = {
+    JOE: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
+    PNG: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
+    LYD: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.USDC },
+};
 
 const CONTRACT_IDS = {
     DAOCDV: "daoCDV",
@@ -175,6 +203,10 @@ const CONTRACT_IDS = {
     DAODEGEN: "daoDEGEN",
     DAOSAFU: "daoSAFU",
     DAOTAS: "daoTAS",
+    DAOAXA: "daoAXA",
+    DAOAXS: "daoAXS",
+    DAOASA: "daoASA",
+    DAOA2S: "daoA2S"
 }
 
 const ETF_STRATEGIES = [
@@ -188,7 +220,11 @@ const ETF_STRATEGIES = [
     CONTRACT_IDS.DAOSTO2,
     CONTRACT_IDS.DAODEGEN,
     CONTRACT_IDS.DAOSAFU,
-    CONTRACT_IDS.DAOTAS
+    CONTRACT_IDS.DAOTAS,
+    CONTRACT_IDS.DAOAXA,
+    CONTRACT_IDS.DAOAXS,
+    CONTRACT_IDS.DAOASA,
+    CONTRACT_IDS.DAOA2S
 ];
 
 const STRATEGY_TYPE = {
@@ -242,6 +278,10 @@ module.exports = {
     DAODEGEN_ASSET_DISTRIBUTION,
     DAOSAFU_ASSET_DISTRIBUTION,
     DAOTAS_ASSET_DISTRIBUTION,
+    DAOAXA_ASSET_DISTRIBUTION,
+    DAOAXS_ASSET_DISTRIBUTION,
+    DAOASA_ASSET_DISTRIBUTION,
+    DAOA2S_ASSET_DISTRIBUTION,
     
     TOKEN_COINGECKO_ID,
     ETF_STRATEGIES,
