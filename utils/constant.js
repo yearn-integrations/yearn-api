@@ -180,15 +180,15 @@ const DAOAXS_ASSET_DISTRIBUTION = {
 };
 
 const DAOASA_ASSET_DISTRIBUTION = {
-    JOE: { percent: 50, tokenId: TOKEN_COINGECKO_ID.DAI },
-    PNG: { percent: 45, tokenId: TOKEN_COINGECKO_ID.USDC },
-    LYD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.USDT },
+    DAI: { percent: 50, tokenId: TOKEN_COINGECKO_ID.DAI },
+    USDC: { percent: 45, tokenId: TOKEN_COINGECKO_ID.USDC },
+    USDT: { percent: 5, tokenId: TOKEN_COINGECKO_ID.USDT },
 };
 
 const DAOA2S_ASSET_DISTRIBUTION = {
-    JOE: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
-    PNG: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
-    LYD: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.USDC },
+    DAI: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
+    DAI: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
+    USDC: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.USDC },
 };
 
 const CONTRACT_IDS = {
@@ -241,7 +241,11 @@ const STRATEGY_TYPE = {
     DAOSTONKS: "daoStonks",
     DAODEGEN: "daoDegen",
     DAOSAFU: "daoSafu",
-    TA: "daoTA"
+    TA: "daoTA",
+    DAOAXA: "daoAXA",
+    DAOAXS: "daoAXS",
+    DAOASA: "daoASA",
+    DAOA2S: "daoA2S",
 }
 
 module.exports = {
