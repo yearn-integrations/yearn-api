@@ -86,6 +86,30 @@ const getApyAttributeNameByStrategy = (strategyType) => {
                 { seriesName: "BTC", attributeName: "btc_performance" },
                 { seriesName: "ETH", attributeName: "eth_performance" },
             ];
+        case constant.STRATEGY_TYPE.DAOAXA:
+            return [
+                { seriesName: "DAO AXA", attributeName: "lp_performance"},
+                { seriesName: "BTC", attributeName: "btc_performance" },
+                { seriesName: "ETH", attributeName: "eth_performance" },
+            ];
+        case constant.STRATEGY_TYPE.DAOAXS:
+            return [
+                { seriesName: "DAO AXS", attributeName: "lp_performance"},
+                { seriesName: "BTC", attributeName: "btc_performance" },
+                { seriesName: "ETH", attributeName: "eth_performance" },
+            ];
+        case constant.STRATEGY_TYPE.DAOASA:
+            return [
+                { seriesName: "DAO ASA", attributeName: "lp_performance"},
+                { seriesName: "BTC", attributeName: "btc_performance" },
+                { seriesName: "ETH", attributeName: "eth_performance" },
+            ];
+        case constant.STRATEGY_TYPE.DAOA2S:
+            return [
+                { seriesName: "DAO A2S", attributeName: "lp_performance"},
+                { seriesName: "BTC", attributeName: "btc_performance" },
+                { seriesName: "ETH", attributeName: "eth_performance" },
+            ];
         default: 
             return [];
     }
