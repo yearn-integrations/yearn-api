@@ -95,9 +95,6 @@ const processChartData = (apys, strategyType, strategyId) => {
     const result = [];
     const apyAttributes = getApyAttributeNameByStrategy(strategyType);
 
-    const isEtfStrategies =  constant.ETF_STRATEGIES.includes(strategyId);
-    const timestampAttribute = isEtfStrategies ? "time_stamp" : "timestamp";
-   
     // Array item added into the result: [seriesName, [[timestamp, apy], [timestamp, apy]]]
     // First item in array item: series name, example: citadelApy, represent a line in line chart
     // Second item in array item: series data, Array of [timestamp, apy]
@@ -114,9 +111,7 @@ const processChartData = (apys, strategyType, strategyId) => {
 
     
     apys.forEach(data => {
-        const date = (!isEtfStrategies) 
-            ? data[timestampAttribute]
-            : data[timestampAttribute] * 1000; // from timestamp in seconds to timestamp in milliseconds
+        const date = dateTimeHelper.toMillisecondsTimestamp(data["date"]);
       
         apyAttributes.map((a, index) => {
             // Add APY into data, etf strategies or yearn aprs require to multiply by 100 for percentage
