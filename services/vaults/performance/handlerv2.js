@@ -2,6 +2,7 @@
 
 require("dotenv").config();
 const performanceDb = require("../../../models/performance.model");
+const totalDepositAmountDb = require("../../../models/total-deposited-amount.model");
 
 const delay = require("delay");
 const ethers = require("ethers");
@@ -36,17 +37,17 @@ const getTokenPrice = async(tokenId, date) => {
             return 1;
         }
     } catch (err){
-        console.error(`[performance/handlerv2] getTokenPrice(): `, err);
+        console.error(`[performance/handlerv2] getTokenPrice() ${tokenId}: `, err);
     }
 }
 
-const getTotalSupply = async(etf, vault, block) => {
+const getTotalSupply = async(etf, vault, block, network) => {
     let totalSupply = 0;
     try {
-        if(etf === "daoMPT") {
-          totalSupply = await vault.methods.totalSupply().call(undefined, block);
-        } else {
+        if(network === constant.ETHEREUM) {
           totalSupply = await vault.totalSupply({ blockTag: block });
+        } else {
+          totalSupply = await vault.methods.totalSupply().call(undefined, block);
         }
     } catch (err) {
         console.error(`[performance/handlerv2] getTotalSupply() for${etf}: `, err);
@@ -55,13 +56,22 @@ const getTotalSupply = async(etf, vault, block) => {
     }
 }
 
-const getTotalPool = async(etf, vault, block) => {
+const getTotalPool = async(etf, vault, block, network) => {
   let pool = 0;
+
+  const networks = [constant.POLYGON, constant.BSC];
+
   try {
       if(etf === "daoSTO") {
         pool = await vault.getTotalValueInPool({ blockTag: block });
-      } else if(etf === "daoMPT") {
-        pool = await vault.methods.getValueInPool().call(undefined, block);
+      } else if(networks.includes(network)) {
+        // BSC or Polygon Network
+        // Different function name for daoMPT
+        if(etf === "daoMPT") {
+          pool = await vault.methods.getValueInPool().call(undefined, block);
+        } else {
+          pool = await vault.methods.getAllPoolInUSD().call(undefined, block);
+        }
       } else {
         // daoELO, daoCDV, daoCUB, daoMVF using this
         pool = await vault.getAllPoolInUSD({ blockTag: block });
@@ -87,11 +97,12 @@ const calcLPTokenPriceUSD = (etf, totalSupply, totalPool, network) => {
       let newTotalPool = etfs.includes(etf)
           ? totalPool.mul(ethers.BigNumber.from("1000000000000"))
           : totalPool;
+
       lpPrice = newTotalPool.mul(ethers.BigNumber.from("1000000000000000000")).div(totalSupply);
       lpPrice = ethers.utils.formatEther(lpPrice);
-    } else if(network === constant.POLYGON) {
+    } else if(network === constant.POLYGON || network === constant.BSC) {
       lpPrice = (new BigNumber(totalPool)).dividedBy(totalSupply);
-    }
+    } 
   
     return lpPrice;
 }
@@ -125,6 +136,14 @@ const getSearchRange = async (firstBlock, lastBlock, network) => {
         1, // Duration, optional, integer. By default 1.
         true // Block after, optional. Search for the nearest block before or after the given date. By default true.
       );
+    }  else if (network === constant.BSC) {
+      days = await contractHelper.getEveryBSC(
+        "days", // Period, required. Valid value: years, quarters, months, weeks, days, hours, minutes
+        firstTimestamp, // Start date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+        lastTimestamp, // End date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+        1, // Duration, optional, integer. By default 1.
+        true // Block after, optional. Search for the nearest block before or after the given date. By default true.
+      );
     }
     return days;
 }
@@ -133,9 +152,8 @@ const getUnixTime = async (block, network) => {
   let timestamp = 0;
 
   try {
-    const blockInfo = (network === constant.ETHEREUM) 
-    ? (await provider.getBlock(block))
-    : (await contractHelper.getPolygonBlockInfo(block))
+
+    const blockInfo = await contractHelper.getBlockInformationByNetwork(block,network)
    
     timestamp =  blockInfo.timestamp;
   } catch(err) {
@@ -165,6 +183,35 @@ const getNextUpdateBlock = async (dateTime, network) => {
   } else if (network === constant.POLYGON) {
     const block = await contractHelper.getPolygonBlockByTimeline(nearestDateTime);
     return [block];
+  } else if (network === constant.BSC) {
+    const block = await contractHelper.getBSCBlockByTimeline(nearestDateTime);
+    return [block];
+  }
+}
+
+const getPricePerFullShare = async(etf, vault, block, network, pool, totalSupply) => {
+  const olderStrategies = ["daoCDV", "daoSTO", "daoELO", "daoCUB", "daoMPT"];
+  const tempStrategies = ["daoCDV2", "daoSTO2"]; // Strategies which required total deposited amount deducted
+  let pricePerFullShare = 0;
+
+  try {
+    if(olderStrategies.includes(etf) || tempStrategies.includes(etf)) {
+      pricePerFullShare = calcLPTokenPriceUSD(etf, totalSupply, pool, network);
+    } else {
+      // New strategies starts from Metaverse onwards
+      if(network !== constant.ETHEREUM) {
+        pricePerFullShare = await vault.methods.getPricePerFullShare().call(undefined, block);
+      } else {
+        pricePerFullShare = await vault.getPricePerFullShare({blockTag: block});
+      }
+      pricePerFullShare = pricePerFullShare.toString();
+      pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
+    }
+  } catch (err) {
+    console.error(`Error in getPricePerFullShare(): `, err);
+  } finally { 
+    console.log(`Price for ${etf}: ${pricePerFullShare}`);
+    return pricePerFullShare;
   }
 }
 
@@ -185,9 +232,10 @@ const syncHistoricalPerformance = async (dateTime) => {
       vault = new ethers.Contract(address, abi, provider);
     } else if (network === constant.POLYGON) {
       vault = await contractHelper.getPolygonContract(abi, address);
-    }
+    } else if (network === constant.BSC) {
+      vault = await contractHelper.getBSCContract(abi, address);
+    } 
      
-
     // Get latest record
     let latestEntry = await performanceDb.findLatest(etf);
     let dates;
@@ -215,12 +263,10 @@ const syncHistoricalPerformance = async (dateTime) => {
       }
     } else {
       const startBlock = etfContractInfo.inceptionBlock;
-      const latestBlock = (network === constant.ETHEREUM) 
-        ? await provider.getBlockNumber()
-        : await contractHelper.getPolygonCurrentBlockNumber();
+      const latestBlock = await contractHelper.getCurrentBlockNumberByNetwork(network);
       dates = await getSearchRange(startBlock, latestBlock, network);
     }
-
+  
     pnlSeries.forEach(p => {
       const attributeName = `${p.db}_inception_price`;
       basePrice[p.db] = latestRecord[attributeName] !== undefined ? latestRecord[attributeName] : 0;
@@ -229,17 +275,29 @@ const syncHistoricalPerformance = async (dateTime) => {
 
     for (const date of dates) {
       try {
-        const totalSupply = await getTotalSupply(etf, vault, date.block);
+        const totalSupply = await getTotalSupply(etf, vault, date.block, network);
         await delay(1000);
-        const totalPool = await getTotalPool(etf, vault, date.block);
+        let totalPool = await getTotalPool(etf, vault, date.block, network);
+      
+        // Temporary solution
+        let totalDepositedAmount = 0;
+        let oriTotalPool = 0;
+        if(["daoCDV2","daoSTO2"].includes(etf)) {
+          const latestTotalDepositAmount = await totalDepositAmountDb.getLatestTotalAmountDepositInfo(etf);
+    
+          if(latestTotalDepositAmount && latestTotalDepositAmount.length > 0) {
+            totalDepositedAmount = latestTotalDepositAmount[0].totalDepositedAmount;
+            totalDepositedAmount = (totalDepositedAmount * 10 ** 18).toString();
+            totalDepositedAmount = ethers.BigNumber.from(totalDepositedAmount);
+            oriTotalPool = totalPool;
+            totalPool = totalPool.sub(totalDepositedAmount);
+          }
+        }
 
-        currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
+        // currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
+        currentPrice["lp"] = await getPricePerFullShare(etf, vault, date.block, network, totalPool, totalSupply);
         
-        // base price = lp inception price. If not running cronjob for first time and
-        // strategy LP haven't get its first non-zero inception price
-        // and in this loop, current price > 0
-        // set current price as base price and inception for the strategy
-        if (basePrice["lp"] === 0 && currentPrice["lp"] > 0) {
+        if (basePrice["lp"] === 0) {
           basePrice["lp"] = currentPrice["lp"];
           inceptionPrice["lp"] = basePrice["lp"];
         }
@@ -254,6 +312,11 @@ const syncHistoricalPerformance = async (dateTime) => {
           lp_token_price_usd:  currentPrice["lp"].toString(),
           lp_inception_price: inceptionPrice["lp"].toString(),
         };
+
+        if(["daoCDV2","daoSTO2"].includes(etf)) {
+          data["total_pending_amount"] = totalDepositedAmount.toString();
+          data["total_pool_usd"] = oriTotalPool.toString();
+        }
 
         for(let i = 0; i < pnlSeries.length; i++) {
           const seriesName = pnlSeries[i].db;
@@ -283,7 +346,7 @@ const syncHistoricalPerformance = async (dateTime) => {
         await performanceDb.add(etf, data);
         console.log(`${etf} Data for ${date.date} saved to db.`);
       } catch (err) {
-        console.error(`Error in syncHistoricalPerformance(): `, err);
+        console.error(`Error in syncHistoricalPerformance() ${etf}: `, err);
       }
     }
   }

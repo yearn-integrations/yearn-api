@@ -32,6 +32,14 @@ const TOKEN_COINGECKO_ID = {
     MVI: "metaverse-index",
     MMSFT: "mirrored-microsoft", // Remember to add this.
     MTWTR: "mirrored-twitter", // Remember to add this.
+    BUNNY: "pancake-bunny",
+    AUTO: "auto",
+    EPS: "ellipsis",
+    XVS: "venus",
+    BNB: "binancecoin",
+    XVS: "venus",
+    CAKE: "pancakeswap-token",
+    BUSD: "binance-usd"
 }
 
 const TOKEN_CHART_COLOR = {
@@ -119,7 +127,6 @@ const DAOCDV2_ASSET_DISTRIBUTION = {
     DAI: { percent: 5, tokenId: TOKEN_COINGECKO_ID.DAI },
 };
 
-// Remember to update this according to actual propotion
 const DAOSTO2_ASSET_DISTRIBUTION = {
     MMSFT: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MMSFT },
     MTWTR: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MTWTR},
@@ -130,6 +137,32 @@ const DAOSTO2_ASSET_DISTRIBUTION = {
     MNFLX: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MNFLX},
 };
 
+const DAODEGEN_ASSET_DISTRIBUTION = {
+    BUNNY: { percent: 25, tokenId: TOKEN_COINGECKO_ID.BUNNY},
+    AUTO: { percent: 25, tokenId: TOKEN_COINGECKO_ID.AUTO},
+    EPS: { percent: 25, tokenId: TOKEN_COINGECKO_ID.EPS},
+    XVS: { percent: 25, tokenId: TOKEN_COINGECKO_ID.XVS}
+};
+
+const DAOSAFU_ASSET_DISTRIBUTION = {
+    BTC: { percent: 45, tokenId: TOKEN_COINGECKO_ID.BTC },
+    BNB: { percent: 35, tokenId: TOKEN_COINGECKO_ID.BNB },
+    XVS: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.XVS },
+    CAKE: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.CAKE},
+    BUSD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.BUSD}
+};
+// Remember to update asset distribution
+const DAOTAS_ASSET_DISTRIBUTION = {
+   BULLISH: {
+        BTC: { percent: 50, tokenId: TOKEN_COINGECKO_ID.BTC },
+        ETH: { percent: 50,  tokenId: TOKEN_COINGECKO_ID.ETH },
+   },
+   BEARISH: {
+        USDC: { percent: 50, tokenId: TOKEN_COINGECKO_ID.USDC },
+        ETH: { percent: 50,  tokenId: TOKEN_COINGECKO_ID.ETH },
+   }
+}
+
 const CONTRACT_IDS = {
     DAOCDV: "daoCDV",
     DAOELO: "daoELO",
@@ -138,7 +171,10 @@ const CONTRACT_IDS = {
     DAOMPT: "daoMPT",
     DAOMVF: "daoMVF",
     DAOCDV2: "daoCDV2",
-    DAOSTO2: "daoSTO2"
+    DAOSTO2: "daoSTO2",
+    DAODEGEN: "daoDEGEN",
+    DAOSAFU: "daoSAFU",
+    DAOTAS: "daoTAS",
 }
 
 const ETF_STRATEGIES = [
@@ -149,7 +185,10 @@ const ETF_STRATEGIES = [
     CONTRACT_IDS.DAOMPT,
     CONTRACT_IDS.DAOMVF,
     CONTRACT_IDS.DAOCDV2,
-    CONTRACT_IDS.DAOSTO2
+    CONTRACT_IDS.DAOSTO2,
+    CONTRACT_IDS.DAODEGEN,
+    CONTRACT_IDS.DAOSAFU,
+    CONTRACT_IDS.DAOTAS
 ];
 
 const STRATEGY_TYPE = {
@@ -164,12 +203,16 @@ const STRATEGY_TYPE = {
     METAVERSE: "metaverse",
     CITADELV2: "citadelv2",
     DAOSTONKS: "daoStonks",
+    DAODEGEN: "daoDegen",
+    DAOSAFU: "daoSafu",
+    TA: "daoTA"
 }
 
 module.exports = {
     // Network Category
     ETHEREUM: "ethereum",
     POLYGON: "polygon",
+    BSC: "bsc",
 
     // Tokens
     ETH: "ETH",
@@ -195,6 +238,9 @@ module.exports = {
     DAOMPT_ASSET_DISTRIBUTION,
     DAOMVF_ASSET_DISTRIBUTION,
     DAOSTO2_ASSET_DISTRIBUTION,
+    DAODEGEN_ASSET_DISTRIBUTION,
+    DAOSAFU_ASSET_DISTRIBUTION,
+    DAOTAS_ASSET_DISTRIBUTION,
     
     TOKEN_COINGECKO_ID,
     ETF_STRATEGIES,

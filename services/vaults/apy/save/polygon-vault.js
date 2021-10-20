@@ -26,6 +26,7 @@ const testVaults = [
         price_id: ["tether", "usd-coin", "dai"],
         isMoneyPrinter: true,
         network: constant.POLYGON,
+        triggerDuration: 5
     },
 ];
 
@@ -53,6 +54,7 @@ const mainVaults = [
         price_id: ["tether", "usd-coin", "dai"],
         isMoneyPrinter: true,
         network: constant.POLYGON,
+        triggerDuration: 5
     },
 ];
 

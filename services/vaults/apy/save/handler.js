@@ -119,36 +119,8 @@ const getFaangPricePerFullShare = async (contract, block, inceptionBlockNbr) => 
   return pricePerFullShare;
 }
 
-const getMetaversePricePerFullShare = async(contract, block, inceptionBlockNumber) => {
-  const contractDidntExist = block < inceptionBlockNumber;
-  const inceptionBlock = block === inceptionBlockNumber;
-
-  if (inceptionBlock) {
-    return 1e18;
-  }
-  if (contractDidntExist) {
-    return 0;
-  }
-
-  let pricePerFullShare = 0;
-  try {
-    // pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
-    const pool = await contract.methods.getAllPoolInUSD().call(undefined, block);
-    const totalSupply = await contract.methods.totalSupply().call(undefined, block);
-
-    if(parseInt(pool) === 0 || parseInt(totalSupply) === 0) {
-      pricePerFullShare = 0;
-    } else {
-      pricePerFullShare = pool / totalSupply;
-    }
-  } catch (err) {
-    console.error(`[apy/save/handler]Error in getMetaversePricePerFullShare(): `, err);
-  } finally {
-    return pricePerFullShare;
-  }
-}
-
-const getCitadelV2PricePerFullShare = async(contract, block, inceptionBlockNumber) => {
+// For new strategies from metaverse onwards
+const getPricePerFullShare = async(contract, block, inceptionBlockNumber, vaultSymbol) => {
   const contractDidntExist = block < inceptionBlockNumber;
   const inceptionBlock = block === inceptionBlockNumber;
 
@@ -164,38 +136,17 @@ const getCitadelV2PricePerFullShare = async(contract, block, inceptionBlockNumbe
     pricePerFullShare = await contract.methods.getPricePerFullShare().call(undefined, block);
     pricePerFullShare = new BigNumber(pricePerFullShare).shiftedBy(-18).toNumber();
   } catch (err) {
-    console.error(`[apy/save/handler]Error in getCitadelV2PricePerFullShare(): `, err);
+    console.error(`[apy/save/handler]Error in getPricePerFullShare() ${vaultSymbol}: `, err);
   } finally {
     return pricePerFullShare;
   }
 }
 
-const getDaoStonksPricePerFullShare = async(contract, block, inceptionBlockNumber) => {
-  const contractDidntExist = block < inceptionBlockNumber;
-  const inceptionBlock = block === inceptionBlockNumber;
-
-  if (inceptionBlock) {
-    return 1e18;
-  }
-  if (contractDidntExist) {
-    return 0;
-  }
-
-  let pricePerFullShare = 0;
-  try {
-    const pool = await contract.methods.getAllPoolInUSD().call(undefined, block);
-    const totalSupply = await contract.methods.totalSupply().call(undefined, block);
-
-    if(parseInt(pool) === 0 || parseInt(totalSupply) === 0) {
-      pricePerFullShare = 0;
-    } else {
-      pricePerFullShare = pool / totalSupply;
-    }
-  } catch (err) {
-    console.error(`[apy/save/handler]Error in getDaoStonksPricePerFullShare(): `, err);
-  } finally {
-    return pricePerFullShare;
-  }
+const calculateApy = (triggerDuration, currentPrice, oneDayAgoPrice) => {
+  const n = 365 / triggerDuration; // Assume 2 days to trigger invest function
+  const apr = (currentPrice - oneDayAgoPrice) * n;
+  const apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
+  return (isNaN(apy) || apy === Infinity) ? 0 : apy;
 }
 
 const getApyForVault = async (vault, contracts) => {
@@ -203,6 +154,8 @@ const getApyForVault = async (vault, contracts) => {
     lastMeasurement: inceptionBlockNbr,
     vaultContractABI: abi,
     vaultContractAddress: address,
+    triggerDuration,
+    vaultSymbol
   } = vault;
   
   if (vault.isCitadel) {
@@ -307,101 +260,15 @@ const getApyForVault = async (vault, contracts) => {
       cubanApy: 0,
       faangApy: apy,
     }
-  } else if (vault.isMetaverse) {
+  } else {
     const contract = await contractHelper.getEthereumContract(abi, address);
-    
-    let pricePerFullShareCurrent = await getMetaversePricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    let pricePerFullShareOneDayAgo = await getMetaversePricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
-    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
-    pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
-
-    // APY Calculation
-    const n = 365 / 2; // Assume 2 days to trigger invest function
-    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-    let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
-
-    if(apy === Infinity) {
-      apy = 0;
-    }
-
+    const currentPrice = await getPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr, vaultSymbol);
+    const oneDayPrice = await getPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr, vaultSymbol);
+    const apy = await calculateApy(triggerDuration, currentPrice, oneDayPrice);
     return {
-      apyInceptionSample: 0,
-      apyOneDaySample: 0,
-      apyThreeDaySample: 0,
-      apyOneWeekSample: 0,
-      apyOneMonthSample: 0,
-      apyLoanscan: 0,
-      compoundApy: 0,
-      citadelApy: 0,
-      elonApy: 0,
-      cubanApy: 0,
-      faangApy: 0,
-      metaverseApy: apy
-    }
-  } else if (vault.isCitadelV2) {
-    const contract = await contractHelper.getEthereumContract(abi, address);
-    
-    let pricePerFullShareCurrent = await getCitadelV2PricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    let pricePerFullShareOneDayAgo = await getCitadelV2PricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
-    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
-    pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
-
-    // APY Calculation
-    const n = 365 / 2; // Assume 2 days to trigger invest function
-    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-    let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
-
-    if(apy === Infinity) {
-      apy = 0;
-    }
-
-    return {
-      apyInceptionSample: 0,
-      apyOneDaySample: 0,
-      apyThreeDaySample: 0,
-      apyOneWeekSample: 0,
-      apyOneMonthSample: 0,
-      apyLoanscan: 0,
-      compoundApy: 0,
-      citadelApy: 0,
-      elonApy: 0,
-      cubanApy: 0,
-      faangApy: 0,
-      citadelv2Apy: apy
-    }
-  } else if (vault.isDaoStonks) {
-    const contract = await contractHelper.getEthereumContract(abi, address);
-    
-    let pricePerFullShareCurrent = await getDaoStonksPricePerFullShare(contract, currentBlockNbr, inceptionBlockNbr);
-    let pricePerFullShareOneDayAgo = await getDaoStonksPricePerFullShare(contract, oneDayAgoBlock, inceptionBlockNbr);
-    pricePerFullShareCurrent = (0 < pricePerFullShareCurrent) ? pricePerFullShareCurrent : 1;
-    pricePerFullShareOneDayAgo = (0  < pricePerFullShareOneDayAgo) ? pricePerFullShareOneDayAgo : 1;
-
-    // APY Calculation
-    const n = 365 / 2; // Assume 2 days to trigger invest function
-    const apr = (pricePerFullShareCurrent - pricePerFullShareOneDayAgo) * n;
-    let apy = (Math.pow((1 + (apr / 100) / n), n) - 1) * 100;
-
-    if(apy === Infinity) {
-      apy = 0;
-    }
-
-    return {
-      apyInceptionSample: 0,
-      apyOneDaySample: 0,
-      apyThreeDaySample: 0,
-      apyOneWeekSample: 0,
-      apyOneMonthSample: 0,
-      apyLoanscan: 0,
-      compoundApy: 0,
-      citadelApy: 0,
-      elonApy: 0,
-      cubanApy: 0,
-      faangApy: 0,
-      metaverseApy: 0,
-      daoStonksApy: apy
-    }
-  } 
+      apy: apy
+    };
+  }
 };
 
 const readVault = async (vault, contracts) => {
@@ -478,6 +345,5 @@ module.exports.getCitadelPricePerFullShare = getCitadelPricePerFullShare;
 module.exports.getElonPricePerFullShare = getElonPricePerFullShare;
 module.exports.getCubanPricePerFullShare = getCubanPricePerFullShare;
 module.exports.getFaangPricePerFullShare = getFaangPricePerFullShare;
-module.exports.getMetaversePricePerFullShare = getMetaversePricePerFullShare;
-module.exports.getCitadelV2PricePerFullShare = getCitadelV2PricePerFullShare;
-module.exports.getDaoStonksPricePerFullShare = getDaoStonksPricePerFullShare;
+module.exports.getPricePerFullShare = getPricePerFullShare;
+module.exports.calculateApy = calculateApy;

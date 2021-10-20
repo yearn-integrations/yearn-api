@@ -5,13 +5,12 @@ const { findAllVaultCategory: findAllVaults } = require("../category/handler");
 const { findAllStrategiesAssetDistribution } = require("../distribution/handler");
 const { getVaultsStatistics } = require("../../user/vaults/statistics/handler");
 const { findAllHistoricalAPY } = require("../apy/save/historical-handle");
-const { calculatePerformance } = require("../performance/handlerv2");
 const { calculateStrategyPNL } = require("../performance/handler");
+const { getLatestTotalAmountDepositInfo } = require("../totalDepositedAmount/handler");
 const performanceDb = require("../../../models/performance.model");
 const contractHelper = require("../../../utils/contract");
 const dateTimeHelper = require("../../../utils/dateTime");
 const constant = require("../../../utils/constant");
-const moment = require("moment");
 
 let contracts;
 
@@ -39,6 +38,20 @@ const getStatisticsInfo = (statistics, vaultAddress) => {
     return vaultStatistic;
 }
 
+const findAllDepositedAmount = async() => {
+    const strategies = ["daoCDV2", "daoSTO2"];
+    const resultMap = {};
+    for(const s of strategies) {
+        const totalDepositedAmount = await getLatestTotalAmountDepositInfo(s);
+        resultMap[s] = (totalDepositedAmount === undefined || 
+            totalDepositedAmount.length <= 0 || 
+            totalDepositedAmount[0].totalDepositedAmount === null) 
+            ? 0
+            : totalDepositedAmount[0].totalDepositedAmount;
+    }
+    return resultMap;
+}
+
 const findAllPerformance = async () => {
     const etfTypeStrategies = constant.ETF_STRATEGIES;
     const period = "1y";
@@ -63,13 +76,14 @@ const findAllPerformance = async () => {
 const proccessingVault = async (obj) => {
    const { vaults } = obj;
 
-   const [tvls, apys, daominePools, vaultContracts, performances, assetsDistribution] = await Promise.all([
+   const [tvls, apys, daominePools, vaultContracts, performances, assetsDistribution, totalDepositedAmounts] = await Promise.all([
         findAllTVL(contracts),
         findVaultsApy(),
         findAllPool(),
         findAllVaults(),
         findAllPerformance(),
         findAllStrategiesAssetDistribution(),
+        findAllDepositedAmount()
         // findAllHistoricalAPY(startTime.unix(), network),
         // getVaultsStatistics(userAddress, network),
    ]);
@@ -91,6 +105,11 @@ const proccessingVault = async (obj) => {
         if (etfStrategies.includes(key)) {
             obj["pnl"] = performances[key];
             obj["asset_distribution"] = assetsDistribution[key];
+        }
+
+        // Temp Solution
+        if(["daoCDV2", "daoSTO2"].includes(key)) {
+            obj["totalDepositedAmount"] = totalDepositedAmounts[key];
         }
         results[key] = obj;
     });

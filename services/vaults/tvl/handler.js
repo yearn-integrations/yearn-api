@@ -108,10 +108,6 @@ const getTVL = async (vault) => {
       const contract = await getContract(vault);
       const usdPool = await contract.methods.getAllPoolInUSD().call();
       tvl = usdPool / 10 ** 6; // All pool in USD (6 decimals follow USDT)
-    } else if (vault.contractType === "metaverse" || vault.contractType === "citadelv2" || vault.contractType === "daoStonks") {
-      const contract = await getContract(vault);
-      const usdPool = await contract.methods.getAllPoolInUSD().call();
-      tvl = usdPool / 10 ** 18; // Check from code, Pool In USD returns in 18 decimals
     } else if(vault.contractType === 'daoFaang'){
       const contract = await getContract(vault);
       const poolAmount = await contract.methods.getTotalValueInPool().call();
@@ -122,6 +118,10 @@ const getTVL = async (vault) => {
       const poolAmount = await contract.methods.getValueInPool().call();
       const decimals = await contract.methods.decimals().call();
       tvl = poolAmount / 10 ** decimals;
+    } else {
+      const contract = await getContract(vault);
+      const usdPool = await contract.methods.getAllPoolInUSD().call();
+      tvl = usdPool / 10 ** 18; // Check from code, Pool In USD returns in 18 decimals
     }
   } catch (err) {
     console.error(`Error in getTVL(), while getting TVL for ${address}: `);
@@ -253,58 +253,31 @@ module.exports.saveAllTVLhandler = async () => {
 /* HANDLERS */
 
 module.exports.tvlHandle = async (req, res) => {
-  // check if vault param is input
-  if (req.params.farmer === null || req.params.farmer === "") {
+  let result = null;
+  let message = "Successful response";
+
+  try {
+    if(req.params.farmer === null || req.params.farmer === "")  {
+      throw (`Strategy ID is empty`);
+    }
+
+    const strategyId = req.params.farmer;
+    if(!contractHelper.checkIsValidStrategyId(strategyId)) {
+      throw(`Invalid Strategy ID`);
+    }
+
+    const collectionName = `${strategyId}_tvl`;
+    result = await db.getTVL(collectionName, { limit: 1 });
+
+  } catch (err) {
+    message = err;
+    console.error(`Error in tvlHandle(): `, err);
+  } finally {
     res.status(200).json({
-      message: "Farmer is empty.",
-      body: null,
-    });
-  }
-
-  let collection = "";
-
-  switch (req.params.farmer) {
-    case db.daoCDVFarmer:
-      collection = db.daoCDVFarmer;
-      break;
-    case db.daoELOFarmer:
-      collection = db.daoELOFarmer;
-      break;
-    case db.daoCUBFarmer:
-      collection = db.daoCUBFarmer;
-      break;
-    case db.daoSTOFarmer:
-      collection = db.daoSTOFarmer;
-      break;
-    case db.daoMPTFarmer: 
-      collection = db.daoMPTFarmer;
-      break;
-    case db.daoMVFFarmer: 
-      collection = db.daoMVFFarmer;
-      break;
-    case db.daoCDV2Farmer: 
-      collection = db.daoCDV2Farmer;
-      break;
-    case db.daoSTO2Farmer: 
-      collection = db.daoSTO2Farmer;
-      break;
-    default:
-      res.status(200).json({
-        message: "Invalid Farmer",
-        body: null,
-      });
-      return;
-  }
-
-
-  const result = await db.getTVL(collection, { limit: 1 });
-  if (result) {
-    res.status(200).json({
-      message: `TVL for ${req.params.farmer}`,
+      message: message,
       body: result,
     });
-  }
-  return;
+  } 
 };
 
 module.exports.getAllTVLHandler = async(req, res) => {

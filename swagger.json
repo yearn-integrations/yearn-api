@@ -26,7 +26,7 @@
           {
             "name": "network",
             "in": "path",
-            "description": "Network to be query. Example: 'ethereum', 'polygon",
+            "description": "Network to be query. Example: 'ethereum', 'polygon', 'bsc'",
             "required": true,
             "type": "string"
           }
@@ -43,7 +43,7 @@
           {
             "name": "farmer",
             "in": "path",
-            "description": "Vault ID with '_price'",
+            "description": "Vault ID",
             "required": true,
             "type": "string"
           },
@@ -67,7 +67,7 @@
           {
             "name": "network",
             "in": "path",
-            "description": "Network. Example: 'ethereum', 'polygon'",
+            "description": "Network. Example: 'ethereum', 'polygon', 'bsc'",
             "required": true,
             "type": "string"
           },
@@ -143,7 +143,7 @@
           {
             "name": "network",
             "in": "path",
-            "description": "Network. Example: 'ethereum', 'polygon' ",
+            "description": "Network. Example: 'ethereum', 'polygon', 'bsc' ",
             "required": true,
             "type": "string"
           },
@@ -174,7 +174,7 @@
           {
             "name": "network",
             "in": "path",
-            "description": "Network. Example: 'ethereum', 'polygon' ",
+            "description": "Network. Example: 'ethereum', 'polygon' , 'bsc'",
             "required": true,
             "type": "string"
           }
@@ -198,7 +198,7 @@
           {
             "name": "network",
             "in": "path",
-            "description": "Network. Example: 'ethereum', 'polygon' ",
+            "description": "Network. Example: 'ethereum', 'polygon' , 'bsc'",
             "required": true,
             "type": "string"
           }
@@ -223,7 +223,7 @@
           {
             "name": "farmer",
             "in": "path",
-            "description": "Vault ID with '_tvl'",
+            "description": "Vault ID",
             "required": true,
             "type": "string"
           }

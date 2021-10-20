@@ -3,13 +3,16 @@ const constant = require("./constant");
 
 const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT; // Ethereum
 const archiveNodePolygonUrl = process.env.POLYGON_ARCHIVENODE_ENDPOINT; // Polygon
+const archiveNodeBSCUrl = process.env.BSC_ARCHIVENODE_ENDPOINT; // BSC
 
 const web3 = new Web3(archiveNodeUrl);
 const polygonWeb3 = new Web3(archiveNodePolygonUrl);
+const bscWeb3 = new Web3(archiveNodeBSCUrl);
 
 const EthDater = require("../services/vaults/apy/save/ethereum-block-by-date");
 const ethereumBlocks = new EthDater(web3, 1000);
 const polygonBlocks = new EthDater(polygonWeb3, 1000);
+const bscBlocks = new EthDater(bscWeb3, 1000);
 
 const { testContracts, mainContracts } = require("../config/serverless/domain");
 
@@ -33,6 +36,16 @@ module.exports.getPolygonContract = async (abi, address) => {
     }
 }
 
+// Create BSC network contract
+module.exports.getBSCContract = async(abi, address) => {
+    try {
+        const contract = new bscWeb3.eth.Contract(abi, address);
+        return contract;
+    } catch (err) {
+        console.log("Error in getBSCContract()", err);
+    }
+}
+
 module.exports.getContract = async (abi, address, network) => {
     try {
         switch(network) {
@@ -40,6 +53,8 @@ module.exports.getContract = async (abi, address, network) => {
                 return this.getEthereumContract(abi, address);
             case constant.POLYGON: 
                 return this.getPolygonContract(abi, address);
+            case constant.BSC: 
+                return this.getBSCContract(abi, address);
             default:
                 return this.getEthereumContract(abi, address);
         }
@@ -64,7 +79,35 @@ module.exports.getPolygonCurrentBlockNumber = async() => {
         const currentBlockNumber = await polygonWeb3.eth.getBlockNumber();
         return currentBlockNumber;
     } catch (err) {
-        console.log('Error in getEthereumCurrentBlockNumber()', err);
+        console.log('Error in getPolygonCurrentBlockNumber()', err);
+    }
+}
+
+// Get current block number by network
+module.exports.getCurrentBlockNumberByNetwork = async(network) => {
+    try {
+        switch(network) {
+            case constant.ETHEREUM: 
+                return this.getEthereumCurrentBlockNumber();
+            case constant.POLYGON: 
+                return this.getPolygonCurrentBlockNumber();
+            case constant.BSC: 
+                return this.getBSCCurrentBlockNumber();
+            default: 
+                return 0;
+        }
+    } catch (err) {
+        console.log('Error in getCurrentBlockNumberByNetwork()', err);
+    }
+}
+
+// Get current block number for BSC
+module.exports.getBSCCurrentBlockNumber = async() => {
+    try {
+        const currentBlockNumber = await bscWeb3.eth.getBlockNumber();
+        return currentBlockNumber;
+    } catch (err) {
+        console.log('Error in getBSCCurrentBlockNumber()', err);
     }
 }
 
@@ -95,12 +138,30 @@ module.exports.getPolygonBlockByTimeline = async(timeline) => {
     }
 }
 
+// Get BSC Block By Timeline
+module.exports.getBSCBlockByTimeline = async(timeline) => {
+    try {
+        return (await bscBlocks.getDate(timeline));
+    } catch (err) {
+        console.log('Error in getBSCBlockByTimeline()', err);
+    }
+}
+
 // Get Polygon block number by timeline
 module.exports.getPolygonBlockNumberByTimeline = async(timeline) => {
     try {
         return (await polygonBlocks.getDate(timeline)).block;
     } catch (err) {
         console.log('Error in getPolygonBlockNumberByTimeline()', err);
+    }
+}
+
+// Get BSC
+module.exports.getBscBlockNumberByTimeline = async(timeline) => {
+    try {
+        return (await bscBlocks.getDate(timeline)).block;
+    } catch (err) {
+        console.log('Error in getBscBlockNumberByTimeline()', err);
     }
 }
 
@@ -141,6 +202,21 @@ module.exports.getEveryPolygon = async (duration, start, end, every, after) => {
     }
 }
 
+// Get First Block for every period stated within start and end, for BSC only 
+module.exports.getEveryBSC = async (duration, start, end, every, after) => {
+    try {
+        return await bscBlocks.getEvery(
+            duration,
+            start, 
+            end,
+            every, 
+            after
+        );
+    } catch (err) {
+        console.error(`Error in getEveryBSC(): `, err);
+    }
+}
+
 // Get block information (Ethereum)
 module.exports.getEthereumBlockInfo = async (blockNumber) => {
     try {
@@ -161,12 +237,24 @@ module.exports.getPolygonBlockInfo = async (blockNumber) => {
         }
         return await polygonWeb3.eth.getBlock(blockNumber);
     } catch (err) {
-        console.log("Error in getEthereumBlockInfo(): ", err);
+        console.log("Error in getPolygonBlockInfo(): ", err);
+    }
+}
+
+// Get block information (BSC)
+module.exports.getBscBlockInfo = async(blockNumber) => {
+    try {
+        if(!blockNumber) {
+            return null;
+        }
+        return await bscWeb3.eth.getBlock(blockNumber);
+    } catch (err) {
+        console.log("Error in getBscBlockInfo(): ", err);
     }
 }
 
 // Get block information by network 
-module.exports.getBlockInformation = async (blockNumber, network) => {
+module.exports.getBlockInformationByNetwork = async (blockNumber, network) => {
     try {
         if(!network || !blockNumber) {
             return null;
@@ -176,6 +264,9 @@ module.exports.getBlockInformation = async (blockNumber, network) => {
         }
         if(network === constant.POLYGON) {
             return await this.getPolygonBlockInfo(blockNumber);
+        }
+        if(network === constant.BSC) {
+            return await this.getBscBlockInfo(blockNumber);
         }
     } catch (err) {
         console.log("Error in getBlockInformation(): ", err);
@@ -219,6 +310,24 @@ module.exports.balanceOf = async(contract, address) => {
         console.error(`Error in balanceOf(): `, err);
     } finally {
         return balanceOf;
+    }
+}
+
+module.exports.checkIsValidStrategyId = (strategyId) => {
+    let result = false;
+    try { 
+        if(strategyId === null || strategyId === "" || strategyId === undefined) {
+            throw(`Missing strategy ID`);
+        }
+
+        const contracts = this.getContractsFromDomain();
+        const strategies = Object.keys(contracts.farmer);
+
+        result = strategies.includes(strategyId);
+    } catch(err) {
+        console.error(`Error in checkIsValidStrategyId(): `, err);
+    } finally {
+        return result;
     }
 }
 
