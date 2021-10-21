@@ -145,10 +145,10 @@ const DAODEGEN_ASSET_DISTRIBUTION = {
 };
 
 const DAOSAFU_ASSET_DISTRIBUTION = {
-    BTC: { percent: 45, tokenId: TOKEN_COINGECKO_ID.BTC },
-    BNB: { percent: 35, tokenId: TOKEN_COINGECKO_ID.BNB },
-    XVS: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.XVS },
-    CAKE: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.CAKE},
+    BTC: { percent: 40, tokenId: TOKEN_COINGECKO_ID.BTC },
+    ETH: { percent: 25, tokenId: TOKEN_COINGECKO_ID.ETH },
+    BNB: { percent: 20, tokenId: TOKEN_COINGECKO_ID.BNB },
+    CAKE: { percent: 10, tokenId: TOKEN_COINGECKO_ID.CAKE},
     BUSD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.BUSD}
 };
 // Remember to update asset distribution
