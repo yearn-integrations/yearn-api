@@ -82,7 +82,7 @@ const getApyAttributeNameByStrategy = (strategyType) => {
             ];
         case constant.STRATEGY_TYPE.TA:
             return [
-                { seriesName: "DAO TA", attributeName: "lp_performance"},
+                { seriesName: "DAO Golden Cross", attributeName: "lp_performance"},
                 { seriesName: "BTC", attributeName: "btc_performance" },
                 { seriesName: "ETH", attributeName: "eth_performance" },
             ];
