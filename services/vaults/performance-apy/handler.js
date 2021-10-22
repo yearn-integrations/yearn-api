@@ -61,7 +61,7 @@ const getApyAttributeNameByStrategy = (strategyType) => {
                 { seriesName: "Citadel V2", attributeName: "lp_performance" },
                 { seriesName: "BTC", attributeName: "btc_performance" },
                 { seriesName: "ETH", attributeName: "eth_performance" },
-            ];
+            ];        
         case constant.STRATEGY_TYPE.DAOSTONKS: 
             return [
                 { seriesName: "DAO Stonks", attributeName: "lp_performance" },
