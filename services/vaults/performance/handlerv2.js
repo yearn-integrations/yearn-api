@@ -306,7 +306,7 @@ const syncHistoricalPerformance = async (dateTime) => {
         // currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
         currentPrice["lp"] = await getPricePerFullShare(etf, vault, date.block, network, totalPool, totalSupply);
         
-        if (basePrice["lp"] === 0) {
+        if (parseFloat(basePrice["lp"]) === parseFloat(0)) {
           basePrice["lp"] = currentPrice["lp"];
           inceptionPrice["lp"] = basePrice["lp"];
         }
@@ -314,8 +314,8 @@ const syncHistoricalPerformance = async (dateTime) => {
         const data = {
           date: date.date,
           date: date.date,
-          time_stamp: date.timestamp,
-          block: date.block,
+          time_stamp: dateTimeHelper.toMillisecondsTimestamp(date.date), // time_stamp: date.timestamp,
+          block: date.block, 
           total_supply: totalSupply.toString(),
           total_pool_usd: totalPool.toString(),
           lp_token_price_usd:  currentPrice["lp"].toString(),

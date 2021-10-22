@@ -1,12 +1,10 @@
 const contractHelper = require("../../../utils/contract");
 const dateTimeHelper = require("../../../utils/dateTime");
 const constant = require("../../../utils/constant");
-const { processPerformanceData, calculateStrategyPNL } = require("../../vaults/performance/handler");
+const { processPerformanceData, calculateStrategyPNL, findPerformanceWithTimePeriods } = require("../../vaults/performance/handler");
 const { getYearnAPY, getCompoundAPY } = require("../../vaults/apy/handler");
-const { calculatePerformance } = require("../../vaults/performance/handlerv2");
 
 const historicalApyDb = require("../../../models/historical-apy.model");
-const performanceDb = require("../../../models/performance.model");
 
 const getApyAttributeNameByStrategy = (strategyType) => {
     switch(strategyType) {
@@ -186,7 +184,6 @@ module.exports.handler = async(req,res) => {
     const etfStrategies = constant.ETF_STRATEGIES;
     const strategyId = req.params.strategy;
     const strategyType = strategies[strategyId].contractType; // Get strategy category
-    startTime = dateTimeHelper.toTimestamp(startTime);
 
     let result = [];
     let historicalData = [];
@@ -199,7 +196,7 @@ module.exports.handler = async(req,res) => {
 
     try {
         if(etfStrategies.includes(strategyId)) {
-            const result = await performanceDb.findPerformanceWithTimePeriods(
+            const result = await findPerformanceWithTimePeriods(
                 strategyId,
                 startTime, 
             );
