@@ -397,12 +397,10 @@ const pnlHandle = async (req, res) => {
 
     const startTime = dateTimeHelper.getStartTimeFromParameter(req.params.days);
     const collection = req.params.farmer;
-    const result = startTime === -1
-      ? await historicalDb.findAll(collection)
-      : await historicalDb.findPerformanceWithTimePeriods(
+    const result = await findPerformanceWithTimePeriods(
         collection,
-        dateTimeHelper.toTimestamp(startTime)
-      );
+        startTime
+    );
   
     if(!result || result.length <= 0) {
       return res.status(200).json({
@@ -525,6 +523,18 @@ const processPerformanceData = (datas, strategyId, sinceInception = false) => {
   } 
 }
 
+
+const findPerformanceWithTimePeriods = async(collection, startTime) => {
+  const sinceInception = (startTime == -1);
+  let start = dateTimeHelper.toMillisecondsTimestamp(startTime);
+ 
+  let result = (sinceInception)
+    ? await historicalDb.findAll(collection)
+    : await historicalDb.findPerformanceWithTimePeriods(collection, start);
+
+  return result;
+}
+
 const performanceHandle = async (req, res) => {
   try {
     if (
@@ -561,13 +571,10 @@ const performanceHandle = async (req, res) => {
     }
 
     const startTime = dateTimeHelper.getStartTimeFromParameter(req.params.days);
-    const collection = req.params.farmer;
-  
     const sinceInception = (startTime == -1);
-    let result = (sinceInception) 
-      ? await historicalDb.findAll(collection)
-      : await historicalDb.findPerformanceWithTimePeriods(collection, dateTimeHelper.toTimestamp(startTime));
-
+    const collection = req.params.farmer;
+   
+    let result = await findPerformanceWithTimePeriods(collection, startTime);
     if(!result || result.length <= 0) {
       return res.status(200).json({
         message: `Performance Data for ${req.params.farmer}`,
@@ -582,6 +589,7 @@ const performanceHandle = async (req, res) => {
       body: result,
     });
   } catch (err) {
+    console.log(`Error in performanceHandle(): `, err);
     res.status(200).json({
       message: `Performance Data for ${req.params.farmer}`,
       body: null,
@@ -597,6 +605,7 @@ module.exports = {
   performanceHandle,
   getTokenPrice,
   processPerformanceData,
-  calculateStrategyPNL
+  calculateStrategyPNL,
+  findPerformanceWithTimePeriods
 }
  

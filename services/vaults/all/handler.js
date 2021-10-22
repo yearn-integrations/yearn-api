@@ -5,9 +5,9 @@ const { findAllVaultCategory: findAllVaults } = require("../category/handler");
 const { findAllStrategiesAssetDistribution } = require("../distribution/handler");
 const { getVaultsStatistics } = require("../../user/vaults/statistics/handler");
 const { findAllHistoricalAPY } = require("../apy/save/historical-handle");
-const { calculateStrategyPNL } = require("../performance/handler");
+const { calculateStrategyPNL, findPerformanceWithTimePeriods } = require("../performance/handler");
 const { getLatestTotalAmountDepositInfo } = require("../totalDepositedAmount/handler");
-const performanceDb = require("../../../models/performance.model");
+
 const contractHelper = require("../../../utils/contract");
 const dateTimeHelper = require("../../../utils/dateTime");
 const constant = require("../../../utils/constant");
@@ -55,13 +55,11 @@ const findAllDepositedAmount = async() => {
 const findAllPerformance = async () => {
     const etfTypeStrategies = constant.ETF_STRATEGIES;
     const period = "1y";
-    const startTime = dateTimeHelper.toTimestamp(
-        dateTimeHelper.getStartTimeFromParameter(period)
-    );
+    const startTime = dateTimeHelper.getStartTimeFromParameter(period);
 
     const returnResult = {};
     for(const strategy of etfTypeStrategies) {
-        const result = await performanceDb.findPerformanceWithTimePeriods(
+        const result = await findPerformanceWithTimePeriods(
             strategy,
             startTime
         );
