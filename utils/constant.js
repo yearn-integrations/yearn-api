@@ -141,7 +141,8 @@ const DAOSTO2_ASSET_DISTRIBUTION = {
 };
 
 const DAODEGEN_ASSET_DISTRIBUTION = {
-    BUSD: { percent: 25, tokenId: TOKEN_COINGECKO_ID.BUSD},
+    BUSD: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.BUSD},
+    USDC: { percent: 12.5, tokenId:  TOKEN_COINGECKO_ID.USDC},
     ALPACA: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.ALPACA},
     BNB: { percent: 25, tokenId: TOKEN_COINGECKO_ID.BNB },
     XVS: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.XVS},
