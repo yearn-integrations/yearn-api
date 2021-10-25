@@ -39,7 +39,10 @@ const TOKEN_COINGECKO_ID = {
     BNB: "binancecoin",
     XVS: "venus",
     CAKE: "pancakeswap-token",
-    BUSD: "binance-usd"
+    BUSD: "binance-usd", 
+    ALPACA: "alpaca-finance",
+    CHESS: "tranchess",
+    BELT: "belt"
 }
 
 const TOKEN_CHART_COLOR = {
@@ -138,17 +141,20 @@ const DAOSTO2_ASSET_DISTRIBUTION = {
 };
 
 const DAODEGEN_ASSET_DISTRIBUTION = {
-    BUNNY: { percent: 25, tokenId: TOKEN_COINGECKO_ID.BUNNY},
-    AUTO: { percent: 25, tokenId: TOKEN_COINGECKO_ID.AUTO},
-    EPS: { percent: 25, tokenId: TOKEN_COINGECKO_ID.EPS},
-    XVS: { percent: 25, tokenId: TOKEN_COINGECKO_ID.XVS}
+    BUSD: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.BUSD},
+    USDC: { percent: 12.5, tokenId:  TOKEN_COINGECKO_ID.USDC},
+    ALPACA: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.ALPACA},
+    BNB: { percent: 25, tokenId: TOKEN_COINGECKO_ID.BNB },
+    XVS: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.XVS},
+    CHESS: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.CHESS},
+    BELT: { percent: 12.5, tokenId: TOKEN_COINGECKO_ID.BELT},
 };
 
 const DAOSAFU_ASSET_DISTRIBUTION = {
-    BTC: { percent: 45, tokenId: TOKEN_COINGECKO_ID.BTC },
-    BNB: { percent: 35, tokenId: TOKEN_COINGECKO_ID.BNB },
-    XVS: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.XVS },
-    CAKE: { percent: 7.5, tokenId: TOKEN_COINGECKO_ID.CAKE},
+    BTC: { percent: 40, tokenId: TOKEN_COINGECKO_ID.BTC },
+    ETH: { percent: 25, tokenId: TOKEN_COINGECKO_ID.ETH },
+    BNB: { percent: 20, tokenId: TOKEN_COINGECKO_ID.BNB },
+    CAKE: { percent: 10, tokenId: TOKEN_COINGECKO_ID.CAKE},
     BUSD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.BUSD}
 };
 // Remember to update asset distribution
