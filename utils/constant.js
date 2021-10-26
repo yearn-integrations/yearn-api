@@ -131,13 +131,14 @@ const DAOCDV2_ASSET_DISTRIBUTION = {
 };
 
 const DAOSTO2_ASSET_DISTRIBUTION = {
-    MMSFT: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MMSFT },
-    MTWTR: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MTWTR},
-    MTSLA: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MTSLA },
-    MGOOGL: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MGOOGL },
-    MAMZN: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MAMZN },
-    MAAPL: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MAAPL },
-    MNFLX: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MNFLX},
+    UST: { percent: 50, tokenId: TOKEN_COINGECKO_ID.UST },
+    MMSFT: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MMSFT },
+    MTWTR: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MTWTR},
+    MTSLA: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MTSLA },
+    MGOOGL: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MGOOGL },
+    MAMZN: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MAMZN },
+    MAAPL: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MAAPL },
+    MNFLX: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MNFLX},
 };
 
 const DAODEGEN_ASSET_DISTRIBUTION = {
