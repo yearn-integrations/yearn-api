@@ -1,5 +1,6 @@
 const Web3 = require("web3");
 const constant = require("./constant");
+const erc20Constant = require("./erc20Constant");
 
 const archiveNodeUrl = process.env.ARCHIVENODE_ENDPOINT; // Ethereum
 const archiveNodePolygonUrl = process.env.POLYGON_ARCHIVENODE_ENDPOINT; // Polygon
@@ -215,6 +216,27 @@ module.exports.getContractsFromDomain = () => {
     return (process.env.PRODUCTION !== null && process.env.PRODUCTION != "")
       ? mainContracts
       : testContracts;
+}
+
+// Get ERC20 Addresses based on environment 
+module.exports.getERC20AddressByNetwork = (network) => {
+    let result = [];
+    try {
+        if(network === undefined || network === "" || network === null) {
+            throw(`Missing network type`);
+        }
+
+        const environment = (process.env.PRODUCTION !== null && process.env.PRODUCTION != "") 
+            ? `PROD`
+            : `TEST`;
+        const collectionName = `${network.toUpperCase()}_${environment}`;
+
+        result = erc20Constant[collectionName];
+    } catch (err) {
+        console.error(`Error in getERC20AddressByNetwork():`,err);
+    } finally {
+        return result;
+    }
 }
 
 // Get First Block for every period stated within start and end, for ethereum only

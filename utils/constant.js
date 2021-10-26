@@ -259,12 +259,24 @@ const STRATEGY_TYPE = {
     DAOA2S: "daoA2S",
 }
 
+const ETHEREUM = "ethereum";
+const POLYGON = "polygon";
+const BSC =  "bsc";
+const AVAX =  "avalanche";
+
+const SUPPORTED_NETWORK = [
+    ETHEREUM,
+    POLYGON,
+    BSC,
+    AVAX
+];
+
 module.exports = {
     // Network Category
-    ETHEREUM: "ethereum",
-    POLYGON: "polygon",
-    BSC: "bsc",
-    AVAX: "avalanche",
+    ETHEREUM,
+    POLYGON,
+    BSC,
+    AVAX,
 
     // Tokens
     ETH: "ETH",
@@ -275,6 +287,7 @@ module.exports = {
 
     // Currency
     USD: "USD",
+    SUPPORTED_NETWORK,
 
     // Strategy ID
     // DAOCDV: "daoCDV",
