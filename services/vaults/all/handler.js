@@ -109,6 +109,7 @@ const proccessingVault = async (obj) => {
     const results = {};
     vaults.map(key => {
         const vaultAddress = contracts.farmer[key].address;
+        const abi = contracts.farmer[key].abi;
 
         let obj = {};
         obj = getVaultInfo(vaultContracts, vaultAddress, obj, selectedNetwork);
@@ -118,7 +119,7 @@ const proccessingVault = async (obj) => {
         const assetDistribution = assetsDistribution[key] ? assetsDistribution[key] : null;
         const daomineApy = getVaultDAOmineAPY(daominePools, vaultAddress);
 
-        obj = { ...obj, tvl, pnl, assetDistribution, daomineApy };
+        obj = { ...obj, tvl, pnl, assetDistribution, daomineApy, address: vaultAddress, abi };
 
         // Temp Solution
         if (["daoCDV2", "daoSTO2"].includes(key)) {
