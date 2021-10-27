@@ -296,3 +296,94 @@ db.airdrop.insertMany([
 db.airdrop_event.insertMany([
     {address: "0xbcf5cef54bca1b0591ee487bac567e7182bf8c7d", active: true}
 ]);
+
+// script to update currencies property for each strategy
+// testnet
+db.vault_categories.updateMany(
+	{ network: "ethereum" },
+	{ $set: {
+		currencies: [
+			{ label: "USDT", address: "0x07de306ff27a2b630b1141956844eb1552b956b5", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
+			{ label: "USDC", address: "0xb7a4f3e9097c08da09517b5ab877f7a917224ede", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
+			{ label: "DAI", address: "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
+		]
+	}}
+);
+
+db.vault_categories.updateMany(
+	{ network: "polygon" },
+	{ $set: {
+		currencies: [
+			{ label: "USDT", address: "0xbd21a10f619be90d6066c941b04e340841f1f989", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
+			{ label: "USDC", address: "0x2058a9d7613eee744279e3856ef0eada5fcbaa7e", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
+			{ label: "DAI", address: "0x001b3b4d0f3714ca98ba10f6042daebf0b1b7b6f", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
+		]
+	}}
+);
+
+db.vault_categories.updateMany(
+	{ network: "bsc" },
+	{ $set: {
+		currencies: [
+			{ label: "USDT", address: "0x337610d27c682e347c9cd60bd4b3b107c9d34ddd", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
+			{ label: "USDC", address: "0x64544969ed7ebf5f083679233325356ebe738930", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
+			{ label: "DAI", address: "0xec5dcb5dbf4b114c9d0f65bccab49ec54f6a0867", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
+		]
+	}}
+);
+
+db.vault_categories.updateMany(
+	{ network: "avalanche" },
+	{ $set: {
+		currencies: [
+			{ label: "USDT", address: "0xE01A4D7de190f60F86b683661F67f79F134E0582", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
+			{ label: "USDC", address: "0xA6cFCa9EB181728082D35419B58Ba7eE4c9c8d38", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
+			{ label: "DAI", address: "0x3bc22AA42FF61fC2D01E87c2Fa4268D0334b1a4c", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
+		]
+	}}
+);
+
+// Mainnet
+db.vault_categories.updateMany(
+	{ network: "ethereum" },
+	{ $set: {
+		currencies: [
+			{ label: "USDT", address: "0xdac17f958d2ee523a2206206994597c13d831ec7", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
+			{ label: "USDC", address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
+			{ label: "DAI", address: "0x6b175474e89094c44da98b954eedeac495271d0f", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
+		]
+	}}
+);
+
+db.vault_categories.updateMany(
+	{ network: "polygon" },
+	{ $set: {
+		currencies: [
+			{ label: "USDT", address: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
+			{ label: "USDC", address: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
+			{ label: "DAI", address: "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
+		]
+	}}
+);
+
+db.vault_categories.updateMany(
+	{ network: "bsc" },
+	{ $set: {
+		currencies: [
+			{ label: "USDT", address: "0x55d398326f99059fF775485246999027B3197955", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
+			{ label: "USDC", address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
+			{ label: "DAI", address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
+		]
+	}}
+);
+
+// db.vault_categories.updateMany(
+// 	{ network: "avalanche" },
+// 	{ $set: {
+// 		currencies: [
+// 			{ label: "USDT", address: "0xE01A4D7de190f60F86b683661F67f79F134E0582", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
+// 			{ label: "USDC", address: "0xA6cFCa9EB181728082D35419B58Ba7eE4c9c8d38", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
+// 			{ label: "DAI", address: "0x3bc22AA42FF61fC2D01E87c2Fa4268D0334b1a4c", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
+// 		]
+// 	}}
+// );
