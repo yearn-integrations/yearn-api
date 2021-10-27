@@ -13,8 +13,8 @@ let contracts;
 
 const getDefaultSupportedERC20ByNetwork = (network) => {
     let erc20address = contractHelper.getERC20AddressByNetwork(network);
-    erc20address = erc20address.map(e => {
-        return { ...e, enabledDeposit: true, enabledWithdraw: true }
+    erc20address = erc20address.map((e, index) => {
+        return { ...e, enabledDeposit: true, enabledWithdraw: true, tokenIndex: index }
     });
     return erc20address;
 }
