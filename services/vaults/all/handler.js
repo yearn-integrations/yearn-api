@@ -119,7 +119,13 @@ const proccessingVault = async (obj) => {
         const assetDistribution = assetsDistribution[key] ? assetsDistribution[key] : null;
         const daomineApy = getVaultDAOmineAPY(daominePools, vaultAddress);
 
-        obj = { ...obj, tvl, pnl, assetDistribution, daomineApy, address: vaultAddress, abi };
+        obj = { ...obj, 
+                tvl, 
+                pnl, 
+                asset_distribution: assetDistribution, 
+                daomineApy, 
+                address: vaultAddress, 
+                abi };
 
         // Temp Solution
         if (["daoCDV2", "daoSTO2"].includes(key)) {
