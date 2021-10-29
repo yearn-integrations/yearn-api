@@ -285,14 +285,15 @@ const syncHistoricalPerformance = async (dateTime) => {
         if(["daoCDV2","daoSTO2"].includes(etf)) {
           const latestTotalDepositAmount = await totalDepositAmountDb.getLatestTotalAmountDepositInfo(etf);
     
+          oriTotalPool = totalPool;
           if(latestTotalDepositAmount && latestTotalDepositAmount.length > 0) {
             totalDepositedAmount = latestTotalDepositAmount[0].totalDepositedAmount;
             totalDepositedAmount = (totalDepositedAmount * 10 ** 18).toString();
             totalDepositedAmount = ethers.BigNumber.from(totalDepositedAmount);
-            oriTotalPool = totalPool;
             totalPool = totalPool.sub(totalDepositedAmount);
-          }
+          } 
         }
+        
 
         // currentPrice["lp"] = calcLPTokenPriceUSD(etf, totalSupply, totalPool, network);
         currentPrice["lp"] = await getPricePerFullShare(etf, vault, date.block, network, totalPool, totalSupply);
