@@ -39,7 +39,11 @@ const TOKEN_COINGECKO_ID = {
     BNB: "binancecoin",
     XVS: "venus",
     CAKE: "pancakeswap-token",
-    BUSD: "binance-usd", 
+    BUSD: "binance-usd",
+    JOE: "joe",
+    PNG: "pangolin",
+    LYD: "lydia-finance",
+    AVAX: "avalanche-2",
     ALPACA: "alpaca-finance",
     CHESS: "tranchess",
     BELT: "belt"
@@ -131,13 +135,14 @@ const DAOCDV2_ASSET_DISTRIBUTION = {
 };
 
 const DAOSTO2_ASSET_DISTRIBUTION = {
-    MMSFT: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MMSFT },
-    MTWTR: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MTWTR},
-    MTSLA: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MTSLA },
-    MGOOGL: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MGOOGL },
-    MAMZN: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MAMZN },
-    MAAPL: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MAAPL },
-    MNFLX: { percent: 14.3, tokenId: TOKEN_COINGECKO_ID.MNFLX},
+    UST: { percent: 50, tokenId: TOKEN_COINGECKO_ID.UST },
+    MMSFT: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MMSFT },
+    MTWTR: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MTWTR},
+    MTSLA: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MTSLA },
+    MGOOGL: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MGOOGL },
+    MAMZN: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MAMZN },
+    MAAPL: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MAAPL },
+    MNFLX: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MNFLX},
 };
 
 const DAODEGEN_ASSET_DISTRIBUTION = {
@@ -157,7 +162,7 @@ const DAOSAFU_ASSET_DISTRIBUTION = {
     CAKE: { percent: 10, tokenId: TOKEN_COINGECKO_ID.CAKE},
     BUSD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.BUSD}
 };
-// Remember to update asset distribution
+
 const DAOTAS_ASSET_DISTRIBUTION = {
    BULLISH: {
         BTC: { percent: 50, tokenId: TOKEN_COINGECKO_ID.BTC },
@@ -168,6 +173,35 @@ const DAOTAS_ASSET_DISTRIBUTION = {
         ETH: { percent: 50,  tokenId: TOKEN_COINGECKO_ID.ETH },
    }
 }
+
+const DAOAXA_ASSET_DISTRIBUTION = {
+    AVAX: { percent: 50, tokenId: TOKEN_COINGECKO_ID.AVAX },
+    JOE: { percent: 22.5, tokenId: TOKEN_COINGECKO_ID.JOE },
+    PNG: { percent: 22.5, tokenId: TOKEN_COINGECKO_ID.PNG },
+    LYD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.LYD },
+};
+
+const DAOAXS_ASSET_DISTRIBUTION = {
+    JOE: { percent: 40, tokenId: TOKEN_COINGECKO_ID.JOE },
+    PNG: { percent: 5, tokenId: TOKEN_COINGECKO_ID.PNG },
+    LYD: { percent: 5, tokenId: TOKEN_COINGECKO_ID.LYD },
+    USDT: { percent: 5, tokenId: TOKEN_COINGECKO_ID.USDT },
+    USDC: { percent: 40, tokenId: TOKEN_COINGECKO_ID.USDC},
+    DAI: { percent: 5, tokenId: TOKEN_COINGECKO_ID.DAI },
+};
+
+const DAOASA_ASSET_DISTRIBUTION = {
+    AVAX: { percent: 50, tokenId: TOKEN_COINGECKO_ID.AVAX},
+    DAI: { percent: 25, tokenId: TOKEN_COINGECKO_ID.DAI },
+    USDC: { percent: 22.5, tokenId: TOKEN_COINGECKO_ID.USDC },
+    USDT: { percent: 2.5, tokenId: TOKEN_COINGECKO_ID.USDT },
+};
+
+const DAOA2S_ASSET_DISTRIBUTION = {
+    DAI: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
+    USDT: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
+    USDC: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.USDC },
+};
 
 const CONTRACT_IDS = {
     DAOCDV: "daoCDV",
@@ -181,6 +215,10 @@ const CONTRACT_IDS = {
     DAODEGEN: "daoDEGEN",
     DAOSAFU: "daoSAFU",
     DAOTAS: "daoTAS",
+    DAOAXA: "daoAXA",
+    DAOAXS: "daoAXS",
+    DAOASA: "daoASA",
+    DAOA2S: "daoA2S"
 }
 
 const ETF_STRATEGIES = [
@@ -194,7 +232,11 @@ const ETF_STRATEGIES = [
     CONTRACT_IDS.DAOSTO2,
     CONTRACT_IDS.DAODEGEN,
     CONTRACT_IDS.DAOSAFU,
-    CONTRACT_IDS.DAOTAS
+    CONTRACT_IDS.DAOTAS,
+    CONTRACT_IDS.DAOAXA,
+    CONTRACT_IDS.DAOAXS,
+    CONTRACT_IDS.DAOASA,
+    CONTRACT_IDS.DAOA2S
 ];
 
 const STRATEGY_TYPE = {
@@ -211,14 +253,31 @@ const STRATEGY_TYPE = {
     DAOSTONKS: "daoStonks",
     DAODEGEN: "daoDegen",
     DAOSAFU: "daoSafu",
-    TA: "daoTA"
+    TA: "daoTA",
+    DAOAXA: "daoAXA",
+    DAOAXS: "daoAXS",
+    DAOASA: "daoASA",
+    DAOA2S: "daoA2S",
 }
+
+const ETHEREUM = "ethereum";
+const POLYGON = "polygon";
+const BSC =  "bsc";
+const AVAX =  "avalanche";
+
+const SUPPORTED_NETWORK = [
+    ETHEREUM,
+    POLYGON,
+    BSC,
+    AVAX
+];
 
 module.exports = {
     // Network Category
-    ETHEREUM: "ethereum",
-    POLYGON: "polygon",
-    BSC: "bsc",
+    ETHEREUM,
+    POLYGON,
+    BSC,
+    AVAX,
 
     // Tokens
     ETH: "ETH",
@@ -229,6 +288,7 @@ module.exports = {
 
     // Currency
     USD: "USD",
+    SUPPORTED_NETWORK,
 
     // Strategy ID
     // DAOCDV: "daoCDV",
@@ -247,6 +307,10 @@ module.exports = {
     DAODEGEN_ASSET_DISTRIBUTION,
     DAOSAFU_ASSET_DISTRIBUTION,
     DAOTAS_ASSET_DISTRIBUTION,
+    DAOAXA_ASSET_DISTRIBUTION,
+    DAOAXS_ASSET_DISTRIBUTION,
+    DAOASA_ASSET_DISTRIBUTION,
+    DAOA2S_ASSET_DISTRIBUTION,
     
     TOKEN_COINGECKO_ID,
     ETF_STRATEGIES,

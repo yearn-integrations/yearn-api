@@ -61,5 +61,9 @@ module.exports = {
   daoTASFarmer: 'daoTAS_historical-apy',
   hfDaiFarmer: 'hfDAI_historical-apy',
   hfUsdcFarmer: 'hfUSDC_historical-apy',
-  hfUsdtFarmer: 'hfUSDT_historical-apy',  
+  hfUsdtFarmer: 'hfUSDT_historical-apy', 
+  daoAXAFarmer: 'daoAXA_historical-apy', 
+  daoAXSFarmer: 'daoAXS_historical-apy', 
+  daoASAFarmer: 'daoASA_historical-apy', 
+  daoA2SFarmer: 'daoA2S_historical-apy', 
 };
