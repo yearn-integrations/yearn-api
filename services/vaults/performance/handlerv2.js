@@ -59,7 +59,7 @@ const getTotalSupply = async(etf, vault, block, network) => {
 const getTotalPool = async(etf, vault, block, network) => {
   let pool = 0;
 
-  const networks = [constant.POLYGON, constant.BSC];
+  const networks = [constant.POLYGON, constant.BSC, constant.AVAX];
 
   try {
       if(etf === "daoSTO") {
@@ -100,7 +100,7 @@ const calcLPTokenPriceUSD = (etf, totalSupply, totalPool, network) => {
 
       lpPrice = newTotalPool.mul(ethers.BigNumber.from("1000000000000000000")).div(totalSupply);
       lpPrice = ethers.utils.formatEther(lpPrice);
-    } else if(network === constant.POLYGON || network === constant.BSC) {
+    } else {
       lpPrice = (new BigNumber(totalPool)).dividedBy(totalSupply);
     } 
   
@@ -138,6 +138,14 @@ const getSearchRange = async (firstBlock, lastBlock, network) => {
       );
     }  else if (network === constant.BSC) {
       days = await contractHelper.getEveryBSC(
+        "days", // Period, required. Valid value: years, quarters, months, weeks, days, hours, minutes
+        firstTimestamp, // Start date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+        lastTimestamp, // End date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
+        1, // Duration, optional, integer. By default 1.
+        true // Block after, optional. Search for the nearest block before or after the given date. By default true.
+      );
+    } else if (network === constant.AVAX) {
+      days = await contractHelper.getEveryAvalanche(
         "days", // Period, required. Valid value: years, quarters, months, weeks, days, hours, minutes
         firstTimestamp, // Start date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
         lastTimestamp, // End date, required. Any valid moment.js value: string, milliseconds, Date() object, moment() object.
@@ -186,6 +194,9 @@ const getNextUpdateBlock = async (dateTime, network) => {
   } else if (network === constant.BSC) {
     const block = await contractHelper.getBSCBlockByTimeline(nearestDateTime);
     return [block];
+  } else if (network === constant.AVAX) {
+    const block = await contractHelper.getAvalancheBlockByTimeline(nearestDateTime);
+    return [block];
   }
 }
 
@@ -230,10 +241,8 @@ const syncHistoricalPerformance = async (dateTime) => {
     let vault;
     if(network === constant.ETHEREUM) {
       vault = new ethers.Contract(address, abi, provider);
-    } else if (network === constant.POLYGON) {
-      vault = await contractHelper.getPolygonContract(abi, address);
-    } else if (network === constant.BSC) {
-      vault = await contractHelper.getBSCContract(abi, address);
+    } else {
+      vault = await contractHelper.getContract(abi, address, network);
     } 
      
     // Get latest record

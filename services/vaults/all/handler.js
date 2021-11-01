@@ -1,10 +1,7 @@
 const { findAllTVL } = require("../tvl/handler");
-const { getVaultsApy: findVaultsApy } = require("../apy/handler");
 const { findAllPool } = require("../../staking/handler");
 const { findAllVaultCategory: findAllVaults } = require("../category/handler");
 const { findAllStrategiesAssetDistribution } = require("../distribution/handler");
-const { getVaultsStatistics } = require("../../user/vaults/statistics/handler");
-const { findAllHistoricalAPY } = require("../apy/save/historical-handle");
 const { calculateStrategyPNL, findPerformanceWithTimePeriods } = require("../performance/handler");
 const { getLatestTotalAmountDepositInfo } = require("../totalDepositedAmount/handler");
 
@@ -14,28 +11,50 @@ const constant = require("../../../utils/constant");
 
 let contracts;
 
-const getVaultApy = (apys, vaultKey) => {
-    const vaultApy = apys.find(a => a.vaultSymbol === vaultKey);
-    return vaultApy ? vaultApy : null;
+const getDefaultSupportedERC20ByNetwork = (network) => {
+    let erc20address = contractHelper.getERC20AddressByNetwork(network);
+    erc20address = erc20address.map((e, index) => {
+        return { ...e, enabledDeposit: true, enabledWithdraw: true, tokenIndex: index }
+    });
+    return erc20address;
 }
 
-const getVaultDAOmineAPY = (pools, vaultAddress) => {
-    const pool = pools.find(p => p.status === 'A' && p.contract_address.toLowerCase() === vaultAddress.toLowerCase());
-    return pool ? pool.apr : null;
-}
-
-const getVaultInfo = (vaultContracts, vaultAddress, vaultObject) => {
+const getVaultInfo = (vaultContracts, vaultAddress, vaultObject, network) => {
     const vault = vaultContracts.find(v => v.contract_address.toLowerCase() === vaultAddress.toLowerCase());
-    vaultObject["deposit"] = (!vault) ? true : vault.deposit;
-    vaultObject["depositMessage"] = (!vault) ? "" : vault.depositMessage;
-    vaultObject["withdraw"] = (!vault) ? true : vault.withdraw;
-    vaultObject["withdrawMessage"] = (!vault) ? "" : vault.withdrawMessage;
-    return vaultObject;
-}
 
-const getStatisticsInfo = (statistics, vaultAddress) => {
-    const vaultStatistic = statistics.find(s => s.contractAddress.toLowerCase() === vaultAddress.toLowerCase());
-    return vaultStatistic;
+    let deposit = true;
+    let depositMessage = "";
+    let withdraw = true;
+    let withdrawMessage = "";
+    let currencies = [];
+    
+    if(vault !== undefined) {
+        deposit = vault.deposit;
+        withdraw = vault.withdraw;
+        depositMessage = vault.depositMessage;
+        withdrawMessage = vault.withdrawMessage;
+        currencies = vault.currencies;
+    }
+
+    // Append default ERC20 address
+    if( vault === undefined || 
+        vault.currencies === undefined || 
+        vault.currencies.length <= 0
+    ) {
+        const erc20address = getDefaultSupportedERC20ByNetwork(network);
+        currencies = erc20address;
+    }
+    
+    vaultObject = { 
+        ...vaultObject ,
+        deposit,
+        withdraw,
+        depositMessage,
+        withdrawMessage,
+        currencies
+    };
+    
+    return vaultObject;
 }
 
 const findAllDepositedAmount = async() => {
@@ -63,7 +82,6 @@ const findAllPerformance = async () => {
             strategy,
             startTime
         );
-
         const pnl = await calculateStrategyPNL(result);
         returnResult[strategy] = pnl;
     }
@@ -71,67 +89,76 @@ const findAllPerformance = async () => {
     return returnResult;
 }
 
-const proccessingVault = async (obj) => {
-   const { vaults } = obj;
+const getVaultDAOmineAPY = (pools, vaultAddress) => {
+    const pool = pools.find(p => p.status === 'A' && p.contract_address.toLowerCase() === vaultAddress.toLowerCase());
+    return pool ? pool.apr : 0;
+}
 
-   const [tvls, apys, daominePools, vaultContracts, performances, assetsDistribution, totalDepositedAmounts] = await Promise.all([
+const proccessingVault = async (obj) => {
+    const { vaults, selectedNetwork } = obj;
+
+    const [tvls, daominePools, vaultContracts, performances, assetsDistribution, totalDepositedAmounts] = await Promise.all([
         findAllTVL(contracts),
-        findVaultsApy(),
         findAllPool(),
         findAllVaults(),
         findAllPerformance(),
         findAllStrategiesAssetDistribution(),
         findAllDepositedAmount()
-        // findAllHistoricalAPY(startTime.unix(), network),
-        // getVaultsStatistics(userAddress, network),
-   ]);
+    ]);
 
-   const results = {};
-   const etfStrategies = constant.ETF_STRATEGIES;
-
+    const results = {};
     vaults.map(key => {
         const vaultAddress = contracts.farmer[key].address;
+        const abi = contracts.farmer[key].abi;
 
         let obj = {};
-        obj = getVaultInfo(vaultContracts, vaultAddress, obj);
-        obj["apy"] = getVaultApy(apys, key);
-        obj["daomineApy"] = getVaultDAOmineAPY(daominePools, vaultAddress);
-        obj["tvl"] = tvls[key] ? tvls[key] : null;
-        // obj["historicalAPY"] = historicalAPYS[key] ? historicalAPYS[key] : null;
-        // obj["statistics"] = getStatisticsInfo(statistics, vaultAddress);
+        obj = getVaultInfo(vaultContracts, vaultAddress, obj, selectedNetwork);
 
-        if (etfStrategies.includes(key)) {
-            obj["pnl"] = performances[key];
-            obj["asset_distribution"] = assetsDistribution[key];
-        }
+        const tvl = tvls[key] ? tvls[key] : null;
+        const pnl = performances[key] ? performances[key] : null;
+        const assetDistribution = assetsDistribution[key] ? assetsDistribution[key] : null;
+        const daomineApy = getVaultDAOmineAPY(daominePools, vaultAddress);
+
+        obj = { ...obj, 
+                tvl, 
+                pnl, 
+                asset_distribution: assetDistribution, 
+                daomineApy, 
+                address: vaultAddress, 
+                abi };
 
         // Temp Solution
-        if(["daoCDV2", "daoSTO2"].includes(key)) {
+        if (["daoCDV2", "daoSTO2"].includes(key)) {
             obj["totalDepositedAmount"] = totalDepositedAmounts[key];
         }
         results[key] = obj;
     });
 
-   return results;
+    return results;
 }
 
 module.exports.handler = async (req, res) => {
+    let message = "";
+    let result = null;
+    
     try {
-        if (req.params.network === null || req.params.network === "") {
-            res.status(200).json({
-                message: 'Missing network type.',
-                body: null
-            });
-            return;
+        const selectedNetwork = req.params.network;
+
+        // Checking for network
+        if (selectedNetwork === undefined || selectedNetwork === null || selectedNetwork === "") {
+            throw(`Missing network type`);
         } 
 
+        // Check supported network
+        const supportedNetwork = constant.SUPPORTED_NETWORK;
+        if (!supportedNetwork.includes(selectedNetwork)) {
+            throw(`Network type is not supported.`);
+        }
+
+        // Find contracts
         contracts = await contractHelper.getContractsFromDomain();
         if(contracts.length <= 0) {
-            res.status(200).json({
-                message: "Something wrong with handler.",
-                body: null
-            });
-            return;
+            throw(`Something wrong with the handler`);
         }
 
         const vaults = [];
@@ -139,15 +166,17 @@ module.exports.handler = async (req, res) => {
             if(contracts.farmer[k].network === req.params.network) {
                 vaults.push(k);
             }
-        })
-        const result = await proccessingVault({vaults});
-
+        });
+        
+        result = await proccessingVault({vaults, selectedNetwork});
+        message = "Successful Response";
+    } catch (err) {
+        message = err;
+        console.error("Error in All Vault Handler: ", err);
+    } finally {
         res.status(200).json({
-            message: "Successful",
+            message,
             body: result
         });
-
-    } catch (err) {
-        console.error("Error in All Vault Handler: ", err);
     }
 }
