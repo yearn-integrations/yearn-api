@@ -199,7 +199,7 @@ const DAOASA_ASSET_DISTRIBUTION = {
 
 const DAOA2S_ASSET_DISTRIBUTION = {
     DAI: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
-    USDT: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.DAI },
+    USDT: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.USDT },
     USDC: { percent: 33.33, tokenId: TOKEN_COINGECKO_ID.USDC },
 };
 
