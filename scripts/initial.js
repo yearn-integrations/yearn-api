@@ -11,7 +11,7 @@ db.vault_categories.insertMany([
     { name: 'advance', network:"avalanche", contract_address: '0xa4dcbe792f51e13fc0e6961bbec436a881e73194', symbol: 'daoAXA', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'advance', network:"avalanche", contract_address: '0x6fd8c0c6cafb7b99c47bbe332cae42b32017cd58', symbol: 'daoAXS', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'advance', network:"avalanche", contract_address: '0x8b8d29166729b31b482df6055eaddcb944d4a1d8', symbol: 'daoASA', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
-    { name: 'advance', network:"avalanche", contract_address: '	0xa236fa927dc61d9566faf62b29d287405c5e49fc', symbol: 'daoA2S', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
+    { name: 'advance', network:"avalanche", contract_address: '0xa236fa927dc61d9566faf62b29d287405c5e49fc', symbol: 'daoA2S', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'degen', network:"bsc", contract_address: '0x5e5d75c2d1eec055e8c824c6c4763b59d5c7f065', symbol: 'daoDEGEN' ,deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' }, // Update this later
     { name: 'advance', network:"bsc", contract_address: '0xb9e35635084b8b198f4bf4ee787d5949b46338f1', symbol: 'daoSAFU', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'advance', network:"ethereum", contract_address: '0xae6637a2e583295654989adcfb3221691bb490ef', symbol: 'daoTAS', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
@@ -377,13 +377,13 @@ db.vault_categories.updateMany(
 	}}
 );
 
-// db.vault_categories.updateMany(
-// 	{ network: "avalanche" },
-// 	{ $set: {
-// 		currencies: [
-// 			{ label: "USDT", address: "0xE01A4D7de190f60F86b683661F67f79F134E0582", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
-// 			{ label: "USDC", address: "0xA6cFCa9EB181728082D35419B58Ba7eE4c9c8d38", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
-// 			{ label: "DAI", address: "0x3bc22AA42FF61fC2D01E87c2Fa4268D0334b1a4c", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
-// 		]
-// 	}}
-// );
+db.vault_categories.updateMany(
+	{ network: "avalanche" },
+	{ $set: {
+		currencies: [
+			{ label: "USDT", address: "0xde3a24028580884448a5397872046a019649b084", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
+			{ label: "USDC", address: "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
+			{ label: "DAI", address: "0xd586e7f844cea2f87f50152665bcbc2c279d8d70", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
+		]
+	}}
+);
