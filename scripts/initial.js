@@ -381,8 +381,8 @@ db.vault_categories.updateMany(
 	{ network: "avalanche" },
 	{ $set: {
 		currencies: [
-			{ label: "USDT", address: "0xde3a24028580884448a5397872046a019649b084", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
-			{ label: "USDC", address: "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
+			{ label: "USDT", address: "0xc7198437980c041c805A1EDcbA50c1Ce5db95118", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
+			{ label: "USDC", address: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
 			{ label: "DAI", address: "0xd586e7f844cea2f87f50152665bcbc2c279d8d70", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
 		]
 	}}
