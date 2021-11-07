@@ -8,10 +8,10 @@ db.vault_categories.insertMany([
     { name: 'basic', network:"ethereum", contract_address: '0x5b3ae8b672a753906b1592d44741f71fbd05ba8c', symbol: 'daoMVF', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'expert', network:"ethereum", contract_address: '0xcc6c417e991e810477b486d992faaca1b7440e76', symbol: 'daoCDV2', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'advance', network:"ethereum", contract_address: '0xd0b14644b0f91239075ed8a415769c4e20d37cf9', symbol: 'daoSTO2', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
-    // { name: 'advance', network:"avalanche", contract_address: '0x0b0e5b52e14152308f9f952ff19c67ebeb7560bb', symbol: 'daoAXA', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
-    // { name: 'advance', network:"avalanche", contract_address: '0xdf9fc6774937bf42602be1f80ab3da8a0b2a8594', symbol: 'daoAXS', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
-    // { name: 'advance', network:"avalanche", contract_address: '0x0d79f121fd1eb213e5dbde11edbe7744ecb51352', symbol: 'daoASA', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
-    // { name: 'advance', network:"avalanche", contract_address: '	0x89d6fd8ba3eaf76687cf7b3d10f914cc445eaec1', symbol: 'daoA2S', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
+    { name: 'advance', network:"avalanche", contract_address: '0xa4dcbe792f51e13fc0e6961bbec436a881e73194', symbol: 'daoAXA', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
+    { name: 'advance', network:"avalanche", contract_address: '0x6fd8c0c6cafb7b99c47bbe332cae42b32017cd58', symbol: 'daoAXS', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
+    { name: 'advance', network:"avalanche", contract_address: '0x8b8d29166729b31b482df6055eaddcb944d4a1d8', symbol: 'daoASA', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
+    { name: 'advance', network:"avalanche", contract_address: '0xa236fa927dc61d9566faf62b29d287405c5e49fc', symbol: 'daoA2S', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'degen', network:"bsc", contract_address: '0x5e5d75c2d1eec055e8c824c6c4763b59d5c7f065', symbol: 'daoDEGEN' ,deposit: true, withdraw: true, depositMessage: '', withdrawMessage: '' }, // Update this later
     { name: 'advance', network:"bsc", contract_address: '0xb9e35635084b8b198f4bf4ee787d5949b46338f1', symbol: 'daoSAFU', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
     { name: 'advance', network:"ethereum", contract_address: '0xae6637a2e583295654989adcfb3221691bb490ef', symbol: 'daoTAS', deposit: true, withdraw: true, depositMessage: '', withdrawMessage: ''},
@@ -378,13 +378,13 @@ db.vault_categories.updateMany(
 	}}
 );
 
-// db.vault_categories.updateMany(
-// 	{ network: "avalanche" },
-// 	{ $set: {
-// 		currencies: [
-// 			{ label: "USDT", address: "0xE01A4D7de190f60F86b683661F67f79F134E0582", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
-// 			{ label: "USDC", address: "0xA6cFCa9EB181728082D35419B58Ba7eE4c9c8d38", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
-// 			{ label: "DAI", address: "0x3bc22AA42FF61fC2D01E87c2Fa4268D0334b1a4c", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
-// 		]
-// 	}}
-// );
+db.vault_categories.updateMany(
+	{ network: "avalanche" },
+	{ $set: {
+		currencies: [
+			{ label: "USDT", address: "0xc7198437980c041c805A1EDcbA50c1Ce5db95118", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 0 },
+			{ label: "USDC", address: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 1 },
+			{ label: "DAI", address: "0xd586e7f844cea2f87f50152665bcbc2c279d8d70", enabledDeposit: true, enabledWithdraw: true, tokenIndex: 2 },
+		]
+	}}
+);
