@@ -4,9 +4,9 @@ name: CI to Docker Hub
 on:
   # Triggers the workflow on push or pull request events but only for the app branch
   push:
-    branches: [ develop ]
+    branches: [ beta ]
   pull_request:
-    branches: [ develop ]
+    branches: [ beta ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -50,7 +50,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/api-develop:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/api-beta:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
