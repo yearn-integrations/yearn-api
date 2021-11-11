@@ -13,9 +13,8 @@ services:
       - backend
   api:
     container_name: "api"
+    image: daoventures/api-develop:latest
     restart: always
-    build:
-      context: .
     env_file:
       - .env
     ports:
