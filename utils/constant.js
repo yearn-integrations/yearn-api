@@ -135,7 +135,7 @@ const DAOCDV2_ASSET_DISTRIBUTION = {
 };
 
 const DAOSTO2_ASSET_DISTRIBUTION = {
-    UST: { percent: 50, tokenId: TOKEN_COINGECKO_ID.UST },
+    UST: { percent: 49.95, tokenId: TOKEN_COINGECKO_ID.UST },
     MMSFT: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MMSFT },
     MTWTR: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MTWTR},
     MTSLA: { percent: 7.15, tokenId: TOKEN_COINGECKO_ID.MTSLA },
