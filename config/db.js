@@ -33,7 +33,7 @@ const connectDB = async (callback) => {
           JSON.stringify(err)
         );
       } else {
-        console.log("Connected successfully to database");
+        console.log("Connected successfully to database1");
         _db = client.db(MONGO_DB, { useUnifiedTopology: true });
       }
 

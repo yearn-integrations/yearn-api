@@ -112,6 +112,7 @@ const findAllStrategiesAssetDistribution = async() => {
 
 const saveAssetsPrice = async() => {
     try {
+
         const assets = await tokenDb.findAll();
 
         const yesterdayDate = await dateTimeHelper.formatDate(

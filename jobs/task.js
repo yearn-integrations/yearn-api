@@ -338,7 +338,7 @@ const saveVipAprHandler = async() => {
 const savePerformance = async () => {
   currentDateTime = new Date().getTime();
   console.log(`[savePerformance] first, START: ${new Date().getTime()}`);
-  await performanceSave.savePerformance(null);
+  await performanceSave.savePerformance(currentDateTime);
   console.log(`[savePerformance] first, END: ${new Date().getTime()}`);
   cron.schedule(
     "*/5 * * * *",
