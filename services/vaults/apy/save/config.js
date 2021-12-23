@@ -3,6 +3,8 @@ const vaultContractV2ABI = require("./abis/vaultV2");
 const vaultContractV3ABI = require("./abis/vaultV3");
 const vaultContractV4ABI = require("./abis/vaultV4");
 const vaultContractV5ABI = require("./abis/vaultV5");
+const vaultCitadelABI = require("./abis/vaultCitadel");
+const daoVaultABI = require("./abis/daovault");
 
 module.exports = {
   delayTime: 1000,
@@ -11,4 +13,6 @@ module.exports = {
   vaultContractV3ABI,
   vaultContractV4ABI,
   vaultContractV5ABI,
+  vaultCitadelABI,
+  daoVaultABI,
 };

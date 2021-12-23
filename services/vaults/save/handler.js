@@ -1,10 +1,11 @@
 require("dotenv").config();
 const AWS = require("aws-sdk");
-const db = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
+// const db = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
+const db = require('../../../models/vault.model');
 const _ = require("lodash");
 const fetch = require("node-fetch");
 const Web3 = require("web3");
-const web3 = new Web3(process.env.WEB3_ENDPOINT);
+const web3 = new Web3(process.env.MAIN_WEB3_ENDPOINT);
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY;
 const yRegistryAbi = require("./abis/yRegistry");
 const yRegistryAddress = "0x3ee41c098f9666ed2ea246f4d2558010e59d63a0";
@@ -70,18 +71,11 @@ const callContractMethod = async (contract, method) => {
 };
 
 const saveVault = async (vault) => {
-	const params = {
-		TableName: "vaults",
-		Item: vault,
-	};
-	await db
-		.put(params)
-		.promise()
-		.catch((err) => console.log("err", err));
+	await db.add(vault).catch((err) => console.log('err', err));
 	console.log(`Saved ${vault.name}`);
 };
 
-module.exports.handler = async (event) => {
+module.exports.handler = async () => {
 	const registryContract = new web3.eth.Contract(
 		yRegistryAbi,
 		yRegistryAddress
@@ -93,53 +87,60 @@ module.exports.handler = async (event) => {
 	await delay(delayTime);
 
 	const getVault = async (vaultAddress, idx) => {
-		const controllerAddress = vaultInfo.controllerArray[idx];
-		const strategyAddress = vaultInfo.strategyArray[idx];
-		const vaultContract = await getContract(vaultAddress);
-		const controllerContract = await getContract(controllerAddress);
-		const strategyContract = await getContract(strategyAddress);
-		const vaultName = await callContractMethod(vaultContract, "name");
-		const vaultSymbol = await callContractMethod(vaultContract, "symbol");
-		const tokenSymbol = vaultSymbol.substring(1);
-		const tokenAddress = vaultInfo.tokenArray[idx];
-		const tokenName = vaultName.substring(6);
-		const decimals = parseInt(
-			await callContractMethod(vaultContract, "decimals"),
-			10
-		);
+		try {
+			const controllerAddress = vaultInfo.controllerArray[idx];
+			const strategyAddress = vaultInfo.strategyArray[idx];
+			const vaultContract = await getContract(vaultAddress);
+			const controllerContract = await getContract(controllerAddress);
+			const strategyContract = await getContract(strategyAddress);
+			const vaultName = await callContractMethod(vaultContract, "name");
+			const vaultSymbol = await callContractMethod(vaultContract, "symbol");
+			const tokenSymbol = vaultSymbol.substring(1);
+			const tokenAddress = vaultInfo.tokenArray[idx];
+			const tokenName = vaultName.substring(6);
+			const decimals = parseInt(
+				await callContractMethod(vaultContract, "decimals"),
+				10
+			);
 
-		const tokenInfo = await fetch(
-			`https://api.coingecko.com/api/v3/coins/ethereum/contract/${tokenAddress}`
-		).then((res) => res.json());
-		const tokenSymbolAlias = tokenSymbolAliases[tokenSymbol] || tokenSymbol;
-		const symbolAlias = symbolAliases[vaultSymbol] || `y${tokenSymbolAlias}`;
-		const vaultAlias =
-			vaultAliases[vaultAddress] || `${tokenSymbolAlias} Vault`;
-		const tokenIcon = tokenInfo.image.large;
-		const vaultIcon = vaultIcons[tokenSymbol];
-		const vault = {
-			address: vaultAddress,
-			name: vaultName,
-			vaultAlias,
-			vaultIcon,
-			symbol: vaultSymbol,
-			symbolAlias,
-			controllerAddress: controllerAddress,
-			controllerName: await fetchContractName(controllerAddress),
-			strategyAddress: strategyAddress,
-			strategyName: await fetchContractName(strategyAddress),
-			tokenAddress: tokenAddress,
-			tokenName: tokenName,
-			tokenSymbol: tokenSymbol,
-			tokenSymbolAlias,
-			tokenIcon: tokenIcon,
-			decimals: decimals,
-			wrapped: vaultInfo.isWrappedArray[idx],
-			delegated: vaultInfo.isDelegatedArray[idx],
-			timestamp: Date.now(),
-		};
-		await saveVault(vault);
-		return vault;
+			const tokenInfo = await fetch(
+				`https://api.coingecko.com/api/v3/coins/ethereum/contract/${tokenAddress}`
+			).then((res) => res.json());
+			
+			if (tokenInfo) {
+				const tokenSymbolAlias = tokenSymbolAliases[tokenSymbol] || tokenSymbol;
+				const symbolAlias = symbolAliases[vaultSymbol] || `y${tokenSymbolAlias}`;
+				const vaultAlias =
+					vaultAliases[vaultAddress] || `${tokenSymbolAlias} Vault`;
+				const tokenIcon = tokenInfo.image ? tokenInfo.image.large : '';
+				const vaultIcon = vaultIcons[tokenSymbol];
+				const vault = {
+					address: vaultAddress,
+					name: vaultName,
+					vaultAlias,
+					vaultIcon,
+					symbol: vaultSymbol,
+					symbolAlias,
+					controllerAddress: controllerAddress,
+					controllerName: await fetchContractName(controllerAddress),
+					strategyAddress: strategyAddress,
+					strategyName: await fetchContractName(strategyAddress),
+					tokenAddress: tokenAddress,
+					tokenName: tokenName,
+					tokenSymbol: tokenSymbol,
+					tokenSymbolAlias,
+					tokenIcon: tokenIcon,
+					decimals: decimals,
+					wrapped: vaultInfo.isWrappedArray[idx],
+					delegated: vaultInfo.isDelegatedArray[idx],
+					timestamp: Date.now(),
+				};
+				await saveVault(vault);
+				return vault;
+			}
+		} catch (err) {}
+
+		return;
 	};
 
 	const vaults = [];
@@ -150,14 +151,4 @@ module.exports.handler = async (event) => {
 		const vault = await getVault(vaultAddress, idx);
 		vaults.push(vault);
 	}
-
-	const response = {
-		statusCode: 200,
-		headers: {
-			"Access-Control-Allow-Origin": "*",
-			"Access-Control-Allow-Credentials": true,
-		},
-		body: JSON.stringify(vaults),
-	};
-	return response;
 };

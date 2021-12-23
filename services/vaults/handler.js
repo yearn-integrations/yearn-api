@@ -1,15 +1,12 @@
 const AWS = require("aws-sdk");
-const db = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
+// const db = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
+const db = require('../../models/vault.model');
 const _ = require("lodash");
 const { injectDataIntoVaultAtKey } = require("../../utils/vaults");
 const { getVaultsApy } = require("../vaults/apy/handler");
 
 const getVaults = async () => {
-  const params = {
-    TableName: "vaults",
-  };
-  const entries = await db.scan(params).promise();
-  const vaults = entries.Items;
+  const vaults = await db.findAll();
   return vaults;
 };
 

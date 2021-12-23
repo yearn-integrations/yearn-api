@@ -1,16 +1,13 @@
-FROM node:14-buster
+FROM node:14
 
-RUN npm install -g serverless && \
-    npm install -g serverless-offline
+WORKDIR /api
 
-WORKDIR /opt/app
-
-COPY package*.json ./
+COPY package*.json /api/
 
 RUN npm install
 
-COPY . .
+COPY ./ /api/
 
-EXPOSE 3000
+EXPOSE 8080
 
-CMD [ "sls", "offline", "--host", "0.0.0.0" ]
+CMD ["npm", "start"]
